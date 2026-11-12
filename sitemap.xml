@@ -14,9 +14,10 @@
   <url><loc>https://www.darktechzon.site/record/</loc></url>
   <url><loc>https://www.darktechzon.site/pdf/</loc></url>
   <url><loc>https://www.darktechzon.site/lookup/</loc></url>
-  <url><loc>https://www.darktechzon.site/Temp-Mail/</loc></url>
-  <url><loc>https://www.darktechzon.site/weather/</loc></url>
-  <url><loc>https://www.darktechzon.site/M/</loc></url>
-  <url><loc>https://www.darktechzon.site/privacy.html</loc></url>
+    <url><loc>https://www.darktechzon.site/weather/</loc></url>
+    <url><loc>https://www.darktechzon.site/privacy.html</loc></url>
   <url><loc>https://www.darktechzon.site/titles/</loc></url>
+  <url>
+    <loc>https://www.darktechzon.site/ocr/</loc>
+  </url>
 </urlset>
