@@ -1,62 +1,188 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Dark Tech Zone — Free Tools Hub</title>
-<meta name="description" content="Dark Tech Zone free tools: downloaders, AI tools and tech utilities — Instagram, TikTok, X, Facebook downloaders, AI captions, code assistant, voice generator, speed test, screen recorder, PDF toolkit and more. 100% free, no signup." />
-<meta name="keywords" content="dark tech zone, free tools, instagram downloader, tiktok downloader, x video downloader, ai tools, pdf toolkit, speed test, screen recorder" />
-<link rel="canonical" href="https://darktechzon.site/" />
-<link rel="icon" type="image/jpeg" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" />
-<meta property="og:title" content="Dark Tech Zone — Free Tools Hub" />
-<meta property="og:description" content="Free downloaders, AI tools and tech utilities by Dark Tech Zone. No signup, no API key." />
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" />
-<meta property="og:type" content="website" />
-<meta name="theme-color" content="#05070c" />
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Dark Tech Zone Tools","url":"https://darktechzon.site/","description":"Free downloaders, AI tools and tech utilities by Dark Tech Zone."}</script>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#05070c;color:#f1f5f9;font-family:Inter,system-ui,Arial,sans-serif;min-height:100vh}
-a{color:inherit;text-decoration:none}
-.wrap{max-width:1080px;margin:0 auto;padding:24px 16px 60px}
-header{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:8px}
-header img{width:72px;height:72px;border-radius:50%;border:2px solid #06b6d4;object-fit:cover;box-shadow:0 0 24px rgba(6,182,212,.45)}
-header h1{font-size:30px;letter-spacing:.5px}
-header h1 b{color:#06b6d4}
-header p{color:#94a3b8;font-size:14px;margin-top:4px}
-.channels{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 28px}
-.channels a{background:#0d1320;border:1px solid rgba(255,255,255,.1);padding:10px 16px;border-radius:999px;font-size:14px;font-weight:600}
-.channels a:hover{border-color:#06b6d4}
-h2{font-size:20px;margin:30px 0 14px;color:#fff}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
-.card{display:block;background:rgba(13,19,32,.85);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:18px}
-.card:hover{border-color:#06b6d4}
-.cname{display:block;font-weight:700;font-size:16px;margin-bottom:6px}
-.cdesc{display:block;color:#94a3b8;font-size:13.5px;line-height:1.55;min-height:42px}
-.cbadge{display:inline-block;margin-top:12px;font-size:12px;font-weight:700;color:#06b6d4}
-footer{margin-top:44px;padding-top:18px;border-top:1px solid rgba(255,255,255,.08);color:#64748b;font-size:13px;line-height:1.8}
-footer a{color:#94a3b8;text-decoration:underline}
-</style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <title>Dark Zone Toolkit &ndash; Free Online Cloud Utilities</title>
+    <meta name="description" content="Explore high-speed developer utilities, Facebook video downloaders, single-page HTML cloud hosting, and OSINT lookup scripts." />
+    <link rel="canonical" href="https://darktechzon.site/" />
+    <link rel="icon" type="image/jpeg" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" />
+    <meta property="og:title" content="Dark Zone Toolkit &ndash; Free Online Cloud Utilities" />
+    <meta property="og:description" content="Free downloaders, AI tools and tech utilities by Dark Tech Zone. No signup, no API key." />
+    <meta property="og:image" content="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" />
+    <meta property="og:type" content="website" />
+    <meta name="theme-color" content="#090d16" />
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Dark Zone Toolkit","url":"https://darktechzon.site/","description":"Free downloaders, AI tools and tech utilities by Dark Tech Zone."}</script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <style>
+        :root {
+            --bg-base: #090d16;
+            --card-bg: #111827;
+            --card-border: #1f293d;
+            --accent-blue: #2563eb;
+            --accent-blue-hover: #1d4ed8;
+            --accent-cyan: #06b6d4;
+            --text-light: #f9fafb;
+            --text-dim: #94a3b8;
+            --input-bg: #162032;
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', sans-serif; }
+        body { background: var(--bg-base); color: var(--text-light); min-height: 100vh; padding: 24px 14px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; }
+        .container { width: 100%; max-width: 860px; margin: 0 auto; }
+
+        header { background: var(--card-bg); border: 1px solid var(--card-border); padding: 16px 22px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .brand { display: flex; align-items: center; gap: 12px; }
+        .brand-icon { width: 44px; height: 44px; border-radius: 14px; overflow: hidden; flex: none; box-shadow: 0 0 16px rgba(37,99,235,0.4); }
+        .brand-icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .brand-text h1 { font-size: 18px; font-weight: 800; color: #fff; }
+        .brand-text p { font-size: 12px; color: var(--text-dim); }
+
+        .social-pill { display: flex; gap: 8px; }
+        .pill-btn { background: #1f293d; border: 1px solid #334155; color: #fff; text-decoration: none; padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s; }
+        .pill-btn:hover { border-color: var(--accent-blue); background: #243048; }
+
+        .search-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 18px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+        .search-input-wrap { position: relative; display: flex; align-items: center; }
+        .search-input-wrap i { position: absolute; left: 16px; color: var(--text-dim); font-size: 16px; }
+        .search-input-wrap input { width: 100%; background: var(--input-bg); border: 1px solid #283548; border-radius: 12px; padding: 14px 16px 14px 44px; font-size: 14px; color: #fff; outline: none; transition: 0.2s; }
+        .search-input-wrap input:focus { border-color: var(--accent-blue); box-shadow: 0 0 14px rgba(37,99,235,0.3); }
+
+        .category-filter { display: flex; gap: 8px; overflow-x: auto; padding-top: 12px; scrollbar-width: none; }
+        .category-filter::-webkit-scrollbar { display: none; }
+        .filter-chip { background: #162032; border: 1px solid #243048; color: var(--text-dim); padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: 0.15s; }
+        .filter-chip.active, .filter-chip:hover { background: var(--accent-blue); color: #fff; border-color: var(--accent-blue); }
+
+        .tools-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; margin-bottom: 24px; }
+        .tool-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 18px 14px; display: flex; flex-direction: column; align-items: center; text-align: center; text-decoration: none; color: #fff; transition: 0.2s; position: relative; overflow: hidden; }
+        .tool-card:hover { border-color: var(--accent-blue); transform: translateY(-3px); box-shadow: 0 10px 25px rgba(37,99,235,0.25); }
+        .tool-icon-box { width: 60px; height: 60px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #fff; margin-bottom: 12px; overflow: hidden; }
+        .tool-icon-box img { width: 100%; height: 100%; object-fit: cover; }
+        .tool-name { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+        .tool-category { font-size: 11px; color: var(--accent-cyan); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .feedback-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 24px; margin-bottom: 20px; }
+        .feedback-card h3 { font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .feedback-form { display: flex; flex-direction: column; gap: 10px; }
+        .feedback-form input, .feedback-form textarea { background: var(--input-bg); border: 1px solid #283548; border-radius: 10px; padding: 12px 14px; color: #fff; font-size: 13px; outline: none; }
+        .feedback-form textarea { height: 90px; resize: vertical; }
+        .feedback-form input:focus, .feedback-form textarea:focus { border-color: var(--accent-blue); }
+
+        .btn-submit { background: var(--accent-blue); color: #fff; border: none; border-radius: 10px; padding: 12px; font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.15s; }
+        .btn-submit:hover { background: var(--accent-blue-hover); }
+
+        footer { text-align: center; font-size: 13px; color: var(--text-dim); padding: 12px 0; }
+        footer a { color: var(--accent-blue); text-decoration: none; font-weight: 600; margin: 0 4px; }
+
+        @media (max-width: 640px) {
+            header { flex-direction: column; gap: 12px; text-align: center; }
+            .tools-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
 </head>
 <body>
-<div class="wrap">
-<header>
-<img src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone official logo" />
-<div>
-<h1>DARK TECH <b>ZONE</b></h1>
-<p>Free Tools Hub &middot; Learn &middot; Build &middot; Secure &middot; 100% free, no signup, no API key</p>
+
+<div class="container">
+    <header>
+        <div class="brand">
+            <div class="brand-icon"><img src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone" /></div>
+            <div class="brand-text">
+                <h1>Dark Zone Toolkit</h1>
+                <p>Dark Tech Zone Developer Cloud Platform</p>
+            </div>
+        </div>
+        <div class="social-pill">
+            <a href="https://t.me/DarkTechZone2" target="_blank" class="pill-btn"><i class="fab fa-telegram"></i> Telegram</a>
+            <a href="https://whatsapp.com/channel/0029VbCgB63LCoX5aiV5qp1t" target="_blank" class="pill-btn"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+        </div>
+    </header>
+
+    <div class="search-card">
+        <div class="search-input-wrap">
+            <i class="fas fa-magnifying-glass"></i>
+            <input type="text" id="toolSearch" placeholder="Search developer tools, downloaders, utilities..." />
+        </div>
+        <div class="category-filter">
+            <button class="filter-chip active" data-filter="all">All Tools</button>
+            <button class="filter-chip" data-filter="downloader">Downloader</button>
+            <button class="filter-chip" data-filter="ai tools">AI Tools</button>
+            <button class="filter-chip" data-filter="tech tools">Tech Tools</button>
+        </div>
+    </div>
+
+    <main class="tools-grid" id="toolsGrid">
+<a href="https://darktechzone2-cyber.github.io/dtz-instagram-downloader/" target="_blank" rel="noopener" class="tool-card" data-name="dtz instagram downloader" data-category="downloader"><div class="tool-icon-box" style="background: linear-gradient(135deg, #2563eb, #1d4ed8);"><i class="fab fa-instagram"></i></div><div class="tool-name">DTZ Instagram Downloader</div><div class="tool-category">Downloader</div></a>
+<a href="https://darktechzone2-cyber.github.io/dtz-x-video-downloader/" target="_blank" rel="noopener" class="tool-card" data-name="dtz x video downloader" data-category="downloader"><div class="tool-icon-box" style="background: linear-gradient(135deg, #10b981, #059669);"><i class="fab fa-x-twitter"></i></div><div class="tool-name">DTZ X Video Downloader</div><div class="tool-category">Downloader</div></a>
+<a href="https://dtz-tiktok-downloader.vercel.app" target="_blank" rel="noopener" class="tool-card" data-name="dtz tiktok downloader" data-category="downloader"><div class="tool-icon-box" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);"><i class="fab fa-tiktok"></i></div><div class="tool-name">DTZ TikTok Downloader</div><div class="tool-category">Downloader</div></a>
+<a href="https://dtz-thumbnail-downloader.vercel.app" target="_blank" rel="noopener" class="tool-card" data-name="dtz thumbnail downloader" data-category="downloader"><div class="tool-icon-box" style="background: linear-gradient(135deg, #f59e0b, #d97706);"><i class="far fa-image"></i></div><div class="tool-name">DTZ Thumbnail Downloader</div><div class="tool-category">Downloader</div></a>
+<a href="https://darktechzon.site/Fb-Dl/" target="_blank" rel="noopener" class="tool-card" data-name="facebook downloader" data-category="downloader"><div class="tool-icon-box" style="background: linear-gradient(135deg, #06b6d4, #0891b2);"><i class="fab fa-facebook"></i></div><div class="tool-name">Facebook Downloader</div><div class="tool-category">Downloader</div></a>
+<a href="https://darktechzone2-cyber.github.io/dtz-ai-caption-generator/" target="_blank" rel="noopener" class="tool-card" data-name="dtz ai caption generator" data-category="ai tools"><div class="tool-icon-box" style="background: linear-gradient(135deg, #ec4899, #be185d);"><i class="fas fa-closed-captioning"></i></div><div class="tool-name">DTZ AI Caption Generator</div><div class="tool-category">AI Tools</div></a>
+<a href="https://darktechzone2-cyber.github.io/dtz-ai-code-assistant/" target="_blank" rel="noopener" class="tool-card" data-name="dtz ai code assistant" data-category="ai tools"><div class="tool-icon-box" style="background: linear-gradient(135deg, #2563eb, #1d4ed8);"><i class="fas fa-code"></i></div><div class="tool-name">DTZ AI Code Assistant</div><div class="tool-category">AI Tools</div></a>
+<a href="https://darktechzone2-cyber.github.io/dtz-ai-voice-generator/" target="_blank" rel="noopener" class="tool-card" data-name="dtz ai voice generator" data-category="ai tools"><div class="tool-icon-box" style="background: linear-gradient(135deg, #10b981, #059669);"><i class="fas fa-microphone"></i></div><div class="tool-name">DTZ AI Voice Generator</div><div class="tool-category">AI Tools</div></a>
+<a href="https://darktechzone2-cyber.github.io/dtz-ai-youtube-title-generator/" target="_blank" rel="noopener" class="tool-card" data-name="dtz ai youtube title generator" data-category="ai tools"><div class="tool-icon-box" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);"><i class="fab fa-youtube"></i></div><div class="tool-name">DTZ AI YouTube Title Generator</div><div class="tool-category">AI Tools</div></a>
+<a href="https://darktechzon.site/Tts/" target="_blank" rel="noopener" class="tool-card" data-name="text to speech" data-category="ai tools"><div class="tool-icon-box" style="background: linear-gradient(135deg, #f59e0b, #d97706);"><i class="fas fa-language"></i></div><div class="tool-name">Text to Speech</div><div class="tool-category">AI Tools</div></a>
+<a href="https://darktechzone2-cyber.github.io/dtz-speed-test/" target="_blank" rel="noopener" class="tool-card" data-name="dtz speed test" data-category="tech tools"><div class="tool-icon-box" style="background: linear-gradient(135deg, #06b6d4, #0891b2);"><i class="fas fa-gauge-high"></i></div><div class="tool-name">DTZ Speed Test</div><div class="tool-category">Tech Tools</div></a>
+<a href="https://darktechzone2-cyber.github.io/dtz-screen-recorder/" target="_blank" rel="noopener" class="tool-card" data-name="dtz screen recorder" data-category="tech tools"><div class="tool-icon-box" style="background: linear-gradient(135deg, #ec4899, #be185d);"><i class="fas fa-desktop"></i></div><div class="tool-name">DTZ Screen Recorder</div><div class="tool-category">Tech Tools</div></a>
+<a href="https://darktechzone2-cyber.github.io/dtz-pdf-toolkit/" target="_blank" rel="noopener" class="tool-card" data-name="dtz pdf toolkit" data-category="tech tools"><div class="tool-icon-box" style="background: linear-gradient(135deg, #2563eb, #1d4ed8);"><i class="fas fa-file-pdf"></i></div><div class="tool-name">DTZ PDF Toolkit</div><div class="tool-category">Tech Tools</div></a>
+<a href="https://dtz-lookup-api.vercel.app" target="_blank" rel="noopener" class="tool-card" data-name="dtz lookup api" data-category="tech tools"><div class="tool-icon-box" style="background: linear-gradient(135deg, #10b981, #059669);"><i class="fas fa-network-wired"></i></div><div class="tool-name">DTZ Lookup API</div><div class="tool-category">Tech Tools</div></a>
+<a href="https://darktechzon.site/Temp-Mail/" target="_blank" rel="noopener" class="tool-card" data-name="temp mail" data-category="tech tools"><div class="tool-icon-box" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);"><i class="fas fa-envelope"></i></div><div class="tool-name">Temp Mail</div><div class="tool-category">Tech Tools</div></a>
+<a href="https://darktechzon.site/Weather/" target="_blank" rel="noopener" class="tool-card" data-name="weather" data-category="tech tools"><div class="tool-icon-box" style="background: linear-gradient(135deg, #f59e0b, #d97706);"><i class="fas fa-cloud-sun"></i></div><div class="tool-name">Weather</div><div class="tool-category">Tech Tools</div></a>
+<a href="https://darktechzon.site/M/" target="_blank" rel="noopener" class="tool-card" data-name="media cloud" data-category="tech tools"><div class="tool-icon-box" style="background: linear-gradient(135deg, #06b6d4, #0891b2);"><i class="fas fa-cloud-arrow-up"></i></div><div class="tool-name">Media Cloud</div><div class="tool-category">Tech Tools</div></a>
+    </main>
+
+    <section class="feedback-card">
+        <h3><i class="fas fa-comment-dots"></i> Request a Tool or Submit Feedback</h3>
+        <form class="feedback-form" style="margin-top:10px;" id="feedbackForm">
+            <input type="email" id="fbEmail" placeholder="Your Email Address" required />
+            <textarea id="fbMsg" placeholder="Describe the feature request, bug, or tool suggestion..." required></textarea>
+            <button type="submit" class="btn-submit"><i class="fas fa-paper-plane"></i> Send Feedback</button>
+        </form>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 <a href="https://darktechzon.site/">Dark Tech Zone</a> &bull; Advanced Security Division &bull; <a href="privacy.html">Privacy Policy</a></p>
+    </footer>
 </div>
-</header>
-<div class="channels">
-<a href="https://whatsapp.com/channel/0029VbCgB63LCoX5aiV5qp1t" target="_blank" rel="noopener">WhatsApp Channel</a>
-<a href="https://t.me/DarkTechZone2" target="_blank" rel="noopener">Telegram</a>
-<a href="https://youtube.com/@darktechzone1" target="_blank" rel="noopener">YouTube</a>
-</div>
-<h2>Downloaders</h2><div class="grid"><a class="card" href="https://darktechzone2-cyber.github.io/dtz-instagram-downloader/" target="_blank" rel="noopener"><span class="cname">DTZ Instagram Downloader</span><span class="cdesc">Download public Instagram videos & photos — free, no login.</span><span class="cbadge">FREE &middot; Open &rarr;</span></a><a class="card" href="https://darktechzone2-cyber.github.io/dtz-x-video-downloader/" target="_blank" rel="noopener"><span class="cname">DTZ X Video Downloader</span><span class="cdesc">Videos & photos from any public X post — MP4 & JPG, up to 4K.</span><span class="cbadge">FREE &middot; Open &rarr;</span></a><a class="card" href="https://dtz-tiktok-downloader.vercel.app" target="_blank" rel="noopener"><span class="cname">DTZ TikTok Downloader</span><span class="cdesc">No-watermark TikTok videos, audio & covers.</span><span class="cbadge">FREE &middot; Open &rarr;</span></a><a class="card" href="https://dtz-thumbnail-downloader.vercel.app" target="_blank" rel="noopener"><span class="cname">DTZ Thumbnail Downloader</span><span class="cdesc">YouTube thumbnails in 4K / HD / SD with title & channel.</span><span class="cbadge">FREE &middot; Open &rarr;</span></a><a class="card" href="https://darktechzon.site/Fb-Dl/" target="_blank" rel="noopener"><span class="cname">Facebook Downloader</span><span class="cdesc">Download Facebook videos in HD.</span><span class="cbadge">FREE &middot; Open &rarr;</span></a></div><h2>AI Tools</h2><div class="grid"><a class="card" href="https://darktechzone2-cyber.github.io/dtz-ai-caption-generator/" target="_blank" rel="noopener"><span class="cname">DTZ AI Caption Generator</span><span class="cdesc">5 ready-to-post AI captions with hashtags for any topic.</span><span class="cbadge">FREE &middot; Open &rarr;</span></a><a class="card" href="https://darktechzone2-cyber.github.io/dtz-ai-youtube-title-generator/" target="_blank" rel="noopener"><span class="cname">DTZ AI YouTube Title Generator</span><span class="cdesc">5 catchy titles + full description + 15 SEO tags + thumbnail ideas — AI generated.</span><span class="cbadge">FREE &middot; Open &rarr;</span></a><a class="card" href="https://darktechzone2-cyber.github.io/dtz-ai-code-assistant/" target="_blank" rel="noopener"><span class="cname">DTZ AI Code Assistant</span><span class="cdesc">Explain, fix, optimize & comment your code with AI.</span><span class="cbadge">FREE &middot; Open &rarr;</span></a><a class="card" href="https://darktechzone2-cyber.github.io/dtz-ai-voice-generator/" target="_blank" rel="noopener"><span class="cname">DTZ AI Voice Generator</span><span class="cdesc">Free text-to-speech voiceovers in many voices.</span><span class="cbadge">FREE &middot; Open &rarr;</span></a><a class="card" href="https://darktechzon.site/Tts/" target="_blank" rel="noopener"><span class="cname">Text to Speech</span><span class="cdesc">Turn any text into natural audio.</span><span class="cbadge">FREE &middot; Open &rarr;</span></a></div><h2>Tech Tools</h2><div class="grid"><a class="card" href="https://darktechzone2-cyber.github.io/dtz-speed-test/" target="_blank" rel="noopener"><span class="cname">DTZ Speed Test</span><span class="cdesc">Real ping, download & upload speed test.</span><span class="cbadge">FREE &middot; Open &rarr;</span></a><a class="card" href="https://darktechzone2-cyber.github.io/dtz-screen-recorder/" target="_blank" rel="noopener"><span class="cname">DTZ Screen Recorder</span><span class="cdesc">Record your screen, window or tab — saves .webm, nothing uploaded.</span><span class="cbadge">FREE &middot; Open &rarr;</span></a><a class="card" href="https://darktechzone2-cyber.github.io/dtz-pdf-toolkit/" target="_blank" rel="noopener"><span class="cname">DTZ PDF Toolkit</span><span class="cdesc">Merge, split & compress PDFs — 100% in your browser.</span><span class="cbadge">FREE &middot; Open &rarr;</span></a><a class="card" href="https://dtz-lookup-api.vercel.app" target="_blank" rel="noopener"><span class="cname">DTZ Lookup API</span><span class="cdesc">Public IP, DNS & WHOIS lookup API.</span><span class="cbadge">FREE &middot; Open &rarr;</span></a><a class="card" href="https://darktechzon.site/Temp-Mail/" target="_blank" rel="noopener"><span class="cname">Temp Mail</span><span class="cdesc">Free temporary email address, no signup.</span><span class="cbadge">FREE &middot; Open &rarr;</span></a><a class="card" href="https://darktechzon.site/Weather/" target="_blank" rel="noopener"><span class="cname">Weather</span><span class="cdesc">Live weather for any city.</span><span class="cbadge">FREE &middot; Open &rarr;</span></a><a class="card" href="https://darktechzon.site/M/" target="_blank" rel="noopener"><span class="cname">Media Cloud</span><span class="cdesc">Free media hosting — upload MP4, MP3, images & APKs with direct links.</span><span class="cbadge">FREE &middot; Open &rarr;</span></a></div>
-<footer>
-Dark Tech Zone &middot; All tools are free to use. <a href="privacy.html">Privacy Policy</a> &middot; <a href="ads.txt">ads.txt</a><br />
-&copy; 2026 Dark Tech Zone. Tools are provided as-is for personal use.
-</footer>
-</div>
+
+<script>
+    const searchInput = document.getElementById('toolSearch');
+    const filterChips = document.querySelectorAll('.filter-chip');
+    const cards = document.querySelectorAll('.tool-card');
+    let currentCategory = 'all';
+
+    function filterTools() {
+        const query = searchInput.value.toLowerCase().trim();
+        cards.forEach(card => {
+            const name = card.getAttribute('data-name');
+            const category = card.getAttribute('data-category');
+            const matchesQuery = name.includes(query);
+            const matchesCategory = (currentCategory === 'all' || category === currentCategory);
+            card.style.display = (matchesQuery && matchesCategory) ? 'flex' : 'none';
+        });
+    }
+
+    searchInput.addEventListener('input', filterTools);
+    filterChips.forEach(chip => {
+        chip.addEventListener('click', function() {
+            filterChips.forEach(c => c.classList.remove('active'));
+            this.classList.add('active');
+            currentCategory = this.getAttribute('data-filter');
+            filterTools();
+        });
+    });
+
+    document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const email = document.getElementById('fbEmail').value.trim();
+        const msg = document.getElementById('fbMsg').value.trim();
+        const body = encodeURIComponent('Email: ' + email + '\n\n' + msg);
+        window.location.href = 'mailto:darktechzone2@gmail.com?subject=' + encodeURIComponent('Dark Zone Toolkit Feedback') + '&body=' + body;
+    });
+</script>
 </body>
 </html>
