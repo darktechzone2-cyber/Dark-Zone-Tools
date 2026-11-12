@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Master Control Panel — Dark Tech Zone</title>
+    <link rel="icon" type="image/jpeg" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --bg-base: #090d16;
+            --card-bg: #111827;
+            --card-border: #1f293d;
+            --accent-blue: #2563eb;
+            --accent-blue-hover: #1d4ed8;
+            --accent-cyan: #06b6d4;
+            --text-light: #f9fafb;
+            --text-dim: #94a3b8;
+            --input-bg: #162032;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg-base); color: var(--text-light); min-height: 100vh; padding: 12px; }
+        .container { width: 100%; max-width: 1100px; margin: 0 auto; }
+        a { color: var(--accent-cyan); text-decoration: none; }
+
+        /* Login */
+        #loginView { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 16px; }
+        .login-card { background: rgba(13, 19, 32, 0.85); border: 1px solid rgba(255,255,255,0.08); padding: 30px 20px; border-radius: 24px; width: 100%; max-width: 380px; text-align: center; box-shadow: 10px 10px 30px rgba(2,4,8,0.9); }
+        .login-card h2 { color: #fff; margin-bottom: 20px; font-size: 18px; font-weight: 700; }
+        .login-logo { width: 84px; height: 84px; border-radius: 50%; object-fit: cover; margin-bottom: 16px; border: 2px solid rgba(6,182,212,0.5); }
+
+        header { background: var(--card-bg); border: 1px solid var(--card-border); padding: 14px 16px; border-radius: 18px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        @media(min-width: 600px) { header { flex-direction: row; justify-content: space-between; align-items: center; padding: 18px 22px; } }
+        .header-title { font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+        .header-logo { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; flex: none; border: 2px solid rgba(6,182,212,0.5); }
+        .header-actions { display: flex; gap: 8px; width: 100%; }
+        @media(min-width: 600px) { .header-actions { width: auto; } }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
+        @media(max-width: 768px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media(max-width: 450px) { .stats-grid { grid-template-columns: 1fr; } }
+        .stat-box { background: var(--card-bg); border: 1px solid var(--card-border); padding: 14px 10px; border-radius: 16px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+        .stat-box .num { font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 2px; }
+        .stat-box .lbl { font-size: 10px; color: var(--text-dim); text-transform: uppercase; font-weight: 700; }
+
+        .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 16px; margin-bottom: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+        @media(min-width: 600px) { .card { padding: 24px; border-radius: 24px; margin-bottom: 24px; } }
+        .card h3 { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+        .card p.hint { font-size: 12px; color: var(--text-dim); margin-bottom: 12px; }
+
+        .form-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 10px; }
+        @media(min-width: 768px) { .form-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); } }
+        input, select, textarea { width: 100%; background: var(--input-bg); border: 1px solid #283548; padding: 12px 14px; border-radius: 12px; color: #fff; font-size: 13px; outline: none; margin-bottom: 10px; }
+        input:focus, textarea:focus, select:focus { border-color: var(--accent-blue); box-shadow: 0 0 14px rgba(37,99,235,0.3); }
+
+        .btn { background: var(--accent-blue); color: #fff; border: none; padding: 11px 16px; border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 4px 12px rgba(37,99,235,0.3); transition: 0.15s; width: 100%; text-decoration: none; text-align: center; }
+        @media(min-width: 600px) { .btn { width: auto; } }
+        .btn:active { transform: scale(0.98); }
+        .btn:hover { background: var(--accent-blue-hover); }
+        .btn:disabled { opacity: 0.6; cursor: wait; }
+        .btn-secondary { background: rgba(255,255,255,0.06); box-shadow: none; }
+
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 10px; }
+        table { width: 100%; border-collapse: collapse; min-width: 500px; }
+        th, td { padding: 10px 8px; border-bottom: 1px solid rgba(255,255,255,0.05); text-align: left; font-size: 12px; }
+        th { color: var(--text-dim); text-transform: uppercase; font-size: 10px; font-weight: 700; }
+
+        .msg { padding: 12px 14px; border-radius: 12px; margin-bottom: 16px; font-size: 12px; font-weight: 600; background: rgba(6, 78, 59, 0.8); color: #6ee7b7; border: 1px solid rgba(5, 150, 105, 0.4); }
+        .msg.err { background: rgba(69,10,10,0.8); color: #f87171; border-color: rgba(153,27,27,0.4); }
+        .ai-output { background: #030509; border: 1px solid rgba(255,255,255,0.06); padding: 14px; border-radius: 12px; color: #38bdf8; font-family: 'JetBrains Mono', monospace; font-size: 12px; white-space: pre-wrap; display: none; margin-top: 12px; max-height: 250px; overflow-y: auto; }
+        .link-danger { background: none; border: none; color: #f87171; font-weight: 600; font-size: 12px; cursor: pointer; padding: 0; font-family: 'Inter', sans-serif; }
+        .link-danger:hover { text-decoration: underline; }
+        .link-edit { color: #38bdf8; text-decoration: none; font-weight: 600; cursor: pointer; background: none; border: none; font-size: 12px; font-family: 'Inter', sans-serif; padding: 0; }
+        .check-row { display: flex; gap: 10px; align-items: flex-start; padding: 10px 4px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 12px; }
+        .check-row:last-child { border-bottom: none; }
+        .check-icon { flex: none; width: 20px; height: 20px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; margin-top: 1px; }
+        .check-ok { background: rgba(6, 78, 59, 0.8); color: #6ee7b7; }
+        .check-bad { background: rgba(69, 10, 10, 0.8); color: #f87171; }
+        .check-row .note { color: var(--text-dim); font-size: 11px; margin-top: 2px; }
+        .warn-box { background: rgba(69, 26, 3, 0.55); border: 1px solid rgba(249, 115, 22, 0.4); color: #fdba74; padding: 12px 14px; border-radius: 12px; font-size: 12px; line-height: 1.6; margin-top: 14px; }
+        .badge { display: inline-block; padding: 3px 8px; border-radius: 20px; font-size: 10px; font-weight: 700; }
+        .badge-on { background: rgba(6, 78, 59, 0.8); color: #6ee7b7; }
+        .badge-off { background: rgba(69, 10, 10, 0.8); color: #f87171; }
+        .hidden { display: none !important; }
+        footer { text-align: center; font-size: 13px; color: var(--text-dim); padding: 12px 0; }
+    </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginView">
+    <div class="login-card">
+        <img src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone" class="login-logo" />
+        <h2>&#128272; DTZ Secure Admin</h2>
+        <div id="loginError" class="msg err hidden"></div>
+        <form id="loginForm">
+            <input type="text" id="loginUser" placeholder="Username" required autocomplete="off" />
+            <input type="password" id="loginPass" placeholder="Password" required />
+            <button type="submit" class="btn" id="loginBtn">Authenticate</button>
+        </form>
+    </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashView" class="container hidden">
+    <header>
+        <div class="header-title"><img src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone" class="header-logo" /> DTZ Mobile Control Panel</div>
+        <div class="header-actions">
+            <a href="https://darktechzon.site/" target="_blank" class="btn" style="background:rgba(255,255,255,0.06); flex:1;"><i class="fas fa-eye"></i> Portal</a>
+            <button class="btn" id="logoutBtn" style="background:rgba(127,29,29,0.8); color:#fca5a5; flex:1;"><i class="fas fa-arrow-right-from-bracket"></i> Logout</button>
+        </div>
+    </header>
+
+    <div id="flash" class="msg hidden"></div>
+
+    <div class="stats-grid">
+        <div class="stat-box"><div class="num" id="statActive">–</div><div class="lbl">Active Tools</div></div>
+        <div class="stat-box"><div class="num" id="statClicks">–</div><div class="lbl">Clicks</div></div>
+        <div class="stat-box"><div class="num" id="statReports">–</div><div class="lbl">Reports</div></div>
+        <div class="stat-box"><div class="num" id="statMedia">–</div><div class="lbl">Media Files</div></div>
+    </div>
+
+    <div class="card" style="border-color: rgba(6,182,212,0.25);">
+        <h3 style="color:var(--accent-cyan);"><i class="fas fa-robot"></i> AI Remote Assistant</h3>
+        <p class="hint">Generate code or ask questions via DTZ AI.</p>
+        <form id="aiForm">
+            <textarea id="aiPrompt" rows="3" placeholder="Enter prompt here..." required style="margin-bottom:10px;"></textarea>
+            <button type="submit" class="btn" id="aiBtn" style="background:var(--accent-cyan); color:#000;"><i class="fas fa-wand-magic-sparkles"></i> Run AI Assistant</button>
+        </form>
+        <div id="aiOutput" class="ai-output"></div>
+    </div>
+
+    <div class="card">
+        <h3><i class="fas fa-plus-circle"></i> Add New Tool</h3>
+        <form id="addToolForm">
+            <div class="form-grid">
+                <input type="text" id="addName" placeholder="Tool Name (e.g. Temp Mail)" required />
+                <input type="text" id="addCategory" placeholder="Category" required />
+            </div>
+            <input type="text" id="addFileUrl" placeholder="File Path or URL (/temp-mail/)" required />
+            <input type="text" id="addIcon" placeholder="FontAwesome Icon Class (fas fa-envelope)" />
+            <select id="addStatus">
+                <option value="1">Active</option>
+                <option value="0">Disabled</option>
+            </select>
+            <button type="submit" class="btn"><i class="fas fa-floppy-disk"></i> Publish Tool</button>
+        </form>
+    </div>
+
+    <div class="card hidden" id="editCard" style="border-color: rgba(37,99,235,0.5);">
+        <h3><i class="fas fa-pen-to-square"></i> <span id="editTitle">Edit Tool</span></h3>
+        <form id="editToolForm">
+            <input type="hidden" id="editId" />
+            <div class="form-grid">
+                <input type="text" id="editName" placeholder="Tool Name" required />
+                <input type="text" id="editCategory" placeholder="Category" required />
+            </div>
+            <input type="text" id="editFileUrl" placeholder="File Path or URL" required />
+            <input type="text" id="editIcon" placeholder="FontAwesome Icon Class" />
+            <select id="editStatus">
+                <option value="1">Active</option>
+                <option value="0">Disabled</option>
+            </select>
+            <button type="submit" class="btn"><i class="fas fa-floppy-disk"></i> Save Changes</button>
+            <button type="button" class="btn btn-secondary" id="editCancel" style="margin-top:8px;"><i class="fas fa-xmark"></i> Cancel</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h3><i class="fas fa-screwdriver-wrench"></i> Manage Tools</h3>
+        <div id="toolsEmpty" class="hidden"><p style="font-size:12px; color:var(--text-dim);">No tools yet. Add one above.</p></div>
+        <div class="table-responsive" id="toolsTableWrap">
+            <table>
+                <tr><th>ID</th><th>Name</th><th>Category</th><th>Status</th><th>Clicks</th><th>Actions</th></tr>
+                <tbody id="toolsBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3><i class="fas fa-gear"></i> Site Settings</h3>
+        <form id="settingsForm">
+            <label style="font-size:12px; color:var(--text-dim); display:block; margin-bottom:6px;">Toolkit Name</label>
+            <input type="text" id="setName" required />
+            <label style="font-size:12px; color:var(--text-dim); display:block; margin-bottom:6px;">Channel Link</label>
+            <input type="text" id="setChannel" required />
+            <button type="submit" class="btn"><i class="fas fa-floppy-disk"></i> Save Settings</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h3><i class="fas fa-photo-film"></i> Uploaded Media <span style="color:var(--text-dim); font-weight:400; font-size:12px;">(KV index only — files still live on the PHP host)</span></h3>
+        <div id="mediaEmpty" class="hidden"><p style="font-size:12px; color:var(--text-dim);">No media files indexed yet.</p></div>
+        <div class="table-responsive" id="mediaTableWrap">
+            <table>
+                <tr><th>File</th><th>Size</th><th>Uploaded</th><th>Action</th></tr>
+                <tbody id="mediaBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3><i class="fas fa-users"></i> Admin Users</h3>
+        <div id="usersEmpty" class="hidden"><p style="font-size:12px; color:var(--text-dim);">No users found.</p></div>
+        <div class="table-responsive" id="usersTableWrap">
+            <table>
+                <tr><th>ID</th><th>Username</th><th>Role</th><th>Created</th></tr>
+                <tbody id="usersBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3><i class="fas fa-magnifying-glass-chart"></i> SEO / AdSense Checklist</h3>
+        <div id="seoList"></div>
+        <div class="warn-box">
+            <strong><i class="fas fa-triangle-exclamation"></i> AdSense warning:</strong>
+            Sim-Db and Sms-Bomb must stay <strong>OFF</strong> the public site. Sim-Db serves personal data and Sms-Bomb is an abuse tool — both violate Google AdSense policies and will block approval. Keep them disabled (status = 0) or remove them from the portal entirely.
+        </div>
+    </div>
+
+    <div class="card">
+        <h3><i class="fas fa-envelope-open-text"></i> User Reports</h3>
+        <div id="reportsEmpty" class="hidden"><p style="font-size:12px; color:var(--text-dim);">No reports available.</p></div>
+        <div class="table-responsive" id="reportsTableWrap">
+            <table>
+                <tr><th>ID</th><th>Message</th><th>Date</th><th>Action</th></tr>
+                <tbody id="reportsBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 <a href="https://darktechzon.site/">Dark Tech Zone</a> &bull; Advanced Security Division</p>
+    </footer>
+</div>
+
+<script>
+(function () {
+    'use strict';
+    var API = '';
+    var token = sessionStorage.getItem('dtz_admin_token') || '';
+    var username = sessionStorage.getItem('dtz_admin_user') || '';
+
+    function esc(s) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+        });
+    }
+    function fmtBytes(b) {
+        b = Number(b) || 0;
+        if (b < 1024) return b + ' B';
+        if (b < 1024 * 1024) return (b / 1024).toFixed(1) + ' KB';
+        if (b < 1024 * 1024 * 1024) return (b / (1024 * 1024)).toFixed(1) + ' MB';
+        return (b / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
+    }
+    function fmtDate(ms) {
+        if (!ms) return '—';
+        try { return new Date(Number(ms)).toISOString().slice(0, 16).replace('T', ' '); } catch (e) { return '—'; }
+    }
+    function flash(msg, isErr) {
+        var el = document.getElementById('flash');
+        el.textContent = msg;
+        el.className = 'msg' + (isErr ? ' err' : '');
+        el.classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(function () { el.classList.add('hidden'); }, 6000);
+    }
+
+    async function api(path, options) {
+        options = options || {};
+        options.headers = Object.assign({ 'Content-Type': 'application/json' }, options.headers || {});
+        if (token) options.headers.Authorization = 'Bearer ' + token;
+        var res = await fetch(API + path, options);
+        var data = null;
+        try { data = await res.json(); } catch (e) { data = null; }
+        if (res.status === 401) { logout(); throw new Error('Session expired. Please log in again.'); }
+        if (!res.ok || !data || data.ok === false) {
+            throw new Error((data && data.error) || ('Request failed (HTTP ' + res.status + ')'));
+        }
+        return data;
+    }
+
+    function showLogin() {
+        document.getElementById('loginView').style.display = 'flex';
+        document.getElementById('dashView').classList.add('hidden');
+    }
+    function showDash() {
+        document.getElementById('loginView').style.display = 'none';
+        document.getElementById('dashView').classList.remove('hidden');
+    }
+    function logout() {
+        token = '';
+        username = '';
+        sessionStorage.removeItem('dtz_admin_token');
+        sessionStorage.removeItem('dtz_admin_user');
+        showLogin();
+    }
+
+    async function loadAll() {
+        var stats = await api('/api/stats');
+        document.getElementById('statActive').textContent = stats.activeTools;
+        document.getElementById('statClicks').textContent = Number(stats.totalClicks).toLocaleString();
+        document.getElementById('statReports').textContent = stats.reportsCount;
+        document.getElementById('statMedia').textContent = stats.mediaCount;
+
+        var toolsData = await api('/api/tools');
+        renderTools(toolsData.tools || []);
+
+        var settings = await api('/api/settings');
+        document.getElementById('setName').value = settings.settings.toolkit_name || '';
+        document.getElementById('setChannel').value = settings.settings.channel_link || '';
+
+        var mediaData = await api('/api/media');
+        renderMedia(mediaData.media || []);
+
+        var usersData = await api('/api/users');
+        renderUsers(usersData.users || []);
+
+        var reportsData = await api('/api/reports');
+        renderReports(reportsData.reports || []);
+
+        runSeoChecks();
+    }
+
+    function renderTools(tools) {
+        var body = document.getElementById('toolsBody');
+        document.getElementById('toolsEmpty').classList.toggle('hidden', tools.length > 0);
+        document.getElementById('toolsTableWrap').classList.toggle('hidden', tools.length === 0);
+        body.innerHTML = tools.map(function (t) {
+            return '<tr><td>' + Number(t.id) + '</td><td>' + esc(t.name) + '</td><td>' + esc(t.category) + '</td>' +
+                '<td>' + (Number(t.status) === 1 ? '<span class="badge badge-on">Active</span>' : '<span class="badge badge-off">Disabled</span>') + '</td>' +
+                '<td>' + Number(t.clicks || 0).toLocaleString() + '</td>' +
+                '<td><button class="link-edit" data-edit="' + Number(t.id) + '">Edit</button> &nbsp;·&nbsp; ' +
+                '<button class="link-danger" data-del="' + Number(t.id) + '">Delete</button></td></tr>';
+        }).join('');
+        body.querySelectorAll('[data-edit]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var t = tools.find(function (x) { return Number(x.id) === Number(btn.getAttribute('data-edit')); });
+                if (!t) return;
+                document.getElementById('editId').value = t.id;
+                document.getElementById('editTitle').textContent = 'Edit Tool #' + t.id + ' — ' + t.name;
+                document.getElementById('editName').value = t.name;
+                document.getElementById('editCategory').value = t.category;
+                document.getElementById('editFileUrl').value = t.filename;
+                document.getElementById('editIcon').value = t.icon || '';
+                document.getElementById('editStatus').value = String(Number(t.status) === 1 ? 1 : 0);
+                document.getElementById('editCard').classList.remove('hidden');
+                document.getElementById('editCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+        });
+        body.querySelectorAll('[data-del]').forEach(function (btn) {
+            btn.addEventListener('click', async function () {
+                if (!confirm('Delete this tool?')) return;
+                try {
+                    await api('/api/tools?id=' + Number(btn.getAttribute('data-del')), { method: 'DELETE' });
+                    flash('Tool deleted.');
+                    loadAll();
+                } catch (e) { flash(e.message, true); }
+            });
+        });
+    }
+
+    function renderMedia(media) {
+        var body = document.getElementById('mediaBody');
+        document.getElementById('mediaEmpty').classList.toggle('hidden', media.length > 0);
+        document.getElementById('mediaTableWrap').classList.toggle('hidden', media.length === 0);
+        body.innerHTML = media.map(function (m) {
+            return '<tr><td style="word-break:break-all;">' + esc(m.name) + '</td><td>' + fmtBytes(m.size) + '</td><td>' + fmtDate(m.mtime) + '</td>' +
+                '<td><button class="link-danger" data-media="' + esc(m.name) + '">Delete</button></td></tr>';
+        }).join('');
+        body.querySelectorAll('[data-media]').forEach(function (btn) {
+            btn.addEventListener('click', async function () {
+                if (!confirm('Remove this file from the media index? (The file on the PHP host is NOT deleted.)')) return;
+                try {
+                    await api('/api/media?name=' + encodeURIComponent(btn.getAttribute('data-media')), { method: 'DELETE' });
+                    flash('Media entry removed from the index.');
+                    loadAll();
+                } catch (e) { flash(e.message, true); }
+            });
+        });
+    }
+
+    function renderUsers(users) {
+        var body = document.getElementById('usersBody');
+        document.getElementById('usersEmpty').classList.toggle('hidden', users.length > 0);
+        document.getElementById('usersTableWrap').classList.toggle('hidden', users.length === 0);
+        body.innerHTML = users.map(function (u) {
+            return '<tr><td>' + Number(u.id) + '</td><td>' + esc(u.username) + '</td><td>' + esc(u.role || '') + '</td><td>' + esc(u.created_at || '') + '</td></tr>';
+        }).join('');
+    }
+
+    function renderReports(reports) {
+        var body = document.getElementById('reportsBody');
+        document.getElementById('reportsEmpty').classList.toggle('hidden', reports.length > 0);
+        document.getElementById('reportsTableWrap').classList.toggle('hidden', reports.length === 0);
+        body.innerHTML = reports.map(function (r) {
+            return '<tr><td>' + Number(r.id) + '</td><td>' + esc(r.message).replace(/\n/g, '<br>') + '</td><td>' + esc(r.created_at || '') + '</td>' +
+                '<td><button class="link-danger" data-report="' + Number(r.id) + '">Clear</button></td></tr>';
+        }).join('');
+        body.querySelectorAll('[data-report]').forEach(function (btn) {
+            btn.addEventListener('click', async function () {
+                if (!confirm('Clear this report?')) return;
+                try {
+                    await api('/api/reports?id=' + Number(btn.getAttribute('data-report')), { method: 'DELETE' });
+                    flash('Report cleared.');
+                    loadAll();
+                } catch (e) { flash(e.message, true); }
+            });
+        });
+    }
+
+    var SEO_CHECKS = [
+        { label: 'sitemap.xml', note: 'Submit it in Google Search Console.', url: 'https://darktechzon.site/sitemap.xml' },
+        { label: 'robots.txt', note: 'Must allow Googlebot to crawl the site.', url: 'https://darktechzon.site/robots.txt' },
+        { label: 'ads.txt', note: 'Required for Google AdSense.', url: 'https://darktechzon.site/ads.txt' },
+        { label: 'Google Search Console verification file', note: 'A google*.html file must sit in the site root.', url: 'https://darktechzon.site/googlea3ecaf68df0bf0f7.html' },
+        { label: 'Privacy Policy page', note: 'Required for AdSense approval (privacy.html).', url: 'https://darktechzon.site/privacy.html' }
+    ];
+    async function runSeoChecks() {
+        var list = document.getElementById('seoList');
+        list.innerHTML = SEO_CHECKS.map(function (c, i) {
+            return '<div class="check-row"><span class="check-icon check-bad" id="seo-' + i + '">…</span><div><strong>' + esc(c.label) + '</strong><div class="note">' + esc(c.note) + '</div></div></div>';
+        }).join('');
+        SEO_CHECKS.forEach(function (c, i) {
+            fetch(c.url, { method: 'HEAD' }).then(function (res) {
+                var el = document.getElementById('seo-' + i);
+                if (!el) return;
+                el.textContent = res.ok ? '✓' : '✗';
+                el.className = 'check-icon ' + (res.ok ? 'check-ok' : 'check-bad');
+            }).catch(function () {
+                var el = document.getElementById('seo-' + i);
+                if (el) { el.textContent = '✗'; el.className = 'check-icon check-bad'; }
+            });
+        });
+    }
+
+    // Login
+    document.getElementById('loginForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        var btn = document.getElementById('loginBtn');
+        var errEl = document.getElementById('loginError');
+        errEl.classList.add('hidden');
+        btn.disabled = true;
+        btn.textContent = 'Checking...';
+        try {
+            var data = await api('/api/login', {
+                method: 'POST',
+                body: JSON.stringify({ username: document.getElementById('loginUser').value.trim(), password: document.getElementById('loginPass').value })
+            });
+            token = data.token;
+            username = data.username;
+            sessionStorage.setItem('dtz_admin_token', token);
+            sessionStorage.setItem('dtz_admin_user', username);
+            showDash();
+            loadAll().catch(function (err) { flash(err.message, true); });
+        } catch (err) {
+            errEl.textContent = err.message;
+            errEl.classList.remove('hidden');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Authenticate';
+        }
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+
+    // AI assistant
+    document.getElementById('aiForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        var prompt = document.getElementById('aiPrompt').value.trim();
+        var btn = document.getElementById('aiBtn');
+        var out = document.getElementById('aiOutput');
+        if (!prompt) return;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        out.style.display = 'block';
+        out.textContent = 'Thinking...';
+        try {
+            var data = await api('/api/ai', { method: 'POST', body: JSON.stringify({ prompt: prompt }) });
+            out.textContent = data.reply;
+        } catch (err) {
+            out.textContent = 'Error: ' + err.message;
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Run AI Assistant';
+        }
+    });
+
+    // Add tool
+    document.getElementById('addToolForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        try {
+            await api('/api/tools', { method: 'POST', body: JSON.stringify({
+                name: document.getElementById('addName').value.trim(),
+                category: document.getElementById('addCategory').value.trim(),
+                filename: document.getElementById('addFileUrl').value.trim(),
+                icon: document.getElementById('addIcon').value.trim() || 'fas fa-cube',
+                status: Number(document.getElementById('addStatus').value)
+            }) });
+            e.target.reset();
+            flash('Tool added successfully.');
+            loadAll();
+        } catch (err) { flash(err.message, true); }
+    });
+
+    // Edit tool
+    document.getElementById('editToolForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        try {
+            await api('/api/tools', { method: 'PUT', body: JSON.stringify({
+                id: Number(document.getElementById('editId').value),
+                name: document.getElementById('editName').value.trim(),
+                category: document.getElementById('editCategory').value.trim(),
+                filename: document.getElementById('editFileUrl').value.trim(),
+                icon: document.getElementById('editIcon').value.trim() || 'fas fa-cube',
+                status: Number(document.getElementById('editStatus').value)
+            }) });
+            document.getElementById('editCard').classList.add('hidden');
+            flash('Tool updated successfully.');
+            loadAll();
+        } catch (err) { flash(err.message, true); }
+    });
+    document.getElementById('editCancel').addEventListener('click', function () {
+        document.getElementById('editCard').classList.add('hidden');
+    });
+
+    // Settings
+    document.getElementById('settingsForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        try {
+            await api('/api/settings', { method: 'PUT', body: JSON.stringify({
+                toolkit_name: document.getElementById('setName').value.trim(),
+                channel_link: document.getElementById('setChannel').value.trim()
+            }) });
+            flash('Settings saved.');
+        } catch (err) { flash(err.message, true); }
+    });
+
+    // Auto-restore session
+    if (token) {
+        showDash();
+        loadAll().catch(function (err) { flash(err.message, true); });
+    } else {
+        showLogin();
+    }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <title>Media Cloud — Free Media Hosting | Dark Tech Zone</title>
+    <meta name="description" content="Free media cloud hosting by Dark Tech Zone. Upload MP4 videos, MP3 audios, high-res images, and APK files with instant direct streaming links. No signup." />
+    <meta name="keywords" content="free media hosting, upload mp4 online, host audio file, direct image link generator, apk file host, dark tech zone media cloud, instant file stream" />
+    <link rel="canonical" href="https://darktechzon.site/media/" />
+    <link rel="icon" type="image/jpeg" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Media Cloud — Free Media Hosting | Dark Tech Zone" />
+    <meta property="og:description" content="Upload MP4, MP3, images and APKs. Get a permanent direct link instantly. 100% free, no signup." />
+    <meta property="og:image" content="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" />
+    <meta name="theme-color" content="#090d16" />
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Dark Tech Zone Media Cloud","url":"https://darktechzon.site/media/","description":"Free media cloud hosting — upload MP4, MP3, images and APKs with instant direct links.","applicationCategory":"UtilitiesApplication","operatingSystem":"All","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+
+    <style>
+        :root {
+            --bg-base: #090d16;
+            --card-bg: #111827;
+            --card-border: #1f293d;
+            --accent-blue: #2563eb;
+            --accent-blue-hover: #1d4ed8;
+            --accent-cyan: #06b6d4;
+            --accent-green: #10b981;
+            --text-light: #f9fafb;
+            --text-dim: #94a3b8;
+            --input-bg: #162032;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter', sans-serif; }
+        body { background: var(--bg-base); color: var(--text-light); min-height: 100vh; padding: 24px 14px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; }
+        .container { width: 100%; max-width: 860px; margin: 0 auto; }
+
+        header { background: var(--card-bg); border: 1px solid var(--card-border); padding: 16px 22px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .brand { display: flex; align-items: center; gap: 12px; }
+        .brand-icon { width: 44px; height: 44px; border-radius: 14px; overflow: hidden; flex: none; box-shadow: 0 0 16px rgba(37,99,235,0.4); }
+        .brand-icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .brand-text h1 { font-size: 18px; font-weight: 800; color: #fff; }
+        .brand-text p { font-size: 12px; color: var(--text-dim); }
+        .social-pill { display: flex; gap: 8px; }
+        .pill-btn { background: #1f293d; border: 1px solid #334155; color: #fff; text-decoration: none; padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s; }
+        .pill-btn:hover { border-color: var(--accent-blue); background: #243048; }
+
+        .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 24px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .tool-head { display: flex; align-items: center; gap: 14px; margin-bottom: 6px; }
+        .tool-icon-box { width: 60px; height: 60px; border-radius: 16px; flex: none; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #06b6d4, #0891b2); box-shadow: 0 8px 20px rgba(6,182,212,0.35); }
+        .tool-icon-box svg { width: 34px; height: 34px; }
+        .tool-head h2 { font-size: 19px; font-weight: 800; color: #fff; }
+        .tool-head p { font-size: 13px; color: var(--text-dim); margin-top: 2px; }
+        .card-sub { font-size: 13px; color: var(--text-dim); text-align: center; margin-bottom: 18px; }
+
+        .dropzone-box { display: flex; flex-direction: column; align-items: center; justify-content: center; border: 2px dashed #283548; border-radius: 16px; padding: 32px 16px; background: rgba(22,32,50,0.5); cursor: pointer; transition: 0.2s; text-align: center; margin-bottom: 16px; }
+        .dropzone-box:hover, .dropzone-box.drag { border-color: var(--accent-blue); background: rgba(37,99,235,0.08); }
+        .dropzone-box svg { width: 40px; height: 40px; margin-bottom: 10px; }
+        .dropzone-title { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+        .dropzone-sub { font-size: 12px; color: var(--text-dim); }
+
+        .btn-upload { width: 100%; background: var(--accent-blue); color: #fff; border: none; border-radius: 12px; padding: 15px; font-size: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.15s; box-shadow: 0 8px 25px rgba(37,99,235,0.35); }
+        .btn-upload:hover { background: var(--accent-blue-hover); }
+        .btn-upload:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .progress-wrap { display: none; margin-top: 16px; }
+        .progress-bar { height: 10px; background: var(--input-bg); border: 1px solid #283548; border-radius: 999px; overflow: hidden; }
+        .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan)); transition: width 0.15s; }
+        .progress-label { font-size: 12px; color: var(--text-dim); margin-top: 6px; text-align: center; }
+
+        .msg-box { margin-top: 14px; padding: 12px 14px; border-radius: 10px; font-size: 13px; font-weight: 600; display: none; }
+        .msg-box.err { display: block; background: #450a0a; border: 1px solid #991b1b; color: #f87171; }
+        .msg-box.ok { display: block; background: #064e3b; border: 1px solid #059669; color: #6ee7b7; }
+
+        .result-box { display: none; margin-top: 16px; background: var(--input-bg); border: 1px solid #283548; border-radius: 12px; padding: 16px; }
+        .result-box h3 { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 10px; }
+        .link-row { display: flex; gap: 8px; }
+        .link-row input { flex: 1; min-width: 0; background: #0f1624; border: 1px solid #1e293b; border-radius: 10px; padding: 10px 12px; color: var(--accent-cyan); font-family: 'JetBrains Mono', monospace; font-size: 12px; outline: none; }
+        .btn-copy { background: var(--accent-blue); color: #fff; border: none; border-radius: 10px; padding: 10px 16px; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+        .btn-copy:hover { background: var(--accent-blue-hover); }
+        .preview { margin-top: 12px; }
+        .preview video, .preview img { max-width: 100%; border-radius: 10px; display: block; }
+        .preview audio { width: 100%; }
+        .preview-note { font-size: 12px; color: var(--text-dim); }
+
+        .hosted-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 20px; margin-bottom: 20px; }
+        .hosted-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e293b; padding-bottom: 12px; margin-bottom: 14px; }
+        .hosted-header h3 { font-size: 15px; font-weight: 700; color: #fff; }
+        .file-count { font-size: 12px; color: var(--accent-cyan); font-weight: 600; }
+        .file-list { display: flex; flex-direction: column; gap: 10px; }
+        .file-row { background: var(--input-bg); border: 1px solid #283548; border-radius: 12px; padding: 12px 14px; }
+        .file-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        .file-name { font-size: 13px; font-weight: 600; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .file-meta { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+        .file-actions { display: flex; gap: 8px; flex: none; }
+        .act-btn { padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; text-decoration: none; cursor: pointer; border: none; transition: 0.15s; }
+        .act-btn.view { background: var(--accent-blue); color: #fff; }
+        .act-btn.copy { background: #1f293d; color: #fff; border: 1px solid #334155; }
+        .act-btn.delete { background: #7f1d1d; color: #fca5a5; }
+        .empty-state { text-align: center; padding: 26px 10px; color: var(--text-dim); font-size: 13px; }
+
+        .seo-box { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 24px; line-height: 1.6; margin-bottom: 20px; font-size: 13px; color: var(--text-dim); }
+        .seo-box h2 { font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+        .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 16px 0; }
+        .feature-item { background: var(--input-bg); border: 1px solid #283548; padding: 14px; border-radius: 12px; }
+        .feature-item h4 { font-size: 13px; color: #fff; margin-bottom: 4px; }
+        .feature-item p { font-size: 12px; color: var(--text-dim); margin-bottom: 0; }
+        .faq-item { border-bottom: 1px solid #1e293b; padding: 12px 0; }
+        .faq-item:last-child { border-bottom: none; }
+        .faq-q { font-size: 13px; font-weight: 700; color: #fff; cursor: pointer; }
+        .faq-a { font-size: 12px; color: var(--text-dim); margin-top: 6px; display: none; }
+
+        footer { text-align: center; font-size: 13px; color: var(--text-dim); padding: 12px 0; }
+        footer a { color: var(--accent-blue); text-decoration: none; font-weight: 600; margin: 0 4px; }
+
+        @media (max-width: 640px) {
+            header { flex-direction: column; gap: 12px; text-align: center; }
+            .link-row { flex-direction: column; }
+            .btn-copy { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="brand">
+            <div class="brand-icon"><img src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone" /></div>
+            <div class="brand-text">
+                <h1>Media Cloud</h1>
+                <p>Dark Tech Zone Storage</p>
+            </div>
+        </div>
+        <div class="social-pill">
+            <a href="https://t.me/DarkTechZone2" target="_blank" rel="noopener" class="pill-btn">Telegram</a>
+            <a href="https://whatsapp.com/channel/0029VbCgB63LCoX5aiV5qp1t" target="_blank" rel="noopener" class="pill-btn">WhatsApp</a>
+        </div>
+    </header>
+
+    <main class="card">
+        <div class="tool-head">
+            <div class="tool-icon-box" aria-hidden="true">
+                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14 34a8 8 0 0 1-1.2-15.9 11 11 0 0 1 21.3-2.3A7.5 7.5 0 0 1 34 31.5" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+                    <path d="M24 40V26" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+                    <path d="M18.5 31.5 24 26l5.5 5.5" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M14 40h20" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+                </svg>
+            </div>
+            <div>
+                <h2>Media Cloud Host</h2>
+                <p>Upload MP4, MP3, images or APK — get a permanent direct link</p>
+            </div>
+        </div>
+        <p class="card-sub">Free media cloud hosting. No signup, no account — your file gets a direct streaming link instantly.</p>
+
+        <form id="uploadForm">
+            <label class="dropzone-box" for="fileInput" id="dropzone">
+                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M14 34a8 8 0 0 1-1.2-15.9 11 11 0 0 1 21.3-2.3A7.5 7.5 0 0 1 34 31.5" stroke="#06b6d4" stroke-width="3" stroke-linecap="round"/>
+                    <path d="M24 40V26" stroke="#06b6d4" stroke-width="3" stroke-linecap="round"/>
+                    <path d="M18.5 31.5 24 26l5.5 5.5" stroke="#06b6d4" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M14 40h20" stroke="#06b6d4" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+                </svg>
+                <div class="dropzone-title" id="fileLabel">Choose or Drag Media File Here</div>
+                <div class="dropzone-sub">Supports: MP4, WebM, MP3, WAV, PNG, JPG, WEBP, GIF, APK — max 100 MB</div>
+                <input type="file" id="fileInput" name="mediaFile" accept=".mp4,.webm,.ogg,.mp3,.wav,.jpeg,.jpg,.png,.gif,.webp,.apk" style="display:none;" />
+            </label>
+
+            <div class="progress-wrap" id="progressWrap">
+                <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+                <div class="progress-label" id="progressLabel">Uploading… 0%</div>
+            </div>
+
+            <button type="submit" class="btn-upload" id="uploadBtn" style="margin-top:16px;">Host Media</button>
+        </form>
+
+        <div id="errMsg" class="msg-box err"></div>
+        <div id="okMsg" class="msg-box ok"></div>
+
+        <div class="result-box" id="resultBox">
+            <h3>Your direct link is ready</h3>
+            <div class="link-row">
+                <input type="text" id="linkInput" readonly />
+                <button class="btn-copy" id="copyBtn" type="button">Copy Link</button>
+            </div>
+            <div class="preview" id="previewBox"></div>
+        </div>
+    </main>
+
+    <section class="hosted-card">
+        <div class="hosted-header">
+            <h3>Recent Uploads</h3>
+            <span class="file-count" id="fileCount">0 Files</span>
+        </div>
+        <div class="file-list" id="fileList">
+            <div class="empty-state">No media hosted yet from this browser.</div>
+        </div>
+        <p style="font-size:11px; color:var(--text-dim); margin-top:12px;">Recent uploads are stored only in this browser (localStorage). Files stay on the cloud until you delete them here.</p>
+    </section>
+
+    <article class="seo-box">
+        <h2>Free Unlimited Cloud File &amp; Media Hosting</h2>
+        <p><strong>Dark Tech Zone Media Cloud</strong> provides high-speed cloud hosting and instant content delivery. Upload MP4 videos, MP3 audios, pictures, and Android APK packages to get clean, direct URLs for streaming and sharing.</p>
+        <div class="feature-grid">
+            <div class="feature-item"><h4>Direct Streaming</h4><p>High-speed streaming for uninterrupted audio and video playback.</p></div>
+            <div class="feature-item"><h4>Permanent Direct Links</h4><p>Short, readable URLs with no intrusive landing pages.</p></div>
+            <div class="feature-item"><h4>Safe &amp; Anonymous</h4><p>100% free with no registration or credit card requirements.</p></div>
+        </div>
+        <h3 style="color:#fff; font-size:15px; margin: 18px 0 8px 0;">Frequently Asked Questions</h3>
+        <div class="faq-item">
+            <div class="faq-q" onclick="toggleFaq(this)">Can I embed these media links on external websites?</div>
+            <div class="faq-a">Yes. Generated direct URLs can be embedded inside HTML5 &lt;video&gt;, &lt;audio&gt;, or &lt;img&gt; tags.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q" onclick="toggleFaq(this)">Is there a fee for downloading or streaming?</div>
+            <div class="faq-a">No, Dark Tech Zone Media Hosting is completely free with zero bandwidth charges.</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-q" onclick="toggleFaq(this)">Do direct links expire?</div>
+            <div class="faq-a">No. Links stay active until you delete the file from your Recent Uploads list.</div>
+        </div>
+    </article>
+
+    <footer>
+        <p>&copy; 2026 <a href="https://darktechzon.site/">Dark Tech Zone</a> &bull; Advanced Security Division &bull; <a href="https://darktechzon.site/privacy.html">Privacy Policy</a></p>
+    </footer>
+</div>
+
+<script>
+(function() {
+    var MAX_BYTES = 100 * 1024 * 1024;
+    var ACCEPT = ['mp4','webm','ogg','mp3','wav','jpeg','jpg','png','gif','webp','apk'];
+    var form = document.getElementById('uploadForm');
+    var fileInput = document.getElementById('fileInput');
+    var dropzone = document.getElementById('dropzone');
+    var fileLabel = document.getElementById('fileLabel');
+    var uploadBtn = document.getElementById('uploadBtn');
+    var errMsg = document.getElementById('errMsg');
+    var okMsg = document.getElementById('okMsg');
+    var progressWrap = document.getElementById('progressWrap');
+    var progressFill = document.getElementById('progressFill');
+    var progressLabel = document.getElementById('progressLabel');
+    var resultBox = document.getElementById('resultBox');
+    var linkInput = document.getElementById('linkInput');
+    var copyBtn = document.getElementById('copyBtn');
+    var previewBox = document.getElementById('previewBox');
+    var fileList = document.getElementById('fileList');
+    var fileCount = document.getElementById('fileCount');
+
+    function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+    function fmtSize(n) {
+        if (n < 1024) return n + ' B';
+        if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
+        return (n / 1024 / 1024).toFixed(2) + ' MB';
+    }
+    function fmtDate(ts) { return new Date(ts).toLocaleString(); }
+    function getStored() { try { return JSON.parse(localStorage.getItem('dtzMediaRecent')) || []; } catch (e) { return []; } }
+    function saveStored(list) { try { localStorage.setItem('dtzMediaRecent', JSON.stringify(list.slice(0, 20))); } catch (e) {} }
+
+    function renderList() {
+        var list = getStored();
+        fileCount.textContent = list.length + ' Files';
+        if (!list.length) {
+            fileList.innerHTML = '<div class="empty-state">No media hosted yet from this browser.</div>';
+            return;
+        }
+        fileList.innerHTML = list.map(function(item) {
+            return '<div class="file-row">' +
+                '<div class="file-top">' +
+                    '<div class="file-name">' + esc(item.filename) + '</div>' +
+                    '<div class="file-actions">' +
+                        '<a href="' + esc(item.url) + '" target="_blank" rel="noopener" class="act-btn view">View</a>' +
+                        '<button class="act-btn copy" data-copy="' + esc(item.url) + '">Copy</button>' +
+                        '<button class="act-btn delete" data-del="' + esc(item.url) + '" data-id="' + esc(item.id || '') + '">Delete</button>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="file-meta">' + fmtSize(item.size) + ' &bull; ' + fmtDate(item.date) + '</div>' +
+            '</div>';
+        }).join('');
+    }
+
+    fileList.addEventListener('click', function(e) {
+        var t = e.target;
+        if (t.dataset && t.dataset.copy) {
+            copyText(t.dataset.copy, t);
+        }
+        if (t.dataset && t.dataset.del) {
+            if (!confirm('Permanently delete this file from cloud storage?')) return;
+            var url = t.dataset.del;
+            fetch('/api/delete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url: url }) })
+                .then(function(r) { return r.json(); })
+                .then(function(res) {
+                    if (res.ok) {
+                        saveStored(getStored().filter(function(i) { return i.url !== url; }));
+                        renderList();
+                        showOk('File deleted.');
+                    } else {
+                        showError(res.error || 'Delete failed.');
+                    }
+                })
+                .catch(function() { showError('Network error while deleting.'); });
+        }
+    });
+
+    function copyText(text, btn) {
+        function done() {
+            if (btn) { var old = btn.textContent; btn.textContent = 'Copied!'; setTimeout(function() { btn.textContent = old; }, 2000); }
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(done, function() { fallbackCopy(text); done(); });
+        } else { fallbackCopy(text); done(); }
+    }
+    function fallbackCopy(text) {
+        var ta = document.createElement('textarea');
+        ta.value = text; document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); } catch (e) {}
+        document.body.removeChild(ta);
+    }
+    copyBtn.addEventListener('click', function() { copyText(linkInput.value, copyBtn); });
+
+    function showError(msg) { errMsg.textContent = msg; errMsg.style.display = 'block'; okMsg.style.display = 'none'; }
+    function showOk(msg) { okMsg.textContent = msg; okMsg.style.display = 'block'; errMsg.style.display = 'none'; }
+    function hideMsgs() { errMsg.style.display = 'none'; okMsg.style.display = 'none'; }
+
+    function setFile(file) {
+        if (!file) return;
+        var ext = (file.name.split('.').pop() || '').toLowerCase();
+        if (ACCEPT.indexOf(ext) === -1) { showError('File type not allowed. Use MP4, WebM, MP3, WAV, PNG, JPG, WEBP, GIF or APK.'); fileInput.value = ''; return; }
+        if (file.size > MAX_BYTES) { showError('File too large. Max 100 MB.'); fileInput.value = ''; return; }
+        hideMsgs();
+        fileLabel.textContent = file.name + ' (' + fmtSize(file.size) + ')';
+    }
+
+    fileInput.addEventListener('change', function() { if (this.files[0]) setFile(this.files[0]); });
+    ['dragenter', 'dragover'].forEach(function(ev) {
+        dropzone.addEventListener(ev, function(e) { e.preventDefault(); dropzone.classList.add('drag'); });
+    });
+    ['dragleave', 'drop'].forEach(function(ev) {
+        dropzone.addEventListener(ev, function(e) { e.preventDefault(); dropzone.classList.remove('drag'); });
+    });
+    dropzone.addEventListener('drop', function(e) {
+        var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+        if (f) { fileInput.files = e.dataTransfer.files; setFile(f); }
+    });
+
+    function showPreview(url, contentType, filename) {
+        var type = (contentType || '').toLowerCase();
+        var ext = (filename.split('.').pop() || '').toLowerCase();
+        if (type.indexOf('video/') === 0 || ['mp4', 'webm', 'ogg'].indexOf(ext) !== -1) {
+            previewBox.innerHTML = '<video controls preload="metadata" src="' + esc(url) + '"></video>';
+        } else if (type.indexOf('audio/') === 0 || ['mp3', 'wav'].indexOf(ext) !== -1) {
+            previewBox.innerHTML = '<audio controls preload="metadata" src="' + esc(url) + '"></audio>';
+        } else if (type.indexOf('image/') === 0 || ['png', 'jpg', 'jpeg', 'gif', 'webp'].indexOf(ext) !== -1) {
+            previewBox.innerHTML = '<img src="' + esc(url) + '" alt="' + esc(filename) + '" />';
+        } else {
+            previewBox.innerHTML = '<p class="preview-note">APK file — use the link above to download it. <a href="' + esc(url) + '" target="_blank" rel="noopener" style="color:var(--accent-cyan);">Download</a></p>';
+        }
+    }
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        hideMsgs();
+        resultBox.style.display = 'none';
+        var file = fileInput.files[0];
+        if (!file) { showError('Please choose a file to upload.'); return; }
+
+        var data = new FormData();
+        data.append('mediaFile', file);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/api/upload', true);
+        xhr.upload.onprogress = function(ev) {
+            if (!ev.lengthComputable) return;
+            var pct = Math.round(ev.loaded / ev.total * 100);
+            progressWrap.style.display = 'block';
+            progressFill.style.width = pct + '%';
+            progressLabel.textContent = 'Uploading… ' + pct + '% (' + fmtSize(ev.loaded) + ' / ' + fmtSize(ev.total) + ')';
+        };
+        xhr.onload = function() {
+            uploadBtn.disabled = false;
+            uploadBtn.textContent = 'Host Media';
+            progressWrap.style.display = 'none';
+            var res;
+            try { res = JSON.parse(xhr.responseText); } catch (err) { showError('Server error: ' + xhr.responseText.substring(0, 150)); return; }
+            if (xhr.status >= 200 && xhr.status < 300 && res.ok) {
+                var list = getStored();
+                list.unshift({ id: res.id, filename: res.filename, url: res.url, size: res.size, date: Date.now() });
+                saveStored(list);
+                renderList();
+                linkInput.value = res.url;
+                showPreview(res.url, res.contentType, res.filename);
+                resultBox.style.display = 'block';
+                showOk('Uploaded successfully!');
+                form.reset();
+                fileLabel.textContent = 'Choose or Drag Media File Here';
+            } else {
+                showError((res && res.error) || 'Upload failed.');
+            }
+        };
+        xhr.onerror = function() {
+            uploadBtn.disabled = false;
+            uploadBtn.textContent = 'Host Media';
+            progressWrap.style.display = 'none';
+            showError('Network error. Check your connection and try again.');
+        };
+        uploadBtn.disabled = true;
+        uploadBtn.textContent = 'Uploading…';
+        progressWrap.style.display = 'block';
+        progressFill.style.width = '0%';
+        progressLabel.textContent = 'Uploading… 0%';
+        xhr.send(data);
+    });
+
+    window.toggleFaq = function(el) {
+        var ans = el.nextElementSibling;
+        ans.style.display = ans.style.display === 'block' ? 'none' : 'block';
+    };
+
+    renderList();
+})();
+</script>
+</body>
+</html>

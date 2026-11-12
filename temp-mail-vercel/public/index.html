@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <title>Free Temp Mail Online &ndash; Disposable Temporary Email Generator &amp; Inbox</title>
+    <meta name="description" content="Fast, anonymous, and secure temporary disposable email generator by Dark Tech Zone. Generate fake email addresses with real-time auto-refreshing inboxes to receive OTP codes and bypass sign-ups." />
+    <meta name="keywords" content="temp mail, disposable email, fake email generator, temporary email inbox, 10 minute mail, receive otp online, dark tech zone temp mail" />
+    <meta name="author" content="Dark Tech Zone" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <link rel="canonical" href="https://darktechzon.site/temp-mail/" />
+    <link rel="icon" type="image/jpeg" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://darktechzon.site/temp-mail/" />
+    <meta property="og:title" content="Free Temp Mail Online &ndash; Disposable Temporary Email Generator &amp; Inbox" />
+    <meta property="og:description" content="Fast, anonymous, and secure temporary disposable email generator by Dark Tech Zone. Generate fake email addresses with real-time auto-refreshing inboxes to receive OTP codes and bypass sign-ups." />
+    <meta property="og:site_name" content="Dark Tech Zone" />
+    <meta property="og:image" content="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" />
+    <meta name="theme-color" content="#090d16" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebApplication",
+          "name": "Dark Tech Zone Temp Mail",
+          "url": "https://darktechzon.site/temp-mail/",
+          "description": "Fast, anonymous, and secure temporary disposable email generator by Dark Tech Zone. Generate fake email addresses with real-time auto-refreshing inboxes to receive OTP codes and bypass sign-ups.",
+          "applicationCategory": "CommunicationApplication",
+          "operatingSystem": "All",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            { "@type": "Question", "name": "What is Dark Tech Zone Temp Mail?", "acceptedAnswer": { "@type": "Answer", "text": "It is a free disposable email service that provides temporary inboxes to receive OTP verification codes and downloads safely without exposing personal email accounts." } },
+            { "@type": "Question", "name": "How fast are incoming emails delivered?", "acceptedAnswer": { "@type": "Answer", "text": "Emails are received instantly in 1 to 5 seconds with automatic background synchronization." } },
+            { "@type": "Question", "name": "Can I view full HTML formatted emails?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, clicking any received message opens a full-screen sandbox reader displaying the complete HTML content, sender headers, and verification links." } }
+          ]
+        }
+      ]
+    }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        :root {
+            --bg-base: #090d16;
+            --card-bg: #111827;
+            --card-border: #1f293d;
+            --accent-blue: #2563eb;
+            --accent-blue-hover: #1d4ed8;
+            --accent-cyan: #06b6d4;
+            --accent-green: #10b981;
+            --danger-bg: #450a0a;
+            --danger-text: #f87171;
+            --text-light: #f9fafb;
+            --text-dim: #94a3b8;
+            --input-bg: #162032;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg-base); color: var(--text-light); min-height: 100vh; padding: 24px 14px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; }
+        .container { width: 100%; max-width: 860px; margin: 0 auto; }
+        header { background: var(--card-bg); border: 1px solid var(--card-border); padding: 16px 22px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .brand { display: flex; align-items: center; gap: 12px; }
+        .brand-icon { width: 44px; height: 44px; border-radius: 14px; overflow: hidden; flex: none; box-shadow: 0 0 16px rgba(37,99,235,0.4); }
+        .brand-icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .brand-title { font-size: 18px; font-weight: 800; color: #fff; }
+        .brand-sub { font-size: 12px; color: var(--text-dim); }
+        .social-pill { display: flex; gap: 8px; }
+        .pill-btn { background: #1f293d; border: 1px solid #334155; color: #fff; text-decoration: none; padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s; }
+        .pill-btn:hover { border-color: var(--accent-blue); background: #243048; }
+        .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 24px 20px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .tool-head { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+        .tool-icon-box { width: 60px; height: 60px; border-radius: 16px; display: flex; align-items: center; justify-content: center; flex: none; background: linear-gradient(135deg, #06b6d4, #0891b2); }
+        .tool-icon-box svg { width: 34px; height: 34px; }
+        .card-title { font-size: 18px; font-weight: 800; color: #fff; }
+        .card-sub { font-size: 13px; color: var(--text-dim); margin-top: 2px; }
+        .email-display-wrap { display: flex; align-items: center; background: var(--input-bg); border: 1px solid #283548; border-radius: 14px; overflow: hidden; margin-bottom: 14px; }
+        .email-prefix-icon { padding: 14px; color: var(--accent-cyan); font-size: 16px; }
+        .email-address-text { flex: 1; font-family: 'JetBrains Mono', monospace; font-size: 14px; color: #fff; outline: none; background: transparent; border: none; min-width: 0; }
+        .copy-btn { background: #1f293d; border: 1px solid #334155; color: #fff; padding: 10px 14px; margin-right: 8px; border-radius: 10px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: 0.15s; flex: none; }
+        .copy-btn:hover { background: var(--accent-blue); }
+        .btn-generate { width: 100%; background: var(--accent-blue); color: #fff; border: none; border-radius: 12px; padding: 14px; font-size: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.15s; box-shadow: 0 8px 25px rgba(37,99,235,0.35); }
+        .btn-generate:hover { background: var(--accent-blue-hover); transform: translateY(-1px); }
+        .btn-generate:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .actions-grid { display: flex; gap: 10px; margin-top: 12px; }
+        .act-btn { flex: 1; background: var(--input-bg); border: 1px solid #283548; color: var(--text-dim); padding: 10px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; transition: 0.15s; }
+        .act-btn:hover { background: #1f293d; color: #fff; }
+        .act-btn.purge:hover { background: var(--danger-bg); border-color: #991b1b; color: var(--danger-text); }
+        .inbox-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 20px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .inbox-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1e293b; padding-bottom: 12px; margin-bottom: 14px; }
+        .inbox-header h3 { font-size: 15px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px; }
+        .sync-badge { font-size: 12px; color: var(--accent-cyan); font-weight: 600; }
+        .inbox-list { display: flex; flex-direction: column; gap: 10px; }
+        .email-row { background: var(--input-bg); border: 1px solid #283548; border-radius: 12px; padding: 14px; cursor: pointer; transition: 0.15s; }
+        .email-row:hover { border-color: var(--accent-blue); transform: translateX(3px); }
+        .email-row-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+        .email-sender { font-weight: 700; font-size: 13px; color: #fff; }
+        .email-sub { font-size: 13px; color: var(--text-dim); }
+        .email-time { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--accent-cyan); }
+        .empty-inbox { text-align: center; padding: 30px 10px; color: var(--text-dim); }
+        .empty-inbox i { font-size: 28px; margin-bottom: 8px; color: #334155; }
+        .seo-box { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 24px; line-height: 1.6; margin-bottom: 20px; font-size: 13px; color: var(--text-dim); }
+        .seo-box h2 { font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+        .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 16px 0; }
+        .feature-item { background: var(--input-bg); border: 1px solid #283548; padding: 14px; border-radius: 12px; }
+        .feature-item i { color: var(--accent-blue); font-size: 18px; margin-bottom: 6px; }
+        .feature-item h4 { font-size: 13px; color: #fff; margin-bottom: 4px; }
+        .feature-item p { font-size: 12px; color: var(--text-dim); margin-bottom: 0; }
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); display: none; align-items: center; justify-content: center; z-index: 10000; padding: 14px; }
+        .modal.active { display: flex !important; }
+        .modal-box { background: #111827; border: 1px solid #1f293d; border-radius: 20px; max-width: 720px; width: 100%; height: 85vh; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.9); overflow: hidden; }
+        .modal-header { padding: 16px 20px; border-bottom: 1px solid #1f293d; display: flex; justify-content: space-between; align-items: center; background: #0f172a; }
+        .modal-body { padding: 16px; flex: 1; overflow-y: auto; background: #090d16; }
+        .modal-iframe { width: 100%; height: 100%; min-height: 400px; background: #fff; border-radius: 12px; border: none; }
+        footer { text-align: center; font-size: 13px; color: var(--text-dim); padding: 12px 0; }
+        footer a { color: var(--accent-blue); text-decoration: none; font-weight: 600; margin: 0 4px; }
+        .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--card-bg); border: 1px solid var(--accent-blue); color: #fff; padding: 8px 18px; border-radius: 30px; font-size: 13px; opacity: 0; transition: opacity 0.25s ease; pointer-events: none; z-index: 11000; }
+        .toast.show { opacity: 1; }
+        @media (max-width: 640px) {
+            header { flex-direction: column; gap: 12px; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <div class="brand">
+            <div class="brand-icon"><img src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone" /></div>
+            <div>
+                <div class="brand-title">Temp Mail</div>
+                <div class="brand-sub">Dark Tech Zone Security</div>
+            </div>
+        </div>
+        <div class="social-pill">
+            <a href="https://t.me/DarkTechZone2" target="_blank" rel="noopener" class="pill-btn"><i class="fab fa-telegram"></i> Telegram</a>
+            <a href="https://whatsapp.com/channel/0029VbCgB63LCoX5aiV5qp1t" target="_blank" rel="noopener" class="pill-btn"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+        </div>
+    </header>
+
+    <main class="card">
+        <div class="tool-head">
+            <div class="tool-icon-box" aria-hidden="true">
+                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="6" y="12" width="36" height="26" rx="4" stroke="#fff" stroke-width="2.6"/>
+                    <path d="M8 15l16 11 16-11" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="36" cy="34" r="8" fill="#06b6d4" stroke="#0891b2" stroke-width="1.5"/>
+                    <path d="M36 29.5V34l3 2" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <div>
+                <div class="card-title">Free Disposable Email Address</div>
+                <div class="card-sub">Generate temporary inboxes to bypass registrations and stop inbox spam</div>
+            </div>
+        </div>
+
+        <div class="email-display-wrap">
+            <i class="fas fa-at email-prefix-icon"></i>
+            <input type="text" id="emailAddress" class="email-address-text" value="Click generate to get an address" readonly />
+            <button type="button" class="copy-btn" id="copyBtn"><i class="fas fa-copy"></i> Copy</button>
+        </div>
+
+        <button type="button" class="btn-generate" id="genBtn"><i class="fas fa-arrows-rotate"></i> Generate New Address</button>
+
+        <div class="actions-grid">
+            <button type="button" class="act-btn" id="refreshBtn"><i class="fas fa-rotate"></i> Refresh Inbox</button>
+            <button type="button" class="act-btn purge" id="purgeBtn"><i class="fas fa-trash-can"></i> Delete Mailbox</button>
+        </div>
+    </main>
+
+    <section class="inbox-card">
+        <div class="inbox-header">
+            <h3><i class="fas fa-inbox"></i> Incoming Messages</h3>
+            <span class="sync-badge"><i class="fas fa-circle-notch fa-spin"></i> Auto-Sync: 10s</span>
+        </div>
+        <div class="inbox-list" id="inboxList">
+            <div class="empty-inbox">
+                <i class="fas fa-envelope-open-text"></i>
+                <p>Waiting for incoming emails... Inboxes update automatically.</p>
+            </div>
+        </div>
+    </section>
+
+    <article class="seo-box">
+        <h2>Free Disposable Temporary Email Service</h2>
+        <p>
+            <strong>Dark Tech Zone Temp Mail</strong> provides free, secure, and disposable email addresses that shield your real inbox from promotional spam, phishing, and unwanted marketing newsletters.
+        </p>
+        <div class="feature-grid">
+            <div class="feature-item">
+                <i class="fas fa-bolt"></i>
+                <h4>Instant Delivery</h4>
+                <p>Receive verification links and OTPs within 1 to 5 seconds.</p>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-shield-halved"></i>
+                <h4>Complete Privacy</h4>
+                <p>No personal records, credit cards, or passwords required.</p>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-trash"></i>
+                <h4>1-Click Purge</h4>
+                <p>Easily discard active mailboxes and create fresh inboxes anytime.</p>
+            </div>
+        </div>
+    </article>
+
+    <footer>
+        <p>&copy; 2026 <a href="https://darktechzon.site/">Dark Tech Zone</a> &bull; Advanced Security Division &bull; <a href="https://darktechzon.site/privacy.html">Privacy Policy</a></p>
+    </footer>
+</div>
+
+<div class="modal" id="msgModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <div>
+                <h4 id="modalSender" style="color:#fff; font-size:14px;">Sender</h4>
+                <p id="modalSub" style="color:var(--text-dim); font-size:12px; margin-top:2px;"></p>
+            </div>
+            <button type="button" class="copy-btn" style="margin:0; background:#374151;" id="closeModalBtn">Close &#10006;</button>
+        </div>
+        <div class="modal-body">
+            <iframe id="msgIframe" class="modal-iframe" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    (function() {
+        var TOKEN_KEY = 'dtz_temp_mail_token';
+        var EMAIL_KEY = 'dtz_temp_mail_email';
+        var currentEmail = localStorage.getItem(EMAIL_KEY) || '';
+        var currentToken = localStorage.getItem(TOKEN_KEY) || '';
+        var isFetching = false;
+
+        var emailInput = document.getElementById('emailAddress');
+        var genBtn = document.getElementById('genBtn');
+        var copyBtn = document.getElementById('copyBtn');
+        var refreshBtn = document.getElementById('refreshBtn');
+        var purgeBtn = document.getElementById('purgeBtn');
+        var inboxList = document.getElementById('inboxList');
+        var toast = document.getElementById('toast');
+        var modal = document.getElementById('msgModal');
+        var msgIframe = document.getElementById('msgIframe');
+        var modalSender = document.getElementById('modalSender');
+        var modalSub = document.getElementById('modalSub');
+        var closeModalBtn = document.getElementById('closeModalBtn');
+
+        if (currentEmail) emailInput.value = currentEmail;
+
+        function showToast(msg) {
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(function() { toast.classList.remove('show'); }, 2000);
+        }
+
+        function copyText(text, okMsg) {
+            function fallback() {
+                var ta = document.createElement('textarea');
+                ta.value = text;
+                ta.style.position = 'fixed';
+                ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.select();
+                try { document.execCommand('copy'); showToast(okMsg); }
+                catch (e) { showToast('Copy failed — select the address manually.'); }
+                document.body.removeChild(ta);
+            }
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(function() { showToast(okMsg); }).catch(fallback);
+            } else { fallback(); }
+        }
+
+        copyBtn.addEventListener('click', function() {
+            if (!currentEmail) return;
+            copyText(currentEmail, 'Email copied to clipboard!');
+        });
+
+        genBtn.addEventListener('click', function() {
+            genBtn.disabled = true;
+            genBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+            fetch('/api/mailbox', { method: 'POST' })
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    if (data.email && data.token) {
+                        currentEmail = data.email;
+                        currentToken = data.token;
+                        localStorage.setItem(EMAIL_KEY, data.email);
+                        localStorage.setItem(TOKEN_KEY, data.token);
+                        emailInput.value = data.email;
+                        showToast('New temporary email created!');
+                        fetchInbox();
+                    } else {
+                        showToast(data.error || 'Generation failed.');
+                    }
+                })
+                .catch(function() { showToast('Network connection error.'); })
+                .finally(function() {
+                    genBtn.disabled = false;
+                    genBtn.innerHTML = '<i class="fas fa-arrows-rotate"></i> Generate New Address';
+                });
+        });
+
+        function fetchInbox() {
+            if (!currentToken || isFetching) return;
+            isFetching = true;
+            fetch('/api/messages?token=' + encodeURIComponent(currentToken))
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    if (data.messages) renderMessages(data.messages);
+                })
+                .catch(function() {})
+                .finally(function() { isFetching = false; });
+        }
+
+        function renderMessages(msgs) {
+            if (!msgs.length) {
+                inboxList.innerHTML = '<div class="empty-inbox"><i class="fas fa-envelope-open-text"></i><p>Waiting for incoming emails... Inboxes update automatically.</p></div>';
+                return;
+            }
+            inboxList.innerHTML = '';
+            msgs.forEach(function(m) {
+                var row = document.createElement('div');
+                row.className = 'email-row';
+                var head = document.createElement('div');
+                head.className = 'email-row-header';
+                var sender = document.createElement('span');
+                sender.className = 'email-sender';
+                sender.textContent = m.from || 'Unknown Sender';
+                var time = document.createElement('span');
+                time.className = 'email-time';
+                time.textContent = formatTime(m.received_at);
+                head.appendChild(sender);
+                head.appendChild(time);
+                var sub = document.createElement('div');
+                sub.className = 'email-sub';
+                sub.textContent = m.subject || '(No Subject)';
+                row.appendChild(head);
+                row.appendChild(sub);
+                row.addEventListener('click', function() {
+                    loadEmailMessage(m.id, m.from || 'Unknown', m.subject || '(No Subject)');
+                });
+                inboxList.appendChild(row);
+            });
+        }
+
+        function loadEmailMessage(id, from, sub) {
+            modalSender.textContent = from;
+            modalSub.textContent = sub;
+            msgIframe.srcdoc = '<p style="padding:20px; font-family:sans-serif; text-align:center; color:#666;">Decrypting message...</p>';
+            modal.classList.add('active');
+            fetch('/api/message?token=' + encodeURIComponent(currentToken) + '&id=' + encodeURIComponent(id))
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    if (data.message) {
+                        msgIframe.srcdoc = data.message.body_html || '<pre style="padding:15px; font-family:monospace;">' + escapeHtml(data.message.body_text || 'No content.') + '</pre>';
+                    } else {
+                        msgIframe.srcdoc = '<p style="padding:20px; color:#ef4444;">Failed to read message.</p>';
+                    }
+                })
+                .catch(function() {
+                    msgIframe.srcdoc = '<p style="padding:20px; color:#ef4444;">Network error while fetching body.</p>';
+                });
+        }
+
+        closeModalBtn.addEventListener('click', function() {
+            modal.classList.remove('active');
+            msgIframe.srcdoc = '';
+        });
+
+        purgeBtn.addEventListener('click', function() {
+            if (!currentToken) { showToast('No mailbox to delete.'); return; }
+            if (!confirm('Are you sure you want to delete this inbox?')) return;
+            var token = currentToken;
+            currentToken = '';
+            currentEmail = '';
+            localStorage.removeItem(TOKEN_KEY);
+            localStorage.removeItem(EMAIL_KEY);
+            emailInput.value = 'Click generate to get an address';
+            renderMessages([]);
+            fetch('/api/mailbox?token=' + encodeURIComponent(token), { method: 'DELETE' })
+                .then(function() { showToast('Mailbox deleted.'); })
+                .catch(function() { showToast('Mailbox deleted locally.'); });
+        });
+
+        refreshBtn.addEventListener('click', function() {
+            fetchInbox();
+            showToast('Checking for new messages...');
+        });
+
+        function formatTime(ts) {
+            if (!ts) return '';
+            var d = new Date(ts * 1000);
+            return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function escapeHtml(s) {
+            var d = document.createElement('div');
+            d.textContent = s;
+            return d.innerHTML;
+        }
+
+        setInterval(fetchInbox, 10000);
+        if (currentToken) fetchInbox();
+    })();
+</script>
+</body>
+</html>

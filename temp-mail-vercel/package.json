@@ -1,0 +1,7 @@
+{
+  "name": "dtz-temp-mail",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Dark Tech Zone Temp Mail — static UI + serverless proxy to the Temp Mail API",
+  "scripts": {}
+}

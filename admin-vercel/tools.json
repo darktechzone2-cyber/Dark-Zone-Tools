@@ -1,0 +1,19 @@
+[
+  { "id": 1,  "name": "DTZ Instagram Downloader",        "category": "Downloader", "filename": "https://darktechzone2-cyber.github.io/dtz-instagram-downloader/",        "icon": "fab fa-instagram",        "status": 1, "clicks": 0 },
+  { "id": 2,  "name": "DTZ X Video Downloader",          "category": "Downloader", "filename": "https://darktechzone2-cyber.github.io/dtz-x-video-downloader/",          "icon": "fab fa-x-twitter",         "status": 1, "clicks": 0 },
+  { "id": 3,  "name": "DTZ TikTok Downloader",           "category": "Downloader", "filename": "https://dtz-tiktok-downloader.vercel.app",                               "icon": "fab fa-tiktok",           "status": 1, "clicks": 0 },
+  { "id": 4,  "name": "DTZ Thumbnail Downloader",        "category": "Downloader", "filename": "https://dtz-thumbnail-downloader.vercel.app",                            "icon": "far fa-image",            "status": 1, "clicks": 0 },
+  { "id": 5,  "name": "Facebook Downloader",             "category": "Downloader", "filename": "https://darktechzon.site/Fb-Dl/",                                        "icon": "fab fa-facebook",         "status": 1, "clicks": 0 },
+  { "id": 6,  "name": "DTZ AI Caption Generator",        "category": "AI Tools",   "filename": "https://darktechzone2-cyber.github.io/dtz-ai-caption-generator/",        "icon": "fas fa-closed-captioning", "status": 1, "clicks": 0 },
+  { "id": 7,  "name": "DTZ AI Code Assistant",           "category": "AI Tools",   "filename": "https://darktechzone2-cyber.github.io/dtz-ai-code-assistant/",           "icon": "fas fa-code",              "status": 1, "clicks": 0 },
+  { "id": 8,  "name": "DTZ AI Voice Generator",          "category": "AI Tools",   "filename": "https://darktechzone2-cyber.github.io/dtz-ai-voice-generator/",          "icon": "fas fa-microphone",         "status": 1, "clicks": 0 },
+  { "id": 9,  "name": "DTZ AI YouTube Title Generator",  "category": "AI Tools",   "filename": "https://darktechzone2-cyber.github.io/dtz-ai-youtube-title-generator/",  "icon": "fab fa-youtube",           "status": 1, "clicks": 0 },
+  { "id": 10, "name": "Text to Speech",                  "category": "AI Tools",   "filename": "https://darktechzon.site/Tts/",                                        "icon": "fas fa-language",         "status": 1, "clicks": 0 },
+  { "id": 11, "name": "DTZ Speed Test",                  "category": "Tech Tools", "filename": "https://darktechzone2-cyber.github.io/dtz-speed-test/",                 "icon": "fas fa-gauge-high",       "status": 1, "clicks": 0 },
+  { "id": 12, "name": "DTZ Screen Recorder",             "category": "Tech Tools", "filename": "https://darktechzone2-cyber.github.io/dtz-screen-recorder/",            "icon": "fas fa-desktop",           "status": 1, "clicks": 0 },
+  { "id": 13, "name": "DTZ PDF Toolkit",                 "category": "Tech Tools", "filename": "https://darktechzone2-cyber.github.io/dtz-pdf-toolkit/",                 "icon": "fas fa-file-pdf",         "status": 1, "clicks": 0 },
+  { "id": 14, "name": "DTZ Lookup API",                  "category": "Tech Tools", "filename": "https://dtz-lookup-api.vercel.app",                                   "icon": "fas fa-network-wired",    "status": 1, "clicks": 0 },
+  { "id": 15, "name": "Temp Mail",                       "category": "Tech Tools", "filename": "https://darktechzon.site/Temp-Mail/",                                  "icon": "fas fa-envelope",         "status": 1, "clicks": 0 },
+  { "id": 16, "name": "Weather",                         "category": "Tech Tools", "filename": "https://darktechzon.site/Weather/",                                   "icon": "fas fa-cloud-sun",        "status": 1, "clicks": 0 },
+  { "id": 17, "name": "Media Cloud",                     "category": "Tech Tools", "filename": "https://darktechzon.site/M/",                                        "icon": "fas fa-cloud-arrow-up",   "status": 1, "clicks": 0 }
+]
