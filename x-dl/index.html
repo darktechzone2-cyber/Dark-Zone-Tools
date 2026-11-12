@@ -1,0 +1,619 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="dark" />
+<link rel="icon" type="image/jpeg" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" />
+<title>DTZ X Video Downloader</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+<style>
+  :root{
+    --bg-base:#090d16; --card-bg:#111827; --card-border:#1f293d;
+    --accent-blue:#2563eb; --accent-blue-hover:#1d4ed8; --accent-cyan:#06b6d4;
+    --text-light:#f9fafb; --text-dim:#94a3b8; --input-bg:#162032;
+    --danger:#f87171; --radius:20px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg-base);color:var(--text-light);font-family:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  body{padding:24px 14px}
+  a{color:var(--accent-cyan)}
+  button,input{font:inherit}
+  button,[role="button"]{min-height:44px}
+  /* header card */
+  .topbar{max-width:860px;margin:0 auto 20px;background:var(--card-bg);border:1px solid var(--card-border);border-radius:20px;padding:16px 22px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+  .topbar-inner{max-width:none;margin:0}
+  .topbar-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .brand{display:flex;align-items:center;gap:12px;min-width:0}
+  .brand-mark{width:44px;height:44px;flex:0 0 44px;border-radius:14px;overflow:hidden;box-shadow:0 0 16px rgba(37,99,235,.4)}
+  .brand-mark img{width:100%;height:100%;object-fit:cover;display:block}
+  .brand-text h1{margin:0;font-size:18px;line-height:1.2;font-weight:800;color:#fff}
+  .brand-text p{margin:2px 0 0;color:var(--text-dim);font-size:12px;line-height:1.4}
+  .social-pill{display:flex;gap:8px;flex:none}
+  .pill-btn{background:#1f293d;border:1px solid #334155;color:#fff;text-decoration:none;padding:8px 14px;border-radius:20px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px;transition:.2s}
+  .pill-btn:hover{border-color:var(--accent-blue);background:#243048}
+  .badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);border:1px solid #334155;color:#e2e8f0;font-size:12.5px;font-weight:600;padding:7px 10px;border-radius:999px}
+  .badge i{width:7px;height:7px;border-radius:50%;background:#4ade80;display:inline-block}
+  main{max-width:860px;margin:0 auto;padding:0 0 28px}
+  .card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:var(--radius);box-shadow:0 10px 30px rgba(0,0,0,.4);padding:20px}
+  .card + .card{margin-top:14px}
+  .tool-head{display:flex;gap:14px;align-items:center;margin-bottom:16px}
+  .tool-icon-box{width:60px;height:60px;border-radius:16px;flex:none;display:flex;align-items:center;justify-content:center}
+  .tool-icon-box svg{width:34px;height:34px}
+  .tool-head h3{margin:0;font-size:17px;font-weight:800;color:#fff}
+  .tool-head p{margin:2px 0 0;font-size:13px;color:var(--text-dim)}
+  .label{font-size:13px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;color:var(--text-dim);margin:0 0 10px}
+  /* search */
+  .search-row{display:flex;gap:10px}
+  .search-row input{flex:1;min-width:0;height:52px;border:1px solid #283548;border-radius:12px;padding:0 14px;font-size:16px;background:var(--input-bg);color:var(--text-light);outline:none}
+  .search-row input:focus{border-color:var(--accent-blue);box-shadow:0 0 14px rgba(37,99,235,.3)}
+  .search-row input::placeholder{color:var(--text-dim)}
+  .btn{border:0;cursor:pointer;border-radius:12px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 18px;text-decoration:none;white-space:nowrap}
+  .btn-green{background:var(--accent-blue);color:#fff}
+  .btn-green:hover{background:var(--accent-blue-hover)}
+  .btn-green:disabled{opacity:.65;cursor:wait}
+  .btn-navy{background:#1f293d;color:#fff;border:1px solid #334155}
+  .btn-navy:hover{background:#243048}
+  .btn-outline{background:transparent;color:#fff;border:1.5px solid #334155}
+  .btn-outline:hover{border-color:var(--accent-blue);background:#162032}
+  .btn-red-ghost{background:transparent;color:var(--danger);border:1.5px solid #7f1d1d}
+  .hint{font-size:13px;color:var(--text-dim);line-height:1.5;margin:10px 0 0}
+  /* examples */
+  .examples{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:14px}
+  .examples span{font-size:13px;color:var(--text-dim);font-weight:600}
+  .chip{border:1px solid #243048;background:#162032;color:var(--text-light);border-radius:999px;padding:9px 13px;font-size:13.5px;font-weight:600;cursor:pointer;min-height:40px}
+  .chip:hover{border-color:var(--accent-blue);background:#1f293d}
+  /* how it works */
+  .steps{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+  .step{display:flex;gap:11px;align-items:flex-start}
+  .step-num{width:32px;height:32px;flex:0 0 32px;border-radius:50%;background:var(--accent-blue);color:#fff;display:grid;place-items:center;font-weight:800;font-size:14px}
+  .step b{display:block;font-size:14px;line-height:1.3;color:#fff}
+  .step p{margin:3px 0 0;font-size:13px;line-height:1.45;color:var(--text-dim)}
+  /* states */
+  .state{padding:22px 18px;text-align:center}
+  .spinner{width:36px;height:36px;border-radius:50%;border:3.5px solid #1f293d;border-top-color:var(--accent-blue);margin:0 auto 12px;animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @media (prefers-reduced-motion: reduce){.spinner{animation:none}}
+  .state p{margin:0;color:var(--text-dim);font-size:14.5px;line-height:1.55}
+  .state.error p{color:#fca5a5}
+  .error-box{background:rgba(69,10,10,.8);border:1px solid #991b1b;border-radius:12px;padding:16px;text-align:left}
+  .error-box b{color:var(--danger);display:flex;gap:8px;align-items:center;font-size:15px}
+  .error-box p{margin:7px 0 0;color:#fca5a5;font-size:14px;line-height:1.55;text-align:left}
+  .note-box{background:rgba(69,26,3,.55);border:1px solid rgba(249,115,22,.4);border-radius:12px;padding:14px 16px;font-size:14px;line-height:1.55;color:#fdba74}
+  /* post card */
+  .post-head{display:flex;gap:12px;align-items:flex-start}
+  .avatar{width:48px;height:48px;border-radius:50%;object-fit:cover;background:#1f293d;flex:0 0 48px;border:1px solid #283548}
+  .post-head h2{margin:0;font-size:16.5px;line-height:1.25;color:#fff}
+  .handle{color:var(--text-dim);font-size:14px;margin-top:2px}
+  .date{color:var(--text-dim);font-size:13px;margin-top:2px}
+  .post-text{margin:14px 0 0;font-size:15.5px;line-height:1.6;white-space:pre-wrap;word-break:break-word;color:#e2e8f0}
+  .stats{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .stat{display:inline-flex;align-items:center;gap:7px;background:#162032;border:1px solid #243048;border-radius:999px;padding:7px 11px;font-size:13px;font-weight:600;color:#e2e8f0}
+  .stat svg{width:15px;height:15px;color:#94a3b8}
+  .stat span{color:var(--text-dim);font-weight:500}
+  .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+  .actions .btn{min-height:44px;font-size:14px}
+  .copied{font-size:13px;color:#6ee7b7;font-weight:700;align-self:center}
+  /* media */
+  .media-title{font-size:17px;margin:0 0 4px;font-weight:800;letter-spacing:-.01em;color:#fff}
+  .media-sub{margin:0 0 14px;color:var(--text-dim);font-size:13.5px;line-height:1.5}
+  video{width:100%;border-radius:12px;background:#000;display:block;aspect-ratio:16/9;object-fit:contain}
+  .video-wrap{margin-bottom:16px}
+  .quality-list{display:flex;flex-direction:column;gap:10px}
+  .quality{display:flex;align-items:center;gap:12px;border:1px solid #283548;border-radius:12px;padding:10px 10px 10px 14px;background:var(--input-bg)}
+  .quality-main{flex:1;min-width:0}
+  .quality-main b{font-size:15px;display:block;color:#fff}
+  .quality-main small{color:var(--text-dim);font-size:12.5px;display:block;margin-top:2px;line-height:1.4}
+  .best{font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;background:rgba(6,78,59,.8);color:#6ee7b7;border:1px solid #059669;padding:3px 7px;border-radius:999px;vertical-align:2px;margin-left:6px;white-space:nowrap}
+  .open-link{font-size:13.5px;font-weight:700;color:var(--accent-cyan);padding:10px 8px;min-height:44px;display:inline-flex;align-items:center}
+  .dl-btn{background:var(--accent-blue);color:#fff;border:0;border-radius:10px;padding:0 16px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:7px;font-size:14px;min-width:132px}
+  .dl-btn:hover{background:var(--accent-blue-hover)}
+  .dl-btn:disabled{opacity:.7;cursor:wait}
+  .dl-btn svg{width:16px;height:16px;flex:0 0 16px}
+  .photo-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .photo-item{border:1px solid #283548;border-radius:12px;overflow:hidden;background:var(--input-bg)}
+  .photo-item img{width:100%;height:170px;object-fit:cover;display:block;background:#0b0f19}
+  .photo-item figcaption{padding:10px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .photo-item figcaption span{font-size:13px;color:var(--text-dim);font-weight:600}
+  .photo-item .dl-btn{min-width:0;padding:0 13px}
+  /* recent */
+  .recent-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .recent-list{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+  .recent-item{display:flex;gap:11px;align-items:center;width:100%;text-align:left;background:var(--input-bg);border:1px solid #283548;border-radius:12px;padding:9px;cursor:pointer;color:var(--text-light)}
+  .recent-item:hover{border-color:var(--accent-blue);background:#1a2436}
+  .recent-item img{width:52px;height:52px;border-radius:8px;object-fit:cover;background:#1f293d;flex:0 0 52px}
+  .recent-item .ph{width:52px;height:52px;border-radius:8px;background:var(--accent-blue);color:#fff;display:grid;place-items:center;flex:0 0 52px;font-weight:800}
+  .recent-item b{font-size:14px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff}
+  .recent-item p{margin:2px 0 0;font-size:13px;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .recent-item div{min-width:0;flex:1}
+  .empty{font-size:14px;color:var(--text-dim);margin:10px 0 0;line-height:1.55}
+  /* limits + footer */
+  .limits{font-size:13.5px;line-height:1.65;color:#94a3b8}
+  .limits b{color:var(--text-light)}
+  .limits ul{margin:8px 0 0;padding-left:18px}
+  .limits li{margin:4px 0}
+  footer{max-width:860px;margin:0 auto;padding:12px 18px 30px;text-align:center;color:var(--text-dim);font-size:13px}
+  footer a{color:var(--accent-blue);text-decoration:none;font-weight:600;margin:0 4px}
+  .hidden{display:none !important}
+  @media (max-width:620px){
+    .topbar{padding:16px}
+    .topbar-head{flex-direction:column;text-align:center}
+    .search-row{flex-direction:column}
+    .search-row .btn{width:100%;height:50px}
+    .steps{grid-template-columns:1fr}
+    .quality{flex-wrap:wrap}
+    .quality-main{flex:1 1 140px}
+    .photo-grid{grid-template-columns:1fr}
+    .photo-item img{height:210px}
+    .actions .btn{flex:1}
+  }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="topbar-head">
+      <div class="brand">
+        <div class="brand-mark"><img src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone" /></div>
+        <div class="brand-text">
+          <h1>DTZ X Video Downloader</h1>
+          <p>Download videos &amp; photos from any public X post</p>
+        </div>
+      </div>
+<div class="social-pill">
+        <a class="pill-btn" href="https://t.me/DarkTechZone2" target="_blank" rel="noopener">Telegram</a>
+        <a class="pill-btn" href="https://whatsapp.com/channel/0029VbCgB63LCoX5aiV5qp1t" target="_blank" rel="noopener">WhatsApp</a>
+      </div>
+    </div>
+    <div class="badges">
+      <span class="badge"><i></i> Free forever</span>
+      <span class="badge">No sign-up</span>
+      <span class="badge">MP4 &amp; JPG</span>
+      <span class="badge">Up to 4K</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Search -->
+  <section class="card" aria-label="Download from X">
+    <div class="tool-head">
+      <div class="tool-icon-box" style="background:linear-gradient(135deg,#2563eb,#1d4ed8);"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="16" rx="3"/><path d="M7.5 4v16M16.5 4v16"/><path d="M10.4 9.7 15.2 12l-4.8 2.3z" fill="#fff" stroke="none"/></svg></div>
+      <div><h3>Get media from a post</h3><p>Paste a public X post link and pick a quality to download.</p></div>
+    </div>
+    <p class="label">Paste an X post link</p>
+    <form id="fetchForm" class="search-row">
+      <input id="urlInput" type="text" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="https://x.com/username/status/1234567890" aria-label="X post link or post ID" />
+      <button class="btn btn-green" id="fetchBtn" type="submit">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        Get Media
+      </button>
+    </form>
+    <p class="hint">Works with x.com, twitter.com and mobile links — or paste just the numeric post ID.</p>
+    <div class="examples">
+      <span>Try an example:</span>
+      <button type="button" class="chip" data-example="https://x.com/SpaceX/status/2104601695711904180">SpaceX splashdown video</button>
+      <button type="button" class="chip" data-example="https://x.com/NASA/status/2107237881668313108">NASA Crew-12 photo</button>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="card" aria-label="How it works">
+    <p class="label">How it works</p>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div><b>Copy the post link on X</b><p>Open the post, tap Share, then Copy link.</p></div></div>
+      <div class="step"><div class="step-num">2</div><div><b>Paste it here</b><p>Hit Get Media and the post loads instantly.</p></div></div>
+      <div class="step"><div class="step-num">3</div><div><b>Pick a quality and download</b><p>Choose up to 4K MP4, or save photos as JPG.</p></div></div>
+    </div>
+  </section>
+
+  <!-- Result -->
+  <div id="resultArea"></div>
+
+  <!-- Recent -->
+  <section class="card" id="recentCard">
+    <div class="recent-head">
+      <p class="label" style="margin:0">Recent lookups</p>
+      <button type="button" class="btn btn-red-ghost" id="clearRecent" style="min-height:38px;padding:0 13px;font-size:13px">Clear</button>
+    </div>
+    <div id="recentList"></div>
+  </section>
+
+  <!-- Limits -->
+  <section class="card limits">
+    <b>Good to know</b>
+    <ul>
+      <li>Public posts only — private, deleted or protected posts cannot be fetched.</li>
+      <li>Files come straight from X's own servers, exactly as posted — nothing is re-encoded or watermarked.</li>
+      <li>A 4K file can be large. If a direct download is slow on mobile, use the <b>Open</b> link next to that quality instead.</li>
+    </ul>
+  </section>
+</main>
+
+<footer>&copy; 2026 <a href="https://darktechzon.site/">Dark Tech Zone</a> &bull; Advanced Security Division &bull; <a href="https://darktechzon.site/privacy.html">Privacy Policy</a></footer>
+
+<script>
+(function(){
+  "use strict";
+  var form = document.getElementById('fetchForm');
+  var input = document.getElementById('urlInput');
+  var fetchBtn = document.getElementById('fetchBtn');
+  var resultArea = document.getElementById('resultArea');
+  var recentList = document.getElementById('recentList');
+  var clearBtn = document.getElementById('clearRecent');
+  var RECENT_KEY = 'dtz-x-recent-v1';
+  var currentTweet = null;
+
+  function esc(s){
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+  function compact(n){
+    if (n == null || isNaN(n)) return '0';
+    try { return new Intl.NumberFormat('en', {notation:'compact', maximumFractionDigits:1}).format(n); }
+    catch(e){ return String(n); }
+  }
+  function formatDate(raw){
+    if(!raw) return '';
+    var d = new Date(raw);
+    if (isNaN(d.getTime())) return raw;
+    return d.toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'}) + ' · ' +
+           d.toLocaleTimeString('en-US', {hour:'numeric', minute:'2-digit'});
+  }
+  function formatDuration(sec){
+    if (sec == null || isNaN(sec)) return '';
+    var s = Math.round(sec);
+    var m = Math.floor(s/60), r = s%60;
+    return m + ':' + (r < 10 ? '0' : '') + r;
+  }
+  function formatMB(bytes){
+    if (!bytes || isNaN(bytes)) return '';
+    var mb = bytes / (1024*1024);
+    return (mb >= 100 ? Math.round(mb) : mb.toFixed(1)) + ' MB';
+  }
+  function withName(url, name){
+    try { var u = new URL(url); u.searchParams.set('name', name); return u.toString(); }
+    catch(e){ return url + (url.indexOf('?') === -1 ? '?' : '&') + 'name=' + name; }
+  }
+
+  /* ---------- input parsing ---------- */
+  function extractId(raw){
+    var s = String(raw || '').trim();
+    if (!s) return null;
+    if (/^\d{5,}$/.test(s)) return s;
+    var m = s.match(/\/status\/(\d{5,})/);
+    if (m) {
+      // host must be one of the accepted ones, or at least look like a URL containing status
+      if (/x\.com|twitter\.com|fxtwitter\.com|vxtwitter\.com/i.test(s)) return m[1];
+      if (/^https?:\/\//i.test(s)) return m[1];
+    }
+    return null;
+  }
+
+  /* ---------- recent (localStorage, per spec) ---------- */
+  function loadRecent(){
+    try { var v = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'); return Array.isArray(v) ? v : []; }
+    catch(e){ return []; }
+  }
+  function saveRecent(list){
+    try { localStorage.setItem(RECENT_KEY, JSON.stringify(list.slice(0,8))); } catch(e){}
+  }
+  function addRecent(item){
+    var list = loadRecent().filter(function(x){ return x.id !== item.id; });
+    list.unshift(item);
+    saveRecent(list);
+    renderRecent();
+  }
+  function renderRecent(){
+    var list = loadRecent();
+    if (!list.length){
+      recentList.innerHTML = '<p class="empty">No lookups yet. Posts you fetch will appear here so you can reopen them in one tap.</p>';
+      clearBtn.style.display = 'none';
+      return;
+    }
+    clearBtn.style.display = '';
+    recentList.innerHTML = '<div class="recent-list">' + list.map(function(it){
+      var thumb = it.thumb ? '<img src="'+esc(it.thumb)+'" alt="" loading="lazy" onerror="this.outerHTML=\'<div class=ph>X</div>\'">' : '<div class="ph">X</div>';
+      return '<button type="button" class="recent-item" data-id="'+esc(it.id)+'">' + thumb +
+        '<div><b>@'+esc(it.handle || 'post')+'</b><p>'+esc(it.text || ('Post ' + it.id))+'</p></div>' +
+        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"><path d="m9 18 6-6-6-6"/></svg></button>';
+    }).join('') + '</div>';
+    var btns = recentList.querySelectorAll('.recent-item');
+    for (var i=0;i<btns.length;i++){
+      btns[i].addEventListener('click', function(){
+        var id = this.getAttribute('data-id');
+        input.value = 'https://x.com/i/status/' + id;
+        lookup(id);
+        window.scrollTo({top:0, behavior:'smooth'});
+      });
+    }
+  }
+  clearBtn.addEventListener('click', function(){ saveRecent([]); renderRecent(); });
+
+  /* ---------- states ---------- */
+  function showLoading(){
+    resultArea.innerHTML = '<section class="card state"><div class="spinner" role="status" aria-label="Loading"></div><p>Fetching the post from X…</p></section>';
+  }
+  function showError(title, msg){
+    resultArea.innerHTML = '<section class="card"><div class="error-box"><b>' +
+      '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>' +
+      esc(title) + '</b><p>' + esc(msg) + '</p></div></section>';
+  }
+
+  /* ---------- normalization (fxtwitter + vxtwitter fallback) ---------- */
+  function normalize(data){
+    if (!data) return null;
+    if (data.tweet) {
+      var t = data.tweet;
+      var media = t.media || {};
+      return {
+        id: String(t.id || ''),
+        text: t.text || '',
+        created_at: t.created_at || '',
+        likes: t.likes, retweets: t.retweets, replies: t.replies, views: t.views,
+        author: { name: (t.author && t.author.name) || '', screen_name: (t.author && t.author.screen_name) || '', avatar_url: (t.author && t.author.avatar_url) || '' },
+        videos: media.videos || [],
+        photos: media.photos || []
+      };
+    }
+    // vxtwitter shape
+    if (data.text != null || data.media_extended || data.user_screen_name) {
+      var videos = [], photos = [];
+      var ext = data.media_extended || [];
+      ext.forEach(function(m){
+        if (m.type === 'video' || m.type === 'gif') {
+          var variants = [];
+          if (m.url) variants.push({content_type:'video/mp4', bitrate: 0, url: m.url});
+          videos.push({ thumbnail_url: m.thumbnail_url || '', duration: m.duration_millis ? m.duration_millis/1000 : null, type: m.type === 'gif' ? 'animated_gif' : 'video', variants: variants });
+        } else if (m.type === 'image' || m.type === 'photo') {
+          photos.push({ url: m.url, width: m.size && m.size.width, height: m.size && m.size.height });
+        }
+      });
+      if (!videos.length && !photos.length && Array.isArray(data.media_urls)) {
+        data.media_urls.forEach(function(u){ photos.push({url:u}); });
+      }
+      return {
+        id: String(data.tweetID || data.id || ''),
+        text: data.text || '',
+        created_at: data.date || '',
+        likes: data.likes, retweets: data.retweets, replies: data.replies, views: data.views,
+        author: { name: data.user_name || '', screen_name: data.user_screen_name || '', avatar_url: data.user_profile_image_url || '' },
+        videos: videos, photos: photos
+      };
+    }
+    return null;
+  }
+
+  function fetchTweet(id){
+    var urls = ['https://api.fxtwitter.com/status/' + id, 'https://api.vxtwitter.com/status/' + id];
+    function tryNext(i){
+      if (i >= urls.length) return Promise.reject(new Error('notfound'));
+      return fetch(urls[i], {headers:{'Accept':'application/json'}})
+        .then(function(r){ if(!r.ok) throw new Error('bad'); return r.json(); })
+        .then(function(j){
+          var t = normalize(j);
+          if (!t || (!t.text && !t.videos.length && !t.photos.length && !t.author.screen_name)) throw new Error('empty');
+          if (!t.id) t.id = id;
+          return t;
+        })
+        .catch(function(){ return tryNext(i+1); });
+    }
+    return tryNext(0);
+  }
+
+  /* ---------- download helpers ---------- */
+  function triggerSave(blob, filename){
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
+  }
+  function downloadFile(btn, url, filename){
+    if (btn.disabled) return;
+    var original = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = 'Downloading…';
+    fetch(url)
+      .then(function(r){ if(!r.ok) throw new Error('fetch'); return r.blob(); })
+      .then(function(b){ triggerSave(b, filename); })
+      .catch(function(){ window.open(url, '_blank', 'noopener'); })
+      .finally(function(){ btn.disabled = false; btn.innerHTML = original; });
+  }
+
+  /* ---------- rendering ---------- */
+  var ICON_DL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>';
+  var ICON_HEART = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>';
+  var ICON_RT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg>';
+  var ICON_REPLY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>';
+  var ICON_EYE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>';
+
+  function statChip(icon, val, label){
+    if (val == null) return '';
+    return '<span class="stat">' + icon + compact(val) + ' <span>' + label + '</span></span>';
+  }
+
+  function render(tweet){
+    currentTweet = tweet;
+    var handle = tweet.author.screen_name || '';
+    var canonical = handle ? ('https://x.com/' + handle + '/status/' + tweet.id) : ('https://x.com/i/status/' + tweet.id);
+
+    var html = '';
+    html += '<section class="card" aria-label="Post details"><div class="post-head">';
+    if (tweet.author.avatar_url) html += '<img class="avatar" src="'+esc(tweet.author.avatar_url)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">';
+    html += '<div><h2>'+esc(tweet.author.name || handle || 'X post')+'</h2>';
+    if (handle) html += '<div class="handle">@'+esc(handle)+'</div>';
+    if (tweet.created_at) html += '<div class="date">'+esc(formatDate(tweet.created_at))+'</div>';
+    html += '</div></div>';
+    if (tweet.text) html += '<p class="post-text">'+esc(tweet.text)+'</p>';
+    html += '<div class="stats">' +
+      statChip(ICON_HEART, tweet.likes, 'Likes') +
+      statChip(ICON_RT, tweet.retweets, 'Reposts') +
+      statChip(ICON_REPLY, tweet.replies, 'Replies') +
+      statChip(ICON_EYE, tweet.views, 'Views') + '</div>';
+    html += '<div class="actions">' +
+      '<button type="button" class="btn btn-navy" id="copyBtn">Copy Post Link</button>' +
+      '<a class="btn btn-outline" href="'+esc(canonical)+'" target="_blank" rel="noopener">Open on X</a>' +
+      '<span class="copied hidden" id="copiedMsg">Copied</span></div>';
+    html += '</section>';
+
+    var hasMedia = false;
+
+    // Videos
+    (tweet.videos || []).forEach(function(video, vi){
+      var variants = (video.variants || []).filter(function(v){
+        return v.content_type === 'video/mp4' && v.bitrate > 0;
+      }).sort(function(a,b){ return b.bitrate - a.bitrate; });
+      // vxtwitter fallback may give bitrate 0 single variant — keep it if it's the only one
+      if (!variants.length) {
+        variants = (video.variants || []).filter(function(v){ return v.content_type === 'video/mp4'; });
+      }
+      if (!variants.length) return;
+      hasMedia = true;
+      variants.forEach(function(v){
+        var m = String(v.url).match(/\/(\d+)x(\d+)\//);
+        v._w = m ? +m[1] : null; v._h = m ? +m[2] : null;
+      });
+      var isGif = video.type === 'animated_gif';
+      var dur = formatDuration(video.duration);
+      html += '<section class="card" aria-label="Video download"><p class="media-title">'+(isGif ? 'GIF' : 'Video')+(tweet.videos.length > 1 ? ' ' + (vi+1) : '')+'</p>';
+      html += '<p class="media-sub">'+(dur ? 'Duration '+dur+' · ' : '')+variants.length+' qualit'+(variants.length===1?'y':'ies')+' available. Tap a quality to save the MP4 straight to your device.</p>';
+      html += '<div class="video-wrap"><video controls playsinline preload="metadata" poster="'+esc(video.thumbnail_url || '')+'" src="'+esc(variants[0].url)+'"></video></div>';
+      html += '<div class="quality-list">';
+      variants.forEach(function(v, qi){
+        var label = v._h ? (v._h + 'p' + (v._w ? ' · ' + v._w + '×' + v._h : '')) : 'MP4';
+        var fname = 'dtz-x-' + tweet.id + '-' + (v._h ? v._h + 'p' : 'video') + '.mp4';
+        html += '<div class="quality"><div class="quality-main"><b>'+esc(label)+(qi===0 ? '<span class="best">Best</span>' : '')+'</b>' +
+          '<small data-size-for="'+esc(v.url)+'">'+(v.bitrate ? Math.round(v.bitrate/1000) + ' kbps · checking size…' : 'MP4 video')+'</small></div>' +
+          '<a class="open-link" href="'+esc(v.url)+'" target="_blank" rel="noopener">Open</a>' +
+          '<button type="button" class="dl-btn" data-url="'+esc(v.url)+'" data-fname="'+esc(fname)+'">'+ICON_DL+'Download</button></div>';
+      });
+      html += '</div></section>';
+    });
+
+    // Photos
+    if (tweet.photos && tweet.photos.length){
+      hasMedia = true;
+      html += '<section class="card" aria-label="Photos"><p class="media-title">Photos</p><p class="media-sub">'+tweet.photos.length+' photo'+(tweet.photos.length===1?'':'s')+' — downloads save the full original quality JPG.</p>';
+      html += '<div class="photo-grid">';
+      tweet.photos.forEach(function(p, i){
+        var display = withName(p.url, 'medium');
+        var orig = withName(p.url, 'orig');
+        var dims = (p.width && p.height) ? (p.width + '×' + p.height) : 'Original';
+        var fname = 'dtz-x-' + tweet.id + '-photo-' + (i+1) + '.jpg';
+        html += '<figure class="photo-item" style="margin:0"><img src="'+esc(display)+'" alt="Photo '+(i+1)+' from this post" loading="lazy">' +
+          '<figcaption><span>Photo '+(i+1)+' · '+esc(dims)+'</span>' +
+          '<button type="button" class="dl-btn" data-url="'+esc(orig)+'" data-fname="'+esc(fname)+'">'+ICON_DL+'Save</button></figcaption></figure>';
+      });
+      html += '</div></section>';
+    }
+
+    if (!hasMedia){
+      html += '<section class="card"><div class="note-box">This post has no video or photo to download.</div></section>';
+    }
+
+    resultArea.innerHTML = html;
+
+    // wire copy
+    var copyBtn = document.getElementById('copyBtn');
+    var copiedMsg = document.getElementById('copiedMsg');
+    if (copyBtn){
+      copyBtn.addEventListener('click', function(){
+        function done(){ copiedMsg.classList.remove('hidden'); setTimeout(function(){ copiedMsg.classList.add('hidden'); }, 2000); }
+        if (navigator.clipboard && navigator.clipboard.writeText){
+          navigator.clipboard.writeText(canonical).then(done).catch(function(){ fallbackCopy(); done(); });
+        } else { fallbackCopy(); done(); }
+        function fallbackCopy(){
+          var ta = document.createElement('textarea');
+          ta.value = canonical; ta.style.position='fixed'; ta.style.opacity='0';
+          document.body.appendChild(ta); ta.select();
+          try { document.execCommand('copy'); } catch(e){}
+          ta.remove();
+        }
+      });
+    }
+
+    // wire downloads
+    var dlBtns = resultArea.querySelectorAll('.dl-btn');
+    for (var i=0;i<dlBtns.length;i++){
+      dlBtns[i].addEventListener('click', function(){
+        downloadFile(this, this.getAttribute('data-url'), this.getAttribute('data-fname'));
+      });
+    }
+
+    // file sizes via HEAD (non-blocking)
+    var sizeEls = resultArea.querySelectorAll('[data-size-for]');
+    sizeEls.forEach(function(el){
+      var url = el.getAttribute('data-size-for');
+      // find bitrate text prefix preserved by re-deriving from sibling? store current prefix before "checking size"
+      var prefix = el.textContent.replace(' · checking size…','');
+      fetch(url, {method:'HEAD'})
+        .then(function(r){
+          var len = r.headers.get('content-length');
+          var size = len ? formatMB(+len) : '';
+          el.textContent = size ? (prefix + ' · ' + size) : prefix;
+        })
+        .catch(function(){ el.textContent = prefix; });
+    });
+
+    // recent
+    var thumb = '';
+    if (tweet.videos && tweet.videos.length && tweet.videos[0].thumbnail_url) thumb = tweet.videos[0].thumbnail_url;
+    else if (tweet.photos && tweet.photos.length) thumb = withName(tweet.photos[0].url, 'small');
+    addRecent({
+      id: tweet.id,
+      handle: handle,
+      thumb: thumb,
+      text: (tweet.text || '').slice(0, 90)
+    });
+
+    resultArea.scrollIntoView({behavior:'smooth', block:'start'});
+  }
+
+  /* ---------- main lookup ---------- */
+  function lookup(id){
+    showLoading();
+    fetchBtn.disabled = true;
+    fetchBtn.textContent = 'Fetching…';
+    fetchTweet(id)
+      .then(function(tweet){ render(tweet); })
+      .catch(function(){
+        showError('Post not found', 'Post not found — it may be deleted, private, or from a protected account. Check the link and try again.');
+      })
+      .finally(function(){
+        fetchBtn.disabled = false;
+        fetchBtn.innerHTML = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg> Get Media';
+      });
+  }
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var id = extractId(input.value);
+    if (!id){
+      showError('Invalid link', "That doesn't look like an X post link. Paste a link like x.com/username/status/1234567890");
+      input.focus();
+      return;
+    }
+    lookup(id);
+  });
+
+  var chips = document.querySelectorAll('[data-example]');
+  for (var c=0;c<chips.length;c++){
+    chips[c].addEventListener('click', function(){
+      var url = this.getAttribute('data-example');
+      input.value = url;
+      var id = extractId(url);
+      if (id) lookup(id);
+    });
+  }
+
+  renderRecent();
+})();
+</script>
+</body>
+</html>

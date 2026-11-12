@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTZ Thumbnail Downloader — YouTube Thumbnails in 4K / HD / SD</title>
+    <link rel="icon" type="image/jpeg" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" />
+<meta name="description" content="Paste any public YouTube link and download its thumbnail in 4K, HD or SD. Free, no login, no install. By Dark Tech Zone.">
+<style>
+  :root{
+    --bg:#f7f7f8; --card:#ffffff; --text:#171717; --muted:#6b7280;
+    --border:#e5e7eb; --accent:#0f766e; --accent-hover:#0d5c56;
+    --accent-soft:#e6f4f2; --danger:#b91c1c; --radius:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--text);line-height:1.55;min-height:100vh;
+    display:flex;flex-direction:column}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  header{border-bottom:1px solid var(--border);background:var(--card)}
+  .wrap{max-width:860px;margin:0 auto;padding:0 20px;width:100%}
+  .topbar{display:flex;align-items:center;gap:12px;padding:16px 0}
+  .logo{width:40px;height:40px;border-radius:10px;background:#111827;color:#fff;
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:19px;letter-spacing:-.5px;flex:none}
+  .logo span{color:#2dd4bf}
+  .brand h1{font-size:19px;line-height:1.2;letter-spacing:-.3px}
+  .brand p{font-size:13px;color:var(--muted)}
+  main{flex:1;padding:36px 0 48px}
+  .hero{text-align:center;margin-bottom:26px}
+  .hero h2{font-size:28px;letter-spacing:-.5px;line-height:1.25}
+  .hero p{color:var(--muted);margin-top:8px;font-size:15px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+  .input-row{display:flex;gap:10px}
+  input[type=text]{flex:1;border:1px solid var(--border);border-radius:10px;
+    padding:13px 14px;font-size:15px;outline:none;background:#fff;color:var(--text);min-width:0}
+  input[type=text]:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  button{border:none;border-radius:10px;cursor:pointer;font-size:15px;font-weight:600;
+    padding:13px 20px;background:var(--accent);color:#fff;white-space:nowrap}
+  button:hover{background:var(--accent-hover)}
+  button:disabled{opacity:.6;cursor:default}
+  .btn-ghost{background:#fff;color:var(--text);border:1px solid var(--border);padding:9px 14px;font-size:13px}
+  .btn-ghost:hover{border-color:#cbd5e1;background:#f9fafb}
+  .btn-small{padding:8px 13px;font-size:13px}
+  .examples{margin-top:12px;font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+  .examples button{background:none;border:none;color:var(--accent);font-size:13px;padding:2px 4px;font-weight:500}
+  .examples button:hover{text-decoration:underline}
+  #status{margin-top:16px;font-size:14px;display:none}
+  #status.error{color:var(--danger);display:block}
+  #status.info{color:var(--muted);display:block}
+  #result{display:none;margin-top:22px}
+  .video-info{display:flex;gap:14px;align-items:flex-start}
+  .video-info img{width:168px;border-radius:10px;flex:none;border:1px solid var(--border);display:block}
+  .video-info h3{font-size:17px;line-height:1.35;letter-spacing:-.2px}
+  .video-info .channel{font-size:14px;color:var(--muted);margin-top:5px}
+  .video-info .meta{font-size:13px;color:var(--muted);margin-top:4px;word-break:break-all}
+  .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-top:16px}
+  .thumb{border:1px solid var(--border);border-radius:12px;overflow:hidden;background:#fff;display:flex;flex-direction:column}
+  .thumb .prev{position:relative;background:#111827;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center}
+  .thumb .prev img{width:100%;height:100%;object-fit:cover;display:block}
+  .thumb .prev .badge{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.75);color:#fff;
+    font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;letter-spacing:.4px}
+  .thumb .body{padding:12px 14px;display:flex;flex-direction:column;gap:3px;flex:1}
+  .thumb .body .name{font-weight:700;font-size:14px}
+  .thumb .body .dims{font-size:13px;color:var(--muted)}
+  .thumb .body .row{display:flex;gap:8px;margin-top:10px}
+  .thumb .body .row button{flex:1}
+  .thumb .body .row .btn-ghost{flex:0 0 auto}
+  .thumb.unavailable{opacity:.55}
+  .thumb.unavailable .prev{background:#e5e7eb}
+  .recent{margin-top:26px}
+  .recent h4{font-size:14px;color:var(--muted);margin-bottom:8px;font-weight:600}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{background:#fff;border:1px solid var(--border);border-radius:999px;padding:6px 12px;
+    font-size:13px;cursor:pointer;color:var(--text)}
+  .chip:hover{border-color:var(--accent);color:var(--accent)}
+  .howto{margin-top:28px}
+  .howto h4{font-size:15px;margin-bottom:8px}
+  .howto ol{margin-left:20px;color:var(--muted);font-size:14px}
+  .howto li{margin-bottom:4px}
+  footer{border-top:1px solid var(--border);background:var(--card);padding:18px 0;
+    font-size:13px;color:var(--muted);text-align:center}
+  .spinner{width:16px;height:16px;border:2px solid #cbd5e1;border-top-color:var(--accent);
+    border-radius:50%;display:inline-block;vertical-align:-3px;animation:spin .7s linear infinite;margin-right:6px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @media (max-width:560px){
+    .input-row{flex-direction:column}
+    .input-row button{width:100%}
+    .video-info{flex-direction:column}
+    .video-info img{width:100%}
+    .hero h2{font-size:23px}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap topbar">
+    <div class="logo"><img src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:10px" /></div>
+    <div class="brand">
+      <h1>Thumbnail Downloader</h1>
+      <p>Dark Tech Zone &middot; Free YouTube thumbnail tool</p>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="hero">
+      <h2>Download YouTube thumbnails in full quality</h2>
+      <p>Paste a public YouTube video link — get 4K, HD and SD thumbnails, with the title and channel.</p>
+    </div>
+
+    <div class="card">
+      <div class="input-row">
+        <input type="text" id="urlInput" placeholder="Paste a YouTube link or Video ID — e.g. https://www.youtube.com/watch?v=..." autocomplete="off" spellcheck="false">
+        <button id="goBtn" onclick="fetchThumbs()">Get Thumbnails</button>
+      </div>
+      <div class="examples">
+        <span>Try:</span>
+        <button onclick="tryExample('https://www.youtube.com/watch?v=dQw4w9WgXcQ')">Rick Astley — Never Gonna Give You Up</button>
+        <span>&middot;</span>
+        <button onclick="tryExample('https://www.youtube.com/watch?v=jNQXAC9IVRw')">Me at the zoo</button>
+        <span>&middot;</span>
+        <button onclick="tryExample('https://youtu.be/aqz-KE-bpKQ')">Big Buck Bunny (4K)</button>
+      </div>
+      <div id="status"></div>
+    </div>
+
+    <div id="result">
+      <div class="card">
+        <div class="video-info">
+          <img id="vThumb" alt="Video thumbnail">
+          <div>
+            <h3 id="vTitle"></h3>
+            <div class="channel" id="vChannel"></div>
+            <div class="meta" id="vMeta"></div>
+          </div>
+        </div>
+        <div class="actions">
+          <button id="dlAllBtn" onclick="downloadAll()">Download All Sizes</button>
+          <button class="btn-ghost" onclick="copyText(document.getElementById('vTitle').textContent,'Title copied')">Copy Title</button>
+          <a id="watchLink" href="#" target="_blank" rel="noopener"><button class="btn-ghost" type="button">Watch on YouTube</button></a>
+        </div>
+      </div>
+      <div class="grid" id="grid"></div>
+    </div>
+
+    <div class="recent" id="recentBox" style="display:none">
+      <h4>Recent lookups</h4>
+      <div class="chips" id="recentChips"></div>
+    </div>
+
+    <div class="howto card">
+      <h4>How to use</h4>
+      <ol>
+        <li>Copy the video link from the YouTube app or browser (Share &rarr; Copy link).</li>
+        <li>Paste it above and click <b>Get Thumbnails</b>.</li>
+        <li>Click <b>Download</b> on the size you want — the image saves straight to your phone/PC.</li>
+      </ol>
+      <p style="margin-top:10px;font-size:13px;color:var(--muted)">Public video thumbnails only — no login, no video download, no data is saved. Thumbnails come from YouTube's official image server (i.ytimg.com).</p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  Dark Tech Zone &middot; Thumbnail Downloader &middot; Public YouTube thumbnails only
+</footer>
+
+<script>
+const SIZES = [
+  { key:'maxresdefault', label:'4K / Max Res', res:'1280 x 720', tag:'4K' },
+  { key:'sddefault',     label:'HD',           res:'640 x 480',  tag:'HD' },
+  { key:'hqdefault',     label:'High Quality', res:'480 x 360',  tag:'HQ' },
+  { key:'mqdefault',     label:'Medium',       res:'320 x 180',  tag:'MQ' },
+  { key:'default',       label:'Small',        res:'120 x 90',   tag:'SD' },
+];
+let currentId = null;
+let available = [];
+
+const $ = id => document.getElementById(id);
+
+document.getElementById('urlInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') fetchThumbs();
+});
+
+function setStatus(msg, kind){
+  const el = $('status');
+  if (!msg){ el.style.display='none'; el.textContent=''; return; }
+  el.className = kind || 'info';
+  el.innerHTML = msg;
+}
+
+function extractId(input){
+  input = (input || '').trim();
+  if (!input) return null;
+  if (/^[A-Za-z0-9_-]{11}$/.test(input)) return input;
+  let m = input.match(/(?:youtube\.com\/(?:watch\?[^#]*v=|shorts\/|embed\/|live\/|v\/)|youtu\.be\/|youtube\.com\/attribution_link\?[^#]*v%3D)([A-Za-z0-9_-]{11})/);
+  if (m) return m[1];
+  try {
+    const u = new URL(input.startsWith('http') ? input : 'https://' + input);
+    const v = u.searchParams.get('v');
+    if (v && /^[A-Za-z0-9_-]{11}$/.test(v)) return v;
+    const parts = u.pathname.split('/').filter(Boolean);
+    const last = parts[parts.length-1];
+    if (last && /^[A-Za-z0-9_-]{11}$/.test(last)) return last;
+  } catch(e){}
+  return null;
+}
+
+function tryExample(url){
+  $('urlInput').value = url;
+  fetchThumbs();
+}
+
+async function fetchMeta(id){
+  const watch = 'https://www.youtube.com/watch?v=' + id;
+  const urls = [
+    'https://www.youtube.com/oembed?url=' + encodeURIComponent(watch) + '&format=json',
+    'https://noembed.com/embed?url=' + encodeURIComponent(watch)
+  ];
+  for (const u of urls){
+    try {
+      const r = await fetch(u);
+      if (!r.ok) continue;
+      const j = await r.json();
+      if (j && j.title) return j;
+    } catch(e){}
+  }
+  return null;
+}
+
+async function probeSize(id, size){
+  // NOTE: do NOT probe with `new Image()` — YouTube answers a missing
+  // thumbnail with HTTP 404 but the body is still a valid 1.1 KB grey
+  // placeholder image, so Image.onload fires and the size looks available.
+  // A fetch HEAD checks the real status: 200 = real thumbnail, 404 = missing.
+  const url = 'https://i.ytimg.com/vi/' + id + '/' + size.key + '.jpg';
+  let r = null;
+  try {
+    r = await fetch(url, { method: 'HEAD' });
+  } catch(e){
+    try { r = await fetch(url); } catch(e2){ return { ...size, url, ok: false, bytes: null }; }
+  }
+  if (!r || !r.ok) return { ...size, url, ok: false, bytes: null };
+  const len = r.headers.get('content-length');
+  return { ...size, url, ok: true, bytes: len ? parseInt(len, 10) : null };
+}
+
+function fmtBytes(n){
+  if (n == null) return 'size unknown';
+  if (n < 1024) return n + ' B';
+  if (n < 1024*1024) return (n/1024).toFixed(1) + ' KB';
+  return (n/1024/1024).toFixed(2) + ' MB';
+}
+
+async function fetchThumbs(){
+  const raw = $('urlInput').value;
+  const id = extractId(raw);
+  if (!id){
+    setStatus('No valid YouTube link or Video ID found. The link should look like: youtube.com/watch?v=... or youtu.be/...', 'error');
+    return;
+  }
+  currentId = id;
+  $('goBtn').disabled = true;
+  $('result').style.display = 'none';
+  setStatus('<span class="spinner"></span>Finding the video...', 'info');
+
+  const meta = await fetchMeta(id);
+  if (!meta){
+    $('goBtn').disabled = false;
+    setStatus('Video not found — check the link. Only public YouTube videos work (not private, deleted or age-restricted).', 'error');
+    return;
+  }
+
+  setStatus('<span class="spinner"></span>Checking thumbnail sizes...', 'info');
+  available = [];
+  const results = await Promise.all(SIZES.map(s => probeSize(id, s)));
+  available = results.filter(r => r.ok);
+
+  // Video info
+  $('vThumb').src = 'https://i.ytimg.com/vi/' + id + '/hqdefault.jpg';
+  $('vTitle').textContent = meta.title;
+  $('vChannel').innerHTML = meta.author_name
+    ? 'Channel: <a href="' + escapeAttr(meta.author_url || '') + '" target="_blank" rel="noopener">' + escapeHtml(meta.author_name) + '</a>'
+    : '';
+  $('vMeta').textContent = 'Video ID: ' + id + '  •  ' + available.length + ' size' + (available.length > 1 ? 's' : '') + ' available';
+  $('watchLink').href = 'https://www.youtube.com/watch?v=' + id;
+
+  // Grid
+  const grid = $('grid');
+  grid.innerHTML = '';
+  results.forEach(r => {
+    const card = document.createElement('div');
+    card.className = 'thumb' + (r.ok ? '' : ' unavailable');
+    card.innerHTML =
+      '<div class="prev">' +
+        (r.ok
+          ? '<img src="' + r.url + '" alt="' + r.label + ' thumbnail" loading="lazy"><span class="badge">' + r.tag + '</span>'
+          : '<span style="color:#9ca3af;font-size:13px;padding:20px;text-align:center">Not available<br>for this video</span>') +
+      '</div>' +
+      '<div class="body">' +
+        '<div class="name">' + r.label + '</div>' +
+        '<div class="dims">' + r.res + (r.ok ? ' &middot; ' + fmtBytes(r.bytes) : ' &middot; not available') + '</div>' +
+        (r.ok
+          ? '<div class="row"><button class="btn-small" onclick="downloadOne(\'' + r.key + '\', this)">Download</button>' +
+            '<button class="btn-ghost btn-small" onclick="copyText(\'' + r.url + '\',\'Image link copied\')">Copy Link</button></div>'
+          : '') +
+      '</div>';
+    grid.appendChild(card);
+  });
+
+  $('dlAllBtn').style.display = available.length ? '' : 'none';
+  $('result').style.display = 'block';
+  setStatus('');
+  $('goBtn').disabled = false;
+  saveRecent(id, meta.title);
+}
+
+async function downloadOne(key, btn){
+  const item = available.find(a => a.key === key);
+  if (!item) return;
+  const orig = btn ? btn.textContent : '';
+  if (btn){ btn.disabled = true; btn.textContent = 'Downloading...'; }
+  try {
+    const r = await fetch(item.url);
+    const blob = await r.blob();
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'dtz-' + currentId + '-' + key + '.jpg';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  } catch(e){
+    window.open(item.url, '_blank');
+  }
+  if (btn){ btn.disabled = false; btn.textContent = orig; }
+}
+
+async function downloadAll(){
+  for (const item of available){
+    await downloadOne(item.key, null);
+    await new Promise(r => setTimeout(r, 400));
+  }
+}
+
+async function copyText(text, okMsg){
+  try {
+    await navigator.clipboard.writeText(text);
+    setStatus(okMsg, 'info');
+  } catch(e){
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); setStatus(okMsg, 'info'); }
+    catch(e2){ setStatus('Copy failed — select the text and copy it manually.', 'error'); }
+    ta.remove();
+  }
+  setTimeout(() => { if ($('status').textContent === okMsg) setStatus(''); }, 2500);
+}
+
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function escapeAttr(s){ return escapeHtml(s).replace(/"/g, '&quot;'); }
+
+// Recent lookups
+function loadRecent(){
+  try { return JSON.parse(localStorage.getItem('dtz-thumb-recent') || '[]'); } catch(e){ return []; }
+}
+function saveRecent(id, title){
+  let list = loadRecent().filter(x => x.id !== id);
+  list.unshift({ id, title });
+  list = list.slice(0, 6);
+  try { localStorage.setItem('dtz-thumb-recent', JSON.stringify(list)); } catch(e){}
+  renderRecent();
+}
+function renderRecent(){
+  const list = loadRecent();
+  const box = $('recentBox');
+  if (!list.length){ box.style.display = 'none'; return; }
+  box.style.display = 'block';
+  $('recentChips').innerHTML = '';
+  list.forEach(x => {
+    const c = document.createElement('button');
+    c.className = 'chip';
+    c.textContent = x.title.length > 42 ? x.title.slice(0, 42) + '...' : x.title;
+    c.title = x.title;
+    c.onclick = () => { $('urlInput').value = 'https://www.youtube.com/watch?v=' + x.id; fetchThumbs(); };
+    $('recentChips').appendChild(c);
+  });
+}
+renderRecent();
+</script>
+</body>
+</html>

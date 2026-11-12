@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTZ Lookup API — Tester</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif; background: #f7f7f8; color: #1a1a1a; padding: 20px; }
+  .wrap { max-width: 760px; margin: 0 auto; }
+  header { text-align: center; margin-bottom: 24px; }
+  header h1 { font-size: 26px; }
+  header h1 span { color: #2563eb; }
+  header p { color: #666; margin-top: 6px; font-size: 14px; }
+  .card { background: #fff; border: 1px solid #e5e5e5; border-radius: 12px; padding: 18px; margin-bottom: 16px; }
+  .card h2 { font-size: 16px; margin-bottom: 10px; }
+  .row { display: flex; gap: 8px; }
+  input { flex: 1; padding: 10px 12px; border: 1px solid #d4d4d4; border-radius: 8px; font-size: 15px; min-width: 0; }
+  button { padding: 10px 18px; background: #2563eb; color: #fff; border: none; border-radius: 8px; font-size: 15px; cursor: pointer; }
+  button:hover { background: #1d4ed8; }
+  pre { background: #111827; color: #e5e7eb; padding: 14px; border-radius: 8px; overflow-x: auto; font-size: 13px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
+  .hint { color: #666; font-size: 13px; margin-top: 8px; }
+  .endpoints { font-size: 13px; color: #444; line-height: 1.9; }
+  .endpoints code { background: #eef2ff; padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+  .hidden { display: none; }
+  footer { text-align: center; color: #999; font-size: 12px; margin-top: 20px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1><span>DTZ</span> Lookup API</h1>
+    <p>Public-data OSINT lookups — IP geo, DNS, WHOIS, domain &amp; headers. No key needed.</p>
+  </header>
+
+  <div class="card">
+    <h2>IP Lookup</h2>
+    <div class="row">
+      <input id="ipInput" type="text" placeholder="8.8.8.8  or  darktechzon.site" value="8.8.8.8">
+      <button onclick="call('/api/ip/' + encodeURIComponent(ipInput.value))">Lookup</button>
+    </div>
+    <p class="hint">Country, city, ISP, ASN, timezone, hosting / VPN flags.</p>
+  </div>
+
+  <div class="card">
+    <h2>Domain — All in One</h2>
+    <div class="row">
+      <input id="domInput" type="text" placeholder="google.com" value="google.com">
+      <button onclick="call('/api/domain/' + encodeURIComponent(domInput.value))">Lookup</button>
+    </div>
+    <p class="hint">WHOIS (registrar, registered / expiry dates) + DNS records + hosting IP geo.</p>
+  </div>
+
+  <div class="card">
+    <h2>DNS Records</h2>
+    <div class="row">
+      <input id="dnsInput" type="text" placeholder="google.com" value="google.com">
+      <button onclick="call('/api/dns/' + encodeURIComponent(dnsInput.value))">Lookup</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>WHOIS (RDAP)</h2>
+    <div class="row">
+      <input id="whoInput" type="text" placeholder="google.com" value="google.com">
+      <button onclick="call('/api/whois/' + encodeURIComponent(whoInput.value))">Lookup</button>
+    </div>
+    <p class="hint">Also tells you if a domain looks unregistered / available.</p>
+  </div>
+
+  <div class="card">
+    <h2>URL Headers</h2>
+    <div class="row">
+      <input id="urlInput" type="text" placeholder="https://example.com" value="https://example.com">
+      <button onclick="call('/api/headers?url=' + encodeURIComponent(urlInput.value))">Check</button>
+    </div>
+  </div>
+
+  <div class="card hidden" id="resultCard">
+    <h2>Result</h2>
+    <pre id="result">…</pre>
+  </div>
+
+  <div class="card">
+    <h2>API Endpoints</h2>
+    <div class="endpoints">
+      <code>GET /api/health</code> — service status<br>
+      <code>GET /api/ip/{ip-or-domain}</code><br>
+      <code>GET /api/dns/{domain}</code><br>
+      <code>GET /api/whois/{domain}</code><br>
+      <code>GET /api/domain/{domain}</code><br>
+      <code>GET /api/headers?url=…</code><br>
+      Limit: 60 requests / minute per IP.
+    </div>
+  </div>
+
+  <footer>DTZ Lookup API v1.0.0 — public data only (ip-api.com, rdap.org, public DNS)</footer>
+</div>
+<script>
+  async function call(path) {
+    const card = document.getElementById('resultCard');
+    const out = document.getElementById('result');
+    card.classList.remove('hidden');
+    out.textContent = 'Loading…';
+    try {
+      const r = await fetch('https://dtz-lookup-api.vercel.app' + path);
+      const data = await r.json();
+      out.textContent = JSON.stringify(data, null, 2);
+    } catch (e) {
+      out.textContent = 'Error: ' + e.message;
+    }
+    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+</script>
+</body>
+</html>

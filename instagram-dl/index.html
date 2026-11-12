@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTZ Instagram Downloader — Download Instagram Reels & Videos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <link rel="icon" type="image/jpeg" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" />
+<meta name="description" content="Paste any public Instagram reel or video link and download the MP4. Free, no login, no install. By Dark Tech Zone.">
+<style>
+  :root{
+    --bg-base:#090d16; --card-bg:#111827; --card-border:#1f293d;
+    --accent-blue:#2563eb; --accent-blue-hover:#1d4ed8; --accent-cyan:#06b6d4;
+    --text-light:#f9fafb; --text-dim:#94a3b8; --input-bg:#162032;
+    --danger:#f87171; --radius:20px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg-base);color:var(--text-light);line-height:1.55;min-height:100vh;
+    display:flex;flex-direction:column;align-items:center;padding:24px 14px}
+  a{color:var(--accent-cyan);text-decoration:none}
+  a:hover{text-decoration:underline}
+  header{width:100%;max-width:860px;background:var(--card-bg);border:1px solid var(--card-border);
+    border-radius:20px;padding:16px 22px;box-shadow:0 10px 30px rgba(0,0,0,.5);margin-bottom:20px}
+  .wrap{max-width:860px;margin:0 auto;width:100%}
+  header .wrap{padding:0}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .logo{width:44px;height:44px;border-radius:14px;overflow:hidden;flex:none;box-shadow:0 0 16px rgba(37,99,235,.4)}
+  .logo img{width:100%;height:100%;object-fit:cover;display:block}
+  .brand{display:flex;align-items:center;gap:12px;min-width:0}
+  .brand h1{font-size:18px;line-height:1.2;font-weight:800;color:#fff}
+  .brand p{font-size:12px;color:var(--text-dim)}
+  .social-pill{display:flex;gap:8px;flex:none}
+  .pill-btn{background:#1f293d;border:1px solid #334155;color:#fff;text-decoration:none;padding:8px 14px;border-radius:20px;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px;transition:.2s}
+  .pill-btn:hover{border-color:var(--accent-blue);background:#243048;text-decoration:none}
+  main{flex:1;width:100%;max-width:860px}
+  .hero{text-align:center;margin-bottom:20px}
+  .hero h2{font-size:26px;letter-spacing:-.5px;line-height:1.25;color:#fff}
+  .hero p{color:var(--text-dim);margin-top:8px;font-size:15px}
+  .card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:var(--radius);padding:20px;margin-bottom:16px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+  .tool-head{display:flex;gap:14px;align-items:center;margin-bottom:16px}
+  .tool-icon-box{width:60px;height:60px;border-radius:16px;flex:none;display:flex;align-items:center;justify-content:center}
+  .tool-icon-box svg{width:34px;height:34px}
+  .tool-head h3{font-size:17px;font-weight:800;color:#fff}
+  .tool-head p{font-size:13px;color:var(--text-dim);margin-top:2px}
+  .input-row{display:flex;gap:10px}
+  input[type=text]{flex:1;border:1px solid #283548;border-radius:12px;
+    padding:14px 16px;font-size:15px;outline:none;background:var(--input-bg);color:var(--text-light);min-width:0}
+  input[type=text]::placeholder{color:var(--text-dim)}
+  input[type=text]:focus{border-color:var(--accent-blue);box-shadow:0 0 14px rgba(37,99,235,.3)}
+  button{border:none;border-radius:10px;cursor:pointer;font-size:15px;font-weight:700;
+    padding:13px 20px;background:var(--accent-blue);color:#fff;white-space:nowrap}
+  button:hover{background:var(--accent-blue-hover)}
+  button:disabled{opacity:.6;cursor:default}
+  .btn-ghost{background:#1f293d;color:#fff;border:1px solid #334155;padding:9px 14px;font-size:13px;font-weight:600}
+  .btn-ghost:hover{border-color:var(--accent-blue);background:#243048}
+  a.btn-primary{display:inline-block;background:var(--accent-blue);color:#fff;border-radius:10px;
+    padding:13px 20px;font-size:15px;font-weight:700;text-align:center}
+  a.btn-primary:hover{background:var(--accent-blue-hover);text-decoration:none}
+  .examples{margin-top:12px;font-size:13px;color:var(--text-dim);display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+  .examples button{background:none;border:none;color:var(--accent-cyan);font-size:13px;padding:2px 4px;font-weight:500}
+  .examples button:hover{text-decoration:underline}
+  #status{margin-top:16px;font-size:14px;display:none}
+  #status.error{color:var(--danger);display:block}
+  #status.info{color:var(--text-dim);display:block}
+  #result{display:none;margin-top:4px}
+  .video-info{display:flex;gap:16px;align-items:flex-start}
+  .player-box{width:240px;flex:none}
+  .player-box video{width:100%;max-height:420px;border-radius:12px;border:1px solid var(--card-border);background:#000;display:block}
+  .preview-fallback{display:none;border:1px dashed #283548;border-radius:12px;background:var(--input-bg);
+    color:var(--text-dim);font-size:14px;text-align:center;padding:36px 18px}
+  .video-info h3{font-size:17px;line-height:1.35;letter-spacing:-.2px;word-break:break-word;color:#fff}
+  .meta{font-size:13px;color:var(--text-dim);margin-top:8px;word-break:break-all}
+  .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+  .actions .primary{flex:1 1 220px}
+  .note{font-size:13px;color:var(--text-dim);margin-top:10px}
+  .recent{margin-top:10px}
+  .recent h4{font-size:14px;color:var(--text-dim);margin-bottom:8px;font-weight:600}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{background:#162032;border:1px solid #243048;border-radius:999px;padding:6px 12px;
+    font-size:13px;cursor:pointer;color:var(--text-light)}
+  .chip:hover{border-color:var(--accent-blue);color:#fff}
+  .howto{margin-top:4px}
+  .howto h4{font-size:15px;margin-bottom:8px;color:#fff}
+  .howto ol{margin-left:20px;color:var(--text-dim);font-size:14px}
+  .howto li{margin-bottom:4px}
+  footer{width:100%;max-width:860px;text-align:center;font-size:13px;color:var(--text-dim);padding:12px 0}
+  footer a{color:var(--accent-blue);text-decoration:none;font-weight:600;margin:0 4px}
+  @media (max-width:560px){
+    .input-row{flex-direction:column}
+    .input-row button{width:100%}
+    .video-info{flex-direction:column}
+    .player-box{width:100%}
+    .player-box video{max-height:none}
+    .hero h2{font-size:23px}
+    .topbar{flex-direction:column;text-align:center}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap topbar">
+    <div class="brand">
+      <div class="logo"><img src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone" /></div>
+      <div>
+        <h1>Instagram Downloader</h1>
+        <p>Dark Tech Zone &middot; Free Instagram video tool</p>
+      </div>
+    </div>
+<div class="social-pill">
+        <a class="pill-btn" href="https://t.me/DarkTechZone2" target="_blank" rel="noopener">Telegram</a>
+        <a class="pill-btn" href="https://whatsapp.com/channel/0029VbCgB63LCoX5aiV5qp1t" target="_blank" rel="noopener">WhatsApp</a>
+      </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="hero">
+      <h2>Download Instagram reels &amp; videos</h2>
+      <p>Paste a public Instagram reel or video post link — save the MP4 in one tap.</p>
+    </div>
+
+    <div class="card">
+      <div class="tool-head">
+        <div class="tool-icon-box" style="background:linear-gradient(135deg,#ec4899,#be185d);"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="2.5" width="19" height="19" rx="5"/><circle cx="12" cy="12" r="4.4"/><circle cx="17.4" cy="6.6" r="1" fill="#fff" stroke="none"/><path d="M10.6 9.6 14.6 12l-4 2.4z" fill="#fff" stroke="none"/></svg></div>
+        <div><h3>Download a reel or video</h3><p>Paste a public Instagram link and save the MP4 in one tap.</p></div>
+      </div>
+      <div class="input-row">
+        <input type="text" id="urlInput" placeholder="Paste an Instagram link — e.g. https://www.instagram.com/reel/... or /p/..." autocomplete="off" spellcheck="false">
+        <button id="goBtn" onclick="fetchVideo()">Get Video</button>
+      </div>
+      <div class="examples">
+        <span>Try:</span>
+        <button onclick="tryExample('https://www.instagram.com/reel/C2mwxDYvQju/')">Sample reel 1</button>
+        <span>&middot;</span>
+        <button onclick="tryExample('https://www.instagram.com/reel/Chunk8-jurw/')">Sample reel 2</button>
+      </div>
+      <div id="status"></div>
+    </div>
+
+    <div id="result">
+      <div class="card">
+        <div class="video-info">
+          <div class="player-box">
+            <video id="vPlayer" controls playsinline preload="metadata"></video>
+            <div class="preview-fallback" id="previewFallback">Preview isn&rsquo;t available for this post — tap Download to save the MP4.</div>
+          </div>
+          <div style="min-width:0;flex:1">
+            <h3 id="vTitle"></h3>
+            <div class="meta" id="vMeta"></div>
+          </div>
+        </div>
+        <div class="actions">
+          <a class="btn-primary primary" id="dlBtn" href="#">Download MP4</a>
+          <button class="btn-ghost" onclick="copyText(current.streamUrl,'Download link copied')">Copy Link</button>
+          <a id="openLink" href="#" target="_blank" rel="noopener"><button class="btn-ghost" type="button">Open on Instagram</button></a>
+        </div>
+        <div class="note">The file saves with a <b>curl-x.com_….mp4</b> name — rename it after downloading if you like.</div>
+      </div>
+    </div>
+
+    <div class="recent" id="recentBox" style="display:none">
+      <h4>Recent lookups</h4>
+      <div class="chips" id="recentChips"></div>
+    </div>
+
+    <div class="howto card">
+      <h4>How to use</h4>
+      <ol>
+        <li>Copy the reel or video link from the Instagram app (Share &rarr; Copy link) or browser.</li>
+        <li>Paste it above and click <b>Get Video</b>.</li>
+        <li>Click <b>Download MP4</b> — the file saves straight to your phone/PC.</li>
+      </ol>
+      <p style="margin-top:10px;font-size:13px;color:var(--text-dim)">Public Instagram reels and video posts only. This tool cannot check a post&rsquo;s availability inside your browser, so if a post is private or deleted, the Download will land on an error page instead of a video. No account, no sign-up: nothing you paste is uploaded or stored. The video file is served by the free public curl-x.com resolver and comes straight from Instagram&rsquo;s servers.</p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  &copy; 2026 <a href="https://darktechzon.site/">Dark Tech Zone</a> &bull; Advanced Security Division &bull; <a href="https://darktechzon.site/privacy.html">Privacy Policy</a>
+</footer>
+
+<script>
+let current = null; // {code, type, igUrl, streamUrl}
+
+const $ = id => document.getElementById(id);
+
+$('urlInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') fetchVideo();
+});
+
+// The resolver serves the MP4 as a file download (Content-Disposition:
+// attachment), which a <video> element cannot play back — so a failed
+// preview says nothing about whether the post exists. The player is a
+// best-effort extra only: if it errors, quietly swap in a neutral note.
+// It is NEVER used to judge whether the video exists.
+$('vPlayer').addEventListener('error', () => {
+  if (!current) return;
+  $('vPlayer').style.display = 'none';
+  $('previewFallback').style.display = 'block';
+}, true);
+
+function setStatus(msg, kind){
+  const el = $('status');
+  if (!msg){ el.style.display='none'; el.textContent=''; return; }
+  el.className = kind || 'info';
+  el.innerHTML = msg;
+}
+
+// Extract the shortcode and post type from any Instagram post URL (or a bare shortcode).
+function extractCode(input){
+  input = (input || '').trim();
+  if (!input) return null;
+  const m = input.match(/instagram\.com\/(p|reel|reels|tv)\/([A-Za-z0-9_-]{5,25})/i);
+  if (m) {
+    let type = m[1].toLowerCase();
+    type = (type === 'reels') ? 'reel' : type;
+    return { code: m[2], type: type };
+  }
+  if (/^[A-Za-z0-9_-]{8,20}$/.test(input)) return { code: input, type: 'p' };
+  return null;
+}
+
+function typeLabel(t){
+  if (t === 'reel') return 'Reel';
+  if (t === 'tv') return 'TV video';
+  return 'Video post';
+}
+
+function tryExample(url){
+  $('urlInput').value = url;
+  fetchVideo();
+}
+
+function fetchVideo(){
+  const raw = $('urlInput').value;
+  const found = extractCode(raw);
+  if (!found){
+    setStatus('That doesn&rsquo;t look like an Instagram post link. Paste a link like instagram.com/reel/... or instagram.com/p/... — profile and explore links do not work.', 'error');
+    return;
+  }
+  const code = found.code;
+  const igUrl = 'https://www.instagram.com/' + (found.type === 'p' ? 'p' : found.type) + '/' + code + '/';
+  const streamUrl = 'https://www.curl-x.com/instagram/' + code;
+  current = { code: code, type: found.type, igUrl: igUrl, streamUrl: streamUrl };
+  // A link that parses is shown straight away — there is no in-browser way
+  // to check the post exists (the resolver sends no CORS headers, and its
+  // attachment response cannot be probed with the media element), so the
+  // Download button below is the real test, exactly as the copy explains.
+  showResult();
+}
+
+function showResult(){
+  const player = $('vPlayer');
+  // Reset the preview area for this lookup, then point the player at the
+  // resolver as a best-effort preview (see the error handler above).
+  $('previewFallback').style.display = 'none';
+  player.style.display = 'block';
+  player.removeAttribute('poster');
+  player.src = current.streamUrl;
+
+  $('vTitle').textContent = 'Instagram ' + typeLabel(current.type).toLowerCase() + ' — ' + current.code;
+  $('vMeta').textContent = 'Type: ' + typeLabel(current.type) + '  •  Post code: ' + current.code;
+  $('dlBtn').href = current.streamUrl;
+  $('openLink').href = current.igUrl;
+  $('result').style.display = 'block';
+  setStatus('');
+  saveRecent(current.code, current.type, current.igUrl);
+}
+
+async function copyText(text, okMsg){
+  try {
+    await navigator.clipboard.writeText(text);
+    setStatus(okMsg, 'info');
+  } catch(e){
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); setStatus(okMsg, 'info'); }
+    catch(e2){ setStatus('Copy failed — select the text and copy it manually.', 'error'); }
+    ta.remove();
+  }
+  setTimeout(() => { if ($('status').textContent === okMsg) setStatus(''); }, 2500);
+}
+
+// Recent lookups (last 8)
+function loadRecent(){
+  try { return JSON.parse(localStorage.getItem('dtz-instagram-recent') || '[]'); } catch(e){ return []; }
+}
+function saveRecent(code, type, url){
+  let list = loadRecent().filter(x => x.code !== code);
+  list.unshift({ code, type, url });
+  list = list.slice(0, 8);
+  try { localStorage.setItem('dtz-instagram-recent', JSON.stringify(list)); } catch(e){}
+  renderRecent();
+}
+function renderRecent(){
+  const list = loadRecent();
+  const box = $('recentBox');
+  if (!list.length){ box.style.display = 'none'; return; }
+  box.style.display = 'block';
+  $('recentChips').innerHTML = '';
+  list.forEach(x => {
+    const c = document.createElement('button');
+    c.className = 'chip';
+    c.textContent = typeLabel(x.type) + ' · ' + x.code;
+    c.title = x.url;
+    c.onclick = () => { $('urlInput').value = x.url; fetchVideo(); };
+    $('recentChips').appendChild(c);
+  });
+}
+renderRecent();
+</script>
+</body>
+</html>

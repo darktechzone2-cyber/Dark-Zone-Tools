@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTZ TikTok Downloader — Download TikTok Videos Without Watermark</title>
+    <link rel="icon" type="image/jpeg" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" />
+<meta name="description" content="Paste any public TikTok link and download the video without watermark, the audio as MP3, or the cover image. Free, no login, no install. By Dark Tech Zone.">
+<style>
+  :root{
+    --bg:#f7f7f8; --card:#ffffff; --text:#171717; --muted:#6b7280;
+    --border:#e5e7eb; --accent:#0f766e; --accent-hover:#0d5c56;
+    --accent-soft:#e6f4f2; --danger:#b91c1c; --radius:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--text);line-height:1.55;min-height:100vh;
+    display:flex;flex-direction:column}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  header{border-bottom:1px solid var(--border);background:var(--card)}
+  .wrap{max-width:860px;margin:0 auto;padding:0 20px;width:100%}
+  .topbar{display:flex;align-items:center;gap:12px;padding:16px 0}
+  .logo{width:40px;height:40px;border-radius:10px;background:#111827;color:#fff;
+    display:flex;align-items:center;justify-content:center;font-weight:800;font-size:19px;letter-spacing:-.5px;flex:none}
+  .logo span{color:#2dd4bf}
+  .brand h1{font-size:19px;line-height:1.2;letter-spacing:-.3px}
+  .brand p{font-size:13px;color:var(--muted)}
+  main{flex:1;padding:36px 0 48px}
+  .hero{text-align:center;margin-bottom:26px}
+  .hero h2{font-size:28px;letter-spacing:-.5px;line-height:1.25}
+  .hero p{color:var(--muted);margin-top:8px;font-size:15px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+  .input-row{display:flex;gap:10px}
+  input[type=text]{flex:1;border:1px solid var(--border);border-radius:10px;
+    padding:13px 14px;font-size:15px;outline:none;background:#fff;color:var(--text);min-width:0}
+  input[type=text]:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  button{border:none;border-radius:10px;cursor:pointer;font-size:15px;font-weight:600;
+    padding:13px 20px;background:var(--accent);color:#fff;white-space:nowrap}
+  button:hover{background:var(--accent-hover)}
+  button:disabled{opacity:.6;cursor:default}
+  .btn-ghost{background:#fff;color:var(--text);border:1px solid var(--border);padding:9px 14px;font-size:13px}
+  .btn-ghost:hover{border-color:#cbd5e1;background:#f9fafb}
+  .btn-small{padding:8px 13px;font-size:13px}
+  .examples{margin-top:12px;font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+  .examples button{background:none;border:none;color:var(--accent);font-size:13px;padding:2px 4px;font-weight:500}
+  .examples button:hover{text-decoration:underline}
+  #status{margin-top:16px;font-size:14px;display:none}
+  #status.error{color:var(--danger);display:block}
+  #status.info{color:var(--muted);display:block}
+  #result{display:none;margin-top:22px}
+  .video-info{display:flex;gap:16px;align-items:flex-start}
+  .video-info video{width:220px;max-height:380px;border-radius:12px;flex:none;border:1px solid var(--border);background:#000;display:block}
+  .video-info img.cover{width:220px;border-radius:12px;flex:none;border:1px solid var(--border);display:block}
+  .video-info h3{font-size:17px;line-height:1.35;letter-spacing:-.2px;word-break:break-word}
+  .author{display:flex;align-items:center;gap:10px;margin-top:10px}
+  .author img{width:40px;height:40px;border-radius:50%;object-fit:cover;border:1px solid var(--border);flex:none}
+  .author .name{font-weight:700;font-size:14px;line-height:1.3}
+  .author .handle{font-size:13px;color:var(--muted)}
+  .stats{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:12px;font-size:13px;color:var(--muted)}
+  .stats b{color:var(--text)}
+  .meta{font-size:13px;color:var(--muted);margin-top:8px;word-break:break-all}
+  .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+  .actions .primary{flex:1 1 200px}
+  .note{font-size:13px;color:var(--muted);margin-top:10px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:16px}
+  .photo{border:1px solid var(--border);border-radius:12px;overflow:hidden;background:#fff}
+  .photo img{width:100%;display:block;aspect-ratio:3/4;object-fit:cover}
+  .photo .row{padding:8px;display:flex;gap:8px}
+  .photo .row button{flex:1}
+  .recent{margin-top:26px}
+  .recent h4{font-size:14px;color:var(--muted);margin-bottom:8px;font-weight:600}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{background:#fff;border:1px solid var(--border);border-radius:999px;padding:6px 12px;
+    font-size:13px;cursor:pointer;color:var(--text)}
+  .chip:hover{border-color:var(--accent);color:var(--accent)}
+  .howto{margin-top:28px}
+  .howto h4{font-size:15px;margin-bottom:8px}
+  .howto ol{margin-left:20px;color:var(--muted);font-size:14px}
+  .howto li{margin-bottom:4px}
+  footer{border-top:1px solid var(--border);background:var(--card);padding:18px 0;
+    font-size:13px;color:var(--muted);text-align:center}
+  .spinner{width:16px;height:16px;border:2px solid #cbd5e1;border-top-color:var(--accent);
+    border-radius:50%;display:inline-block;vertical-align:-3px;animation:spin .7s linear infinite;margin-right:6px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @media (max-width:560px){
+    .input-row{flex-direction:column}
+    .input-row button{width:100%}
+    .video-info{flex-direction:column}
+    .video-info video,.video-info img.cover{width:100%;max-height:none}
+    .hero h2{font-size:23px}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap topbar">
+    <div class="logo"><img src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:10px" /></div>
+    <div class="brand">
+      <h1>TikTok Downloader</h1>
+      <p>Dark Tech Zone &middot; Free TikTok video tool</p>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <div class="hero">
+      <h2>Download TikTok videos without watermark</h2>
+      <p>Paste a public TikTok link — get the clean video, the audio as MP3, and the cover image.</p>
+    </div>
+
+    <div class="card">
+      <div class="input-row">
+        <input type="text" id="urlInput" placeholder="Paste a TikTok link — e.g. https://www.tiktok.com/@user/video/... or vm.tiktok.com/..." autocomplete="off" spellcheck="false">
+        <button id="goBtn" onclick="fetchVideo()">Get Video</button>
+      </div>
+      <div class="examples">
+        <span>Try:</span>
+        <button onclick="tryExample('https://www.tiktok.com/@cookingvibe01/video/7691907160216734994')">Cooking Vibe — stir fried crab</button>
+        <span>&middot;</span>
+        <button onclick="tryExample('https://www.tiktok.com/@mazabypopular1/video/7619405765287169281')">Maza — Chaunsa song</button>
+        <span>&middot;</span>
+        <button onclick="tryExample('https://www.tiktok.com/@nuannuan2026/video/7699320687797734676')">Nuannuan — trending video</button>
+      </div>
+      <div id="status"></div>
+    </div>
+
+    <div id="result">
+      <div class="card">
+        <div class="video-info">
+          <video id="vPlayer" controls playsinline preload="metadata" poster=""></video>
+          <div style="min-width:0;flex:1">
+            <h3 id="vTitle"></h3>
+            <div class="author" id="vAuthor"></div>
+            <div class="stats" id="vStats"></div>
+            <div class="meta" id="vMeta"></div>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="primary" id="dlVideoBtn" onclick="downloadFile('video', this)">Download Video (No Watermark)</button>
+          <button class="btn-ghost" id="dlWmBtn" onclick="downloadFile('wm', this)">With Watermark</button>
+          <button class="btn-ghost" id="dlAudioBtn" onclick="downloadFile('audio', this)">Download Audio (MP3)</button>
+          <button class="btn-ghost" id="dlCoverBtn" onclick="downloadFile('cover', this)">Cover Image</button>
+          <button class="btn-ghost" onclick="copyText(current.tiktokUrl,'Video link copied')">Copy Link</button>
+          <a id="watchLink" href="#" target="_blank" rel="noopener"><button class="btn-ghost" type="button">Open on TikTok</button></a>
+        </div>
+        <div class="note" id="dlNote"></div>
+      </div>
+      <div id="photoSection" style="display:none">
+        <div class="card" style="margin-top:16px">
+          <h4 style="font-size:15px;margin-bottom:4px">Photo slideshow — <span id="photoCount"></span> photos</h4>
+          <p style="font-size:13px;color:var(--muted)">This TikTok is a photo post. Download each photo below.</p>
+          <div class="grid" id="photoGrid"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="recent" id="recentBox" style="display:none">
+      <h4>Recent lookups</h4>
+      <div class="chips" id="recentChips"></div>
+    </div>
+
+    <div class="howto card">
+      <h4>How to use</h4>
+      <ol>
+        <li>Copy the video link from the TikTok app (Share &rarr; Copy link) or browser.</li>
+        <li>Paste it above and click <b>Get Video</b>.</li>
+        <li>Click <b>Download Video (No Watermark)</b> — the MP4 saves straight to your phone/PC. Use <b>Download Audio</b> for the sound as MP3.</li>
+      </ol>
+      <p style="margin-top:10px;font-size:13px;color:var(--muted)">Public TikTok videos only — no login, no paid content, nothing is uploaded or stored. Video data comes from the free public TikWM API; files come straight from TikTok's servers.</p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  Dark Tech Zone &middot; TikTok Downloader &middot; Public TikTok videos only
+</footer>
+
+<script>
+let current = null; // {id, title, tiktokUrl, play, wmplay, music, cover, size, wmSize, images[]}
+
+const $ = id => document.getElementById(id);
+
+$('urlInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') fetchVideo();
+});
+
+function setStatus(msg, kind){
+  const el = $('status');
+  if (!msg){ el.style.display='none'; el.textContent=''; return; }
+  el.className = kind || 'info';
+  el.innerHTML = msg;
+}
+
+function extractVideoId(input){
+  input = (input || '').trim();
+  if (!input) return null;
+  if (/^\d{15,22}$/.test(input)) return input; // bare video ID
+  const m = input.match(/\/video\/(\d{15,22})/);
+  if (m) return m[1];
+  return null;
+}
+
+function tryExample(url){
+  $('urlInput').value = url;
+  fetchVideo();
+}
+
+function fmtNum(n){
+  if (n == null || isNaN(n)) return '0';
+  if (n >= 1e9) return (n/1e9).toFixed(1).replace(/\.0$/,'') + 'B';
+  if (n >= 1e6) return (n/1e6).toFixed(1).replace(/\.0$/,'') + 'M';
+  if (n >= 1e3) return (n/1e3).toFixed(1).replace(/\.0$/,'') + 'K';
+  return String(n);
+}
+
+function fmtBytes(n){
+  if (n == null || isNaN(n)) return 'size unknown';
+  if (n < 1024) return n + ' B';
+  if (n < 1024*1024) return (n/1024).toFixed(1) + ' KB';
+  return (n/1024/1024).toFixed(1) + ' MB';
+}
+
+function fmtDur(s){
+  if (s == null || isNaN(s)) return '';
+  s = Math.round(s);
+  return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0');
+}
+
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function escapeAttr(s){ return escapeHtml(s).replace(/"/g, '&quot;'); }
+
+async function fetchVideo(){
+  const raw = $('urlInput').value;
+  const id = extractVideoId(raw);
+  // Short links (vm.tiktok.com / vt.tiktok.com) carry no video ID — send the raw URL to the API, it resolves them.
+  const isShort = /^(https?:\/\/)?(vm|vt)\.tiktok\.com\//i.test(raw.trim());
+  const apiUrl = 'https://www.tikwm.com/api/?url=' + encodeURIComponent(raw.trim());
+  if (!id && !isShort){
+    setStatus('No valid TikTok link found. Paste a link like tiktok.com/@user/video/... or a short link like vm.tiktok.com/...', 'error');
+    return;
+  }
+  $('goBtn').disabled = true;
+  $('result').style.display = 'none';
+  setStatus('<span class="spinner"></span>Finding the video...', 'info');
+
+  let data = null;
+  try {
+    const r = await fetch(apiUrl);
+    const j = await r.json();
+    if (j && j.code === 0 && j.data) data = j.data;
+    else if (j && j.msg) { $('goBtn').disabled = false; setStatus('TikTok says: ' + escapeHtml(j.msg) + ' — check the link. Only public videos work (not private or deleted).', 'error'); return; }
+  } catch(e){
+    $('goBtn').disabled = false;
+    setStatus('Could not reach the download service — check your connection and try again.', 'error');
+    return;
+  }
+
+  if (!data || (!data.play && !(data.images && data.images.length))){
+    $('goBtn').disabled = false;
+    setStatus('Video not found — check the link. Only public TikTok videos work (not private or deleted).', 'error');
+    return;
+  }
+
+  const author = data.author || {};
+  const videoId = data.id || id || '';
+  current = {
+    id: videoId,
+    title: data.title || data.content_desc || 'TikTok video',
+    tiktokUrl: 'https://www.tiktok.com/@' + (author.unique_id || 'user') + '/video/' + videoId,
+    play: data.play || null,
+    wmplay: data.wmplay || null,
+    music: data.music || null,
+    cover: data.origin_cover || data.cover || null,
+    size: data.size || null,
+    wmSize: data.wm_size || null,
+    images: Array.isArray(data.images) ? data.images : [],
+    musicTitle: (data.music_info && data.music_info.title) || '',
+    musicAuthor: (data.music_info && data.music_info.author) || ''
+  };
+
+  // Player / cover
+  const player = $('vPlayer');
+  if (current.play){
+    player.style.display = '';
+    player.src = current.play;
+    player.poster = data.cover || '';
+  } else {
+    player.style.display = 'none';
+  }
+
+  $('vTitle').textContent = current.title;
+  $('vAuthor').innerHTML = (author.avatar ? '<img src="' + escapeAttr(author.avatar) + '" alt="">' : '') +
+    '<div><div class="name">' + escapeHtml(author.nickname || 'TikTok user') + '</div>' +
+    '<div class="handle">@' + escapeHtml(author.unique_id || '') + '</div></div>';
+
+  const stats = [];
+  if (data.play_count != null) stats.push('<span><b>' + fmtNum(data.play_count) + '</b> views</span>');
+  if (data.digg_count != null) stats.push('<span><b>' + fmtNum(data.digg_count) + '</b> likes</span>');
+  if (data.comment_count != null) stats.push('<span><b>' + fmtNum(data.comment_count) + '</b> comments</span>');
+  if (data.share_count != null) stats.push('<span><b>' + fmtNum(data.share_count) + '</b> shares</span>');
+  if (data.collect_count != null) stats.push('<span><b>' + fmtNum(data.collect_count) + '</b> saves</span>');
+  $('vStats').innerHTML = stats.join('');
+
+  const metaBits = ['Video ID: ' + videoId];
+  if (data.duration != null) metaBits.push('Duration: ' + fmtDur(data.duration));
+  if (current.size) metaBits.push('Video size: ~' + fmtBytes(current.size));
+  if (current.musicTitle) metaBits.push('Audio: ' + current.musicTitle + (current.musicAuthor ? ' — ' + current.musicAuthor : ''));
+  $('vMeta').textContent = metaBits.join('  •  ');
+
+  $('watchLink').href = current.tiktokUrl;
+  $('dlVideoBtn').style.display = current.play ? '' : 'none';
+  $('dlWmBtn').style.display = current.wmplay ? '' : 'none';
+  $('dlAudioBtn').style.display = current.music ? '' : 'none';
+  $('dlCoverBtn').style.display = current.cover ? '' : 'none';
+  $('dlNote').textContent = current.size && current.size > 50*1024*1024
+    ? 'This is a long video (' + fmtBytes(current.size) + ') — the download may take a while on mobile data.'
+    : '';
+
+  // Photo slideshow
+  const ps = $('photoSection');
+  if (current.images.length){
+    ps.style.display = 'block';
+    $('photoCount').textContent = current.images.length;
+    const grid = $('photoGrid');
+    grid.innerHTML = '';
+    current.images.forEach((src, i) => {
+      const d = document.createElement('div');
+      d.className = 'photo';
+      d.innerHTML = '<img src="' + escapeAttr(src) + '" alt="Photo ' + (i+1) + '" loading="lazy">' +
+        '<div class="row"><button class="btn-small" onclick="downloadUrl(\'' + escapeAttr(src) + '\', \'dtz-tiktok-' + videoId + '-photo' + (i+1) + '.jpg\', this)">Download</button></div>';
+      grid.appendChild(d);
+    });
+  } else {
+    ps.style.display = 'none';
+  }
+
+  $('result').style.display = 'block';
+  setStatus('');
+  $('goBtn').disabled = false;
+  saveRecent(videoId, current.title, current.tiktokUrl);
+}
+
+async function downloadFile(kind, btn){
+  if (!current) return;
+  let url, name;
+  if (kind === 'video'){ url = current.play; name = 'dtz-tiktok-' + current.id + '.mp4'; }
+  else if (kind === 'wm'){ url = current.wmplay; name = 'dtz-tiktok-' + current.id + '-watermark.mp4'; }
+  else if (kind === 'audio'){ url = current.music; name = 'dtz-tiktok-' + current.id + '-audio.mp3'; }
+  else if (kind === 'cover'){ url = current.cover; name = 'dtz-tiktok-' + current.id + '-cover.jpg'; }
+  if (!url) return;
+  await downloadUrl(url, name, btn);
+}
+
+async function downloadUrl(url, filename, btn){
+  const orig = btn ? btn.textContent : '';
+  if (btn){ btn.disabled = true; btn.textContent = 'Downloading...'; }
+  try {
+    const r = await fetch(url);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const blob = await r.blob();
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+  } catch(e){
+    // Fallback: open the direct file URL — the browser / phone can save it from there.
+    window.open(url, '_blank');
+    setStatus('Direct download blocked by the browser — the file opened in a new tab instead. Long-press / right-click it to save.', 'info');
+  }
+  if (btn){ btn.disabled = false; btn.textContent = orig; }
+}
+
+async function copyText(text, okMsg){
+  try {
+    await navigator.clipboard.writeText(text);
+    setStatus(okMsg, 'info');
+  } catch(e){
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); setStatus(okMsg, 'info'); }
+    catch(e2){ setStatus('Copy failed — select the text and copy it manually.', 'error'); }
+    ta.remove();
+  }
+  setTimeout(() => { if ($('status').textContent === okMsg) setStatus(''); }, 2500);
+}
+
+// Recent lookups
+function loadRecent(){
+  try { return JSON.parse(localStorage.getItem('dtz-tiktok-recent') || '[]'); } catch(e){ return []; }
+}
+function saveRecent(id, title, url){
+  let list = loadRecent().filter(x => x.id !== id);
+  list.unshift({ id, title, url });
+  list = list.slice(0, 6);
+  try { localStorage.setItem('dtz-tiktok-recent', JSON.stringify(list)); } catch(e){}
+  renderRecent();
+}
+function renderRecent(){
+  const list = loadRecent();
+  const box = $('recentBox');
+  if (!list.length){ box.style.display = 'none'; return; }
+  box.style.display = 'block';
+  $('recentChips').innerHTML = '';
+  list.forEach(x => {
+    const c = document.createElement('button');
+    c.className = 'chip';
+    c.textContent = x.title.length > 42 ? x.title.slice(0, 42) + '...' : x.title;
+    c.title = x.title;
+    c.onclick = () => { $('urlInput').value = x.url; fetchVideo(); };
+    $('recentChips').appendChild(c);
+  });
+}
+renderRecent();
+</script>
+</body>
+</html>
