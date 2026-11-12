@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Dark Tech Zone TTS – Free AI Neural Text to Speech Converter Online</title>
+    <meta name="description" content="Convert text to natural human-like speech instantly with Dark Tech Zone Neural TTS. Free online text to speech converter with 320+ realistic AI voices across all world languages with full country flags." />
+    <meta name="keywords" content="text to speech, tts online, ai voice generator, neural tts, urdu text to speech, free text to speech converter, mp3 voice generator, realistic ai voices, country flags" />
+    <meta name="author" content="Dark Tech Zone" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <link rel="canonical" href="https://darktechzon.site/tts/" />
+    <link rel="icon" type="image/jpeg" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" />
+
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://darktechzon.site/tts/" />
+    <meta property="og:title" content="Dark Tech Zone TTS – Free AI Neural Text to Speech Converter Online" />
+    <meta property="og:description" content="Convert text to natural human-like speech instantly with Dark Tech Zone Neural TTS. Free online text to speech converter with 320+ realistic AI voices across all world languages with full country flags." />
+    <meta property="og:site_name" content="Dark Tech Zone" />
+
+    <!-- Google Structured Data / Schema Markup -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebApplication",
+          "name": "Dark Tech Zone AI Neural Text to Speech",
+          "url": "https://darktechzon.site/tts/",
+          "description": "Convert text to natural human-like speech instantly with Dark Tech Zone Neural TTS. Free online text to speech converter with 320+ realistic AI voices across all world languages with full country flags.",
+          "applicationCategory": "MultimediaApplication",
+          "operatingSystem": "All",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Is Dark Tech Zone Text-to-Speech free to use?",
+              "acceptedAnswer": { "@type": "Answer", "text": "Yes, Dark Tech Zone Neural TTS is 100% free with unlimited generation and instant MP3 downloads without registration." }
+            },
+            {
+              "@type": "Question",
+              "name": "Which languages and voice models are supported?",
+              "acceptedAnswer": { "@type": "Answer", "text": "The tool supports over 320 neural voices mapped with complete country flags across 140+ world languages and regional dialects." }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@700;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <style>
+        :root {
+            --bg-base: #090d16;
+            --card-bg: #111827;
+            --card-border: #1f293d;
+            --accent-green: #10b981;
+            --input-bg: #162032;
+            --accent-blue: #2563eb;
+            --accent-blue-hover: #1d4ed8;
+            --accent-cyan: #06b6d4;
+            --text-light: #f9fafb;
+            --text-dim: #94a3b8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg-base); color: var(--text-light); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 20px 14px; }
+        
+        .main-container { width: 100%; max-width: 860px; margin: 0 auto; }
+        
+        header { background: var(--card-bg); border: 1px solid var(--card-border); padding: 16px 22px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .brand { display: flex; align-items: center; gap: 14px; }
+        .brand-logo { width: 44px; height: 44px; border-radius: 14px; overflow: hidden; flex: none; box-shadow: 0 0 20px rgba(37,99,235,0.4); }
+        .brand-logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .brand-text h1 { font-size: 19px; font-weight: 800; color: #fff; letter-spacing: 0.5px; }
+        .brand-text p { font-size: 12px; color: var(--text-dim); }
+        .social-pill { display: flex; gap: 8px; }
+        .pill-btn { background: #1f293d; border: 1px solid #334155; color: var(--text-light); text-decoration: none; padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s; }
+        .pill-btn:hover { border-color: var(--accent-blue); background: #243048; }
+
+        .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 28px; box-shadow: 0 20px 45px rgba(0,0,0,0.6); margin-bottom: 24px; }
+        .card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+        .card-header i { color: var(--accent-cyan); font-size: 20px; }
+        .card-header h2 { font-size: 17px; font-weight: 700; color: #fff; }
+
+        .control-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
+        .form-group { margin-bottom: 18px; }
+        label { display: block; font-size: 13px; font-weight: 600; color: var(--text-dim); margin-bottom: 8px; }
+        
+        select, textarea { width: 100%; background: var(--input-bg); border: 1px solid #283548; border-radius: 12px; padding: 14px 16px; color: #fff; font-size: 14px; outline: none; transition: border 0.2s, box-shadow 0.2s; }
+        select:focus, textarea:focus { border-color: var(--accent-blue); box-shadow: 0 0 12px rgba(37,99,235,0.3); }
+        textarea { height: 130px; resize: vertical; line-height: 1.5; }
+
+        .char-info { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-dim); margin-top: 6px; }
+
+        .btn-generate { width: 100%; background: var(--accent-blue); color: #fff; border: none; border-radius: 12px; padding: 16px; font-size: 16px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; box-shadow: 0 8px 25px rgba(37,99,235,0.35); }
+        .btn-generate:hover { background: var(--accent-blue-hover); transform: translateY(-1px); }
+        .btn-generate:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .player-wrap { margin-top: 22px; padding: 18px; background: var(--input-bg); border: 1px solid #283548; border-radius: 14px; display: none; }
+        audio { width: 100%; height: 42px; margin-bottom: 14px; outline: none; }
+        .btn-download { width: 100%; background: var(--accent-green); color: #fff; text-decoration: none; border-radius: 10px; padding: 12px; font-size: 14px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
+        .btn-download:hover { background: #059669; }
+
+        .seo-content { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 32px 28px; line-height: 1.7; color: #d1d5db; margin-bottom: 24px; }
+        .seo-content h2 { font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 14px; }
+        .seo-content p { font-size: 14px; margin-bottom: 14px; }
+
+        footer { text-align: center; font-size: 13px; color: var(--text-dim); padding: 18px 0; }
+        footer a { color: var(--accent-blue); text-decoration: none; font-weight: 600; margin: 0 6px; }
+
+        @media (max-width: 640px) {
+            .control-grid { grid-template-columns: 1fr; }
+            header { flex-direction: column; gap: 14px; text-align: center; }
+            .brand { flex-direction: column; }
+        }
+
+        .tool-icon-box { width: 60px; height: 60px; border-radius: 16px; display: flex; align-items: center; justify-content: center; flex: none; }
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+    <!-- Header -->
+    <header>
+        <div class="brand">
+            <div class="brand-logo"><img src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone" /></div>
+            <div class="brand-text">
+                <h1>DARK TECH ZONE TTS</h1>
+                <p>320+ Voices • Full Country Flags Mapping</p>
+            </div>
+        </div>
+        <div class="social-pill">
+            <a href="https://t.me/DarkTechZone2" target="_blank" class="pill-btn"><i class="fab fa-telegram"></i> Telegram</a>
+            <a href="https://whatsapp.com/channel/0029VbCgB63LCoX5aiV5qp1t" target="_blank" class="pill-btn"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+        </div>
+    </header>
+
+    <!-- App Studio Interface -->
+    <main class="card">
+        <div class="card-header">
+            <div class="tool-icon-box" style="background:linear-gradient(135deg,#10b981,#059669);">
+              <svg viewBox="0 0 64 64" width="34" height="34" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="26" y="8" width="12" height="24" rx="6"/>
+                <path d="M20 26a12 12 0 0 0 24 0"/>
+                <path d="M32 38v10M24 52h16"/>
+                <path d="M12 22v8M8 18v16M52 22v8M56 18v16"/>
+              </svg>
+            </div>
+            <h2>Generate Studio-Grade Speech</h2>
+        </div>
+
+        <form id="ttsForm" onsubmit="event.preventDefault(); generateSpeech();">
+            <div class="control-grid">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="localeFilter"><i class="fas fa-globe"></i> Language &amp; Country</label>
+                    <select id="localeFilter" onchange="filterVoices()">
+                        <option value="ALL">🌐 All World Languages</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="voiceSelect"><i class="fas fa-user-astronaut"></i> Neural Voice Model</label>
+                    <select id="voiceSelect">
+                        <option value="">Loading Neural Voices...</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="ttsText"><i class="fas fa-align-left"></i> Text / Script Content</label>
+                <textarea id="ttsText" maxlength="4000" placeholder="Type text or paste scripts in Urdu, English, Arabic, Hindi, Spanish...">السلام علیکم! ڈارک ٹیک زون کے ٹیکسٹ ٹو اسپیچ جنریٹر میں خوش آمدید۔</textarea>
+                <div class="char-info">
+                    <span>Full International Script Mapping Enabled</span>
+                    <span><span id="charCount">63</span> / 4000 chars</span>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-generate" id="generateBtn">
+                <i class="fas fa-play"></i> Synthesize &amp; Play Speech
+            </button>
+        </form>
+
+        <div class="player-wrap" id="playerWrap">
+            <audio id="audioPlayer" controls></audio>
+            <a id="downloadBtn" class="btn-download" href="#" download="darktechzone_speech.mp3">
+                <i class="fas fa-download"></i> Download Audio MP3
+            </a>
+        </div>
+    </main>
+
+    <!-- SEO Optimized Structural Content Block -->
+    <article class="seo-content">
+        <h2>Global AI Neural Text to Speech Converter with Country Flags</h2>
+        <p>
+            Welcome to the <strong>Dark Tech Zone TTS</strong> global text-to-speech platform. Browse over 320 neural voice profiles mapped with full country flags and localized language titles across 140+ countries. Instantly convert scripts into realistic audio for free.
+        </p>
+    </article>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 <a href="https://darktechzon.site/">Dark Tech Zone</a> &bull; Advanced Security Division &bull; <a href="https://darktechzon.site/privacy.html">Privacy Policy</a></p>
+    </footer>
+</div>
+
+<script>
+let allVoices = [];
+const API_BASE = 'https://text-to-speech-api.faizanahmadkhichi.dev';
+const FALLBACK_VOICES = [
+    {name: 'ur-PK-AsadNeural', locale: 'ur-PK', gender: 'Male'},
+    {name: 'ur-PK-UzmaNeural', locale: 'ur-PK', gender: 'Female'},
+    {name: 'en-US-JennyNeural', locale: 'en-US', gender: 'Female'},
+    {name: 'en-US-GuyNeural', locale: 'en-US', gender: 'Male'},
+    {name: 'hi-IN-SwaraNeural', locale: 'hi-IN', gender: 'Female'},
+    {name: 'ar-SA-HamedNeural', locale: 'ar-SA', gender: 'Male'}
+];
+const textArea = document.getElementById('ttsText');
+const charCount = document.getElementById('charCount');
+
+textArea.addEventListener('input', () => {
+    charCount.textContent = textArea.value.length;
+});
+
+// Full Locale Flag & Full Name Mapping Dictionary
+const LOCALE_METADATA = {
+    "af-ZA": {"name": "Afrikaans (South Africa)", "flag": "🇿🇦"},
+    "am-ET": {"name": "Amharic (Ethiopia)", "flag": "🇪🇹"},
+    "ar-AE": {"name": "Arabic (U.A.E.)", "flag": "🇦🇪"},
+    "ar-BH": {"name": "Arabic (Bahrain)", "flag": "🇧🇭"},
+    "ar-DZ": {"name": "Arabic (Algeria)", "flag": "🇩🇿"},
+    "ar-EG": {"name": "Arabic (Egypt)", "flag": "🇪🇬"},
+    "ar-IQ": {"name": "Arabic (Iraq)", "flag": "🇮🇶"},
+    "ar-JO": {"name": "Arabic (Jordan)", "flag": "🇯🇴"},
+    "ar-KW": {"name": "Arabic (Kuwait)", "flag": "🇰🇼"},
+    "ar-LB": {"name": "Arabic (Lebanon)", "flag": "🇱🇧"},
+    "ar-LY": {"name": "Arabic (Libya)", "flag": "🇱🇾"},
+    "ar-MA": {"name": "Arabic (Morocco)", "flag": "🇲🇦"},
+    "ar-OM": {"name": "Arabic (Oman)", "flag": "🇴🇲"},
+    "ar-QA": {"name": "Arabic (Qatar)", "flag": "🇶🇦"},
+    "ar-SA": {"name": "Arabic (Saudi Arabia)", "flag": "🇸🇦"},
+    "ar-SY": {"name": "Arabic (Syria)", "flag": "🇸🇾"},
+    "ar-TN": {"name": "Arabic (Tunisia)", "flag": "🇹🇳"},
+    "ar-YE": {"name": "Arabic (Yemen)", "flag": "🇾🇪"},
+    "az-AZ": {"name": "Azerbaijani (Azerbaijan)", "flag": "🇦🇿"},
+    "bg-BG": {"name": "Bulgarian (Bulgaria)", "flag": "🇧🇬"},
+    "bn-BD": {"name": "Bengali (Bangladesh)", "flag": "🇧🇩"},
+    "bn-IN": {"name": "Bengali (India)", "flag": "🇮🇳"},
+    "bs-BA": {"name": "Bosnian (Bosnia)", "flag": "🇧🇦"},
+    "ca-ES": {"name": "Catalan (Spain)", "flag": "🇪🇸"},
+    "cs-CZ": {"name": "Czech (Czech Republic)", "flag": "🇨🇿"},
+    "cy-GB": {"name": "Welsh (UK)", "flag": "🇬🇧"},
+    "da-DK": {"name": "Danish (Denmark)", "flag": "🇩🇰"},
+    "de-AT": {"name": "German (Austria)", "flag": "🇦🇹"},
+    "de-CH": {"name": "German (Switzerland)", "flag": "🇨🇭"},
+    "de-DE": {"name": "German (Germany)", "flag": "🇩🇪"},
+    "el-GR": {"name": "Greek (Greece)", "flag": "🇬🇷"},
+    "en-AU": {"name": "English (Australia)", "flag": "🇦🇺"},
+    "en-CA": {"name": "English (Canada)", "flag": "🇨🇦"},
+    "en-GB": {"name": "English (UK)", "flag": "🇬🇧"},
+    "en-HK": {"name": "English (Hong Kong)", "flag": "🇭🇰"},
+    "en-IE": {"name": "English (Ireland)", "flag": "🇮🇪"},
+    "en-IN": {"name": "English (India)", "flag": "🇮🇳"},
+    "en-KE": {"name": "English (Kenya)", "flag": "🇰🇪"},
+    "en-NG": {"name": "English (Nigeria)", "flag": "🇳🇬"},
+    "en-NZ": {"name": "English (New Zealand)", "flag": "🇳🇿"},
+    "en-PH": {"name": "English (Philippines)", "flag": "🇵🇭"},
+    "en-SG": {"name": "English (Singapore)", "flag": "🇸🇬"},
+    "en-TZ": {"name": "English (Tanzania)", "flag": "🇹🇿"},
+    "en-US": {"name": "English (United States)", "flag": "🇺🇸"},
+    "en-ZA": {"name": "English (South Africa)", "flag": "🇿🇦"},
+    "es-AR": {"name": "Spanish (Argentina)", "flag": "🇦🇷"},
+    "es-BO": {"name": "Spanish (Bolivia)", "flag": "🇧🇴"},
+    "es-CL": {"name": "Spanish (Chile)", "flag": "🇨🇱"},
+    "es-CO": {"name": "Spanish (Colombia)", "flag": "🇨🇴"},
+    "es-CR": {"name": "Spanish (Costa Rica)", "flag": "🇨🇷"},
+    "es-CU": {"name": "Spanish (Cuba)", "flag": "🇨🇺"},
+    "es-DO": {"name": "Spanish (Dominican Rep.)", "flag": "🇩🇴"},
+    "es-EC": {"name": "Spanish (Ecuador)", "flag": "🇪🇨"},
+    "es-ES": {"name": "Spanish (Spain)", "flag": "🇪🇸"},
+    "es-GQ": {"name": "Spanish (Equatorial Guinea)", "flag": "🇬🇶"},
+    "es-GT": {"name": "Spanish (Guatemala)", "flag": "🇬🇹"},
+    "es-HN": {"name": "Spanish (Honduras)", "flag": "🇭🇳"},
+    "es-MX": {"name": "Spanish (Mexico)", "flag": "🇲🇽"},
+    "es-NI": {"name": "Spanish (Nicaragua)", "flag": "🇳🇮"},
+    "es-PA": {"name": "Spanish (Panama)", "flag": "🇵🇦"},
+    "es-PE": {"name": "Spanish (Peru)", "flag": "🇵🇪"},
+    "es-PR": {"name": "Spanish (Puerto Rico)", "flag": "🇵🇷"},
+    "es-PY": {"name": "Spanish (Paraguay)", "flag": "🇵🇾"},
+    "es-SV": {"name": "Spanish (El Salvador)", "flag": "🇸🇻"},
+    "es-US": {"name": "Spanish (United States)", "flag": "🇺🇸"},
+    "es-UY": {"name": "Spanish (Uruguay)", "flag": "🇺🇾"},
+    "es-VE": {"name": "Spanish (Venezuela)", "flag": "🇻🇪"},
+    "et-EE": {"name": "Estonian (Estonia)", "flag": "🇪🇪"},
+    "fa-IR": {"name": "Persian (Iran)", "flag": "🇮🇷"},
+    "fi-FI": {"name": "Finnish (Finland)", "flag": "🇫🇮"},
+    "fil-PH": {"name": "Filipino (Philippines)", "flag": "🇵🇭"},
+    "fr-BE": {"name": "French (Belgium)", "flag": "🇧🇪"},
+    "fr-CA": {"name": "French (Canada)", "flag": "🇨🇦"},
+    "fr-CH": {"name": "French (Switzerland)", "flag": "🇨🇭"},
+    "fr-FR": {"name": "French (France)", "flag": "🇫🇷"},
+    "ga-IE": {"name": "Irish (Ireland)", "flag": "🇮🇪"},
+    "gl-ES": {"name": "Galician (Spain)", "flag": "🇪🇸"},
+    "gu-IN": {"name": "Gujarati (India)", "flag": "🇮🇳"},
+    "he-IL": {"name": "Hebrew (Israel)", "flag": "🇮🇱"},
+    "hi-IN": {"name": "Hindi (India)", "flag": "🇮🇳"},
+    "hr-HR": {"name": "Croatian (Croatia)", "flag": "🇭🇷"},
+    "hu-HU": {"name": "Hungarian (Hungary)", "flag": "🇭🇺"},
+    "id-ID": {"name": "Indonesian (Indonesia)", "flag": "🇮🇩"},
+    "is-IS": {"name": "Icelandic (Iceland)", "flag": "🇮🇸"},
+    "it-IT": {"name": "Italian (Italy)", "flag": "🇮🇹"},
+    "ja-JP": {"name": "Japanese (Japan)", "flag": "🇯🇵"},
+    "jv-ID": {"name": "Javanese (Indonesia)", "flag": "🇮🇩"},
+    "ka-GE": {"name": "Georgian (Georgia)", "flag": "🇬🇪"},
+    "kk-KZ": {"name": "Kazakh (Kazakhstan)", "flag": "🇰🇿"},
+    "km-KH": {"name": "Khmer (Cambodia)", "flag": "🇰🇭"},
+    "kn-IN": {"name": "Kannada (India)", "flag": "🇮🇳"},
+    "ko-KR": {"name": "Korean (South Korea)", "flag": "🇰🇷"},
+    "lo-LA": {"name": "Lao (Laos)", "flag": "🇱🇦"},
+    "lt-LT": {"name": "Lithuanian (Lithuania)", "flag": "🇱🇹"},
+    "lv-LV": {"name": "Latvian (Latvia)", "flag": "🇱🇻"},
+    "mk-MK": {"name": "Macedonian (N. Macedonia)", "flag": "🇲🇰"},
+    "ml-IN": {"name": "Malayalam (India)", "flag": "🇮🇳"},
+    "mn-MN": {"name": "Mongolian (Mongolia)", "flag": "🇲🇳"},
+    "mr-IN": {"name": "Marathi (India)", "flag": "🇮🇳"},
+    "ms-MY": {"name": "Malay (Malaysia)", "flag": "🇲🇾"},
+    "mt-MT": {"name": "Maltese (Malta)", "flag": "🇲🇹"},
+    "my-MM": {"name": "Burmese (Myanmar)", "flag": "🇲🇲"},
+    "nb-NO": {"name": "Norwegian (Norway)", "flag": "🇳🇴"},
+    "ne-NP": {"name": "Nepali (Nepal)", "flag": "🇳🇵"},
+    "nl-BE": {"name": "Dutch (Belgium)", "flag": "🇧🇪"},
+    "nl-NL": {"name": "Dutch (Netherlands)", "flag": "🇳🇱"},
+    "pl-PL": {"name": "Polish (Poland)", "flag": "🇵🇱"},
+    "ps-AF": {"name": "Pashto (Afghanistan)", "flag": "🇦🇫"},
+    "pt-BR": {"name": "Portuguese (Brazil)", "flag": "🇧🇷"},
+    "pt-PT": {"name": "Portuguese (Portugal)", "flag": "🇵🇹"},
+    "ro-RO": {"name": "Romanian (Romania)", "flag": "🇷🇴"},
+    "ru-RU": {"name": "Russian (Russia)", "flag": "🇷🇺"},
+    "si-LK": {"name": "Sinhala (Sri Lanka)", "flag": "🇱🇰"},
+    "sk-SK": {"name": "Slovak (Slovakia)", "flag": "🇸🇰"},
+    "sl-SI": {"name": "Slovenian (Slovenia)", "flag": "🇸🇮"},
+    "so-SO": {"name": "Somali (Somalia)", "flag": "🇸🇴"},
+    "sq-AL": {"name": "Albanian (Albania)", "flag": "🇦🇱"},
+    "sr-RS": {"name": "Serbian (Serbia)", "flag": "🇷🇸"},
+    "su-ID": {"name": "Sundanese (Indonesia)", "flag": "🇮🇩"},
+    "sv-SE": {"name": "Swedish (Sweden)", "flag": "🇸🇪"},
+    "sw-KE": {"name": "Swahili (Kenya)", "flag": "🇰🇪"},
+    "sw-TZ": {"name": "Swahili (Tanzania)", "flag": "🇹🇿"},
+    "ta-IN": {"name": "Tamil (India)", "flag": "🇮🇳"},
+    "ta-LK": {"name": "Tamil (Sri Lanka)", "flag": "🇱🇰"},
+    "ta-MY": {"name": "Tamil (Malaysia)", "flag": "🇲🇾"},
+    "ta-SG": {"name": "Tamil (Singapore)", "flag": "🇸🇬"},
+    "te-IN": {"name": "Telugu (India)", "flag": "🇮🇳"},
+    "th-TH": {"name": "Thai (Thailand)", "flag": "🇹🇭"},
+    "tr-TR": {"name": "Turkish (Turkey)", "flag": "🇹🇷"},
+    "uk-UA": {"name": "Ukrainian (Ukraine)", "flag": "🇺🇦"},
+    "ur-IN": {"name": "Urdu (India)", "flag": "🇮🇳"},
+    "ur-PK": {"name": "Urdu (Pakistan)", "flag": "🇵🇰"},
+    "uz-UZ": {"name": "Uzbek (Uzbekistan)", "flag": "🇺🇿"},
+    "vi-VN": {"name": "Vietnamese (Vietnam)", "flag": "🇻🇳"},
+    "zh-CN": {"name": "Chinese (Mandarin)", "flag": "🇨🇳"},
+    "zh-HK": {"name": "Chinese (Cantonese, HK)", "flag": "🇭🇰"},
+    "zh-TW": {"name": "Chinese (Taiwanese)", "flag": "🇹🇼"},
+    "zu-ZA": {"name": "Zulu (South Africa)", "flag": "🇿🇦"}
+};
+
+function getLocaleName(locale) {
+    return LOCALE_METADATA[locale] ? LOCALE_METADATA[locale].name : locale;
+}
+
+function getLocaleFlag(locale) {
+    return LOCALE_METADATA[locale] ? LOCALE_METADATA[locale].flag : "🌐";
+}
+
+// 1. Load Voices directly from the TTS API (falls back to the built-in list)
+async function loadVoices() {
+    try {
+        const res = await fetch(API_BASE + '/voices');
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        allVoices = data.voices || [];
+        if (!allVoices.length) throw new Error('Empty voice list');
+    } catch (e) {
+        console.error("Voice load error:", e);
+        allVoices = FALLBACK_VOICES.slice();
+    }
+
+    const localeFilter = document.getElementById('localeFilter');
+    const locales = [...new Set(allVoices.map(v => v.locale))].sort();
+
+    locales.forEach(loc => {
+        const opt = document.createElement('option');
+        opt.value = loc;
+        const flag = getLocaleFlag(loc);
+        const fullName = getLocaleName(loc);
+        opt.textContent = `${flag} ${fullName} (${loc})`;
+        localeFilter.appendChild(opt);
+    });
+
+    renderVoiceOptions(allVoices);
+}
+
+// 2. Render Voice Options with Flags and Full Names
+function renderVoiceOptions(voices) {
+    const select = document.getElementById('voiceSelect');
+    select.innerHTML = '';
+    voices.forEach(v => {
+        const opt = document.createElement('option');
+        opt.value = v.name;
+        const flag = getLocaleFlag(v.locale);
+        const fullName = getLocaleName(v.locale);
+        const shortName = v.name.split('-')[2]?.replace('Neural', '') || v.name;
+        
+        opt.textContent = `${flag} ${fullName} — ${shortName} (${v.gender || 'Neural'})`;
+        if (v.name === "ur-PK-AsadNeural") opt.selected = true;
+        select.appendChild(opt);
+    });
+}
+
+// 3. Filter Voices by Selected Language
+function filterVoices() {
+    const loc = document.getElementById('localeFilter').value;
+    if (loc === "ALL") {
+        renderVoiceOptions(allVoices);
+    } else {
+        renderVoiceOptions(allVoices.filter(v => v.locale === loc));
+    }
+}
+
+// 4. Synthesize Audio
+async function generateSpeech() {
+    const text = textArea.value.trim();
+    const voice = document.getElementById('voiceSelect').value;
+    const btn = document.getElementById('generateBtn');
+    const playerWrap = document.getElementById('playerWrap');
+    const audioPlayer = document.getElementById('audioPlayer');
+    const downloadBtn = document.getElementById('downloadBtn');
+
+    if (!text) {
+        alert("Please enter some text!");
+        return;
+    }
+
+    if (text.length > 4000) {
+        alert("Text cannot exceed 4000 characters.");
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing Neural Audio...';
+
+    // Synthesize directly against the TTS API (the old PHP handler only built this URL)
+    const audioUrl = API_BASE + '/?text=' + encodeURIComponent(text) + '&voice=' + encodeURIComponent(voice);
+
+    try {
+        audioPlayer.src = audioUrl;
+        downloadBtn.href = audioUrl;
+        playerWrap.style.display = 'block';
+        await audioPlayer.play();
+    } catch (e) {
+        alert("Audio synthesis error: " + e.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-play"></i> Synthesize &amp; Play Speech';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', loadVoices);
+</script>
+</body>
+</html>
