@@ -1,0 +1,1120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light" />
+    <meta name="description" content="Turn any photo into a 512x512 WhatsApp sticker with optional AI background removal, outlines and text. Free, runs entirely in your browser." />
+    <link rel="icon" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" />
+    <title>DTZ WhatsApp Sticker Maker</title>
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+    <style>
+      :root {
+        --bg: #f7f7f8;
+        --card: #ffffff;
+        --ink: #111827;
+        --muted: #4b5563;
+        --faint: #6b7280;
+        --line: #e5e7eb;
+        --line-strong: #d1d5db;
+        --green: #16a34a;
+        --green-dark: #15803d;
+        --green-soft: #f0fdf4;
+        --red: #dc2626;
+        --red-soft: #fef2f2;
+        --amber: #92400e;
+        --amber-soft: #fffbeb;
+        --radius: 14px;
+        --shadow: 0 1px 2px rgba(16, 24, 40, 0.05), 0 1px 3px rgba(16, 24, 40, 0.06);
+      }
+      * { box-sizing: border-box; }
+      html { -webkit-text-size-adjust: 100%; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: ui-sans-system, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        font-size: 16px;
+        line-height: 1.5;
+      }
+      button, [role="button"], select, summary, input:not([type="checkbox"], [type="radio"]) { min-height: 2.25rem; }
+      a { color: var(--green-dark); }
+      :focus-visible { outline: 3px solid rgba(22, 163, 74, 0.45); outline-offset: 2px; border-radius: 6px; }
+
+      .wrap { max-width: 1080px; margin: 0 auto; padding: 20px 16px 40px; }
+
+      /* Header */
+      .site-head { display: flex; align-items: center; gap: 14px; margin: 6px 0 20px; }
+      .site-head img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; flex: none; border: 1px solid var(--line); background: #fff; }
+      .site-head h1 { font-size: 1.45rem; line-height: 1.2; margin: 0; letter-spacing: -0.01em; }
+      .site-head p { margin: 2px 0 0; color: var(--muted); font-size: 0.95rem; }
+
+      /* Cards */
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 20px;
+        margin-bottom: 18px;
+      }
+      .card-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 6px; }
+      .step-num {
+        flex: none; width: 26px; height: 26px; border-radius: 50%;
+        background: var(--green); color: #fff; font-size: 0.85rem; font-weight: 700;
+        display: inline-flex; align-items: center; justify-content: center;
+        transform: translateY(5px);
+      }
+      .card h2 { font-size: 1.15rem; margin: 0; letter-spacing: -0.01em; }
+      .card .sub { color: var(--muted); font-size: 0.92rem; margin: 4px 0 14px; }
+      .card h2 + .sub { margin-left: 36px; }
+
+      /* Dropzone */
+      .dropzone {
+        border: 2px dashed var(--line-strong);
+        border-radius: 12px;
+        background: #fbfbfc;
+        padding: 28px 16px;
+        text-align: center;
+        cursor: pointer;
+        transition: border-color 0.15s ease, background 0.15s ease;
+      }
+      .dropzone:hover { border-color: var(--green); }
+      .dropzone.dragging { border-color: var(--green); background: var(--green-soft); }
+      .dropzone svg { width: 40px; height: 40px; stroke: var(--green); margin-bottom: 8px; }
+      .dropzone .dz-title { font-weight: 600; font-size: 1.02rem; }
+      .dropzone .dz-hint { color: var(--muted); font-size: 0.88rem; margin-top: 2px; }
+      .load-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+      .file-info { margin-top: 12px; font-size: 0.9rem; color: var(--muted); }
+      .file-info strong { color: var(--ink); }
+
+      /* Buttons */
+      .btn {
+        appearance: none; border: 1px solid transparent; border-radius: 10px;
+        font: inherit; font-weight: 600; font-size: 0.95rem;
+        padding: 10px 18px; min-height: 44px;
+        display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        cursor: pointer; text-decoration: none; transition: background 0.12s ease, border-color 0.12s ease;
+      }
+      .btn svg { width: 18px; height: 18px; flex: none; }
+      .btn-primary { background: var(--green); color: #fff; }
+      .btn-primary:hover { background: var(--green-dark); }
+      .btn-secondary { background: #fff; color: var(--ink); border-color: var(--line-strong); }
+      .btn-secondary:hover { border-color: var(--green); color: var(--green-dark); }
+      .btn-danger { background: #fff; color: var(--red); border-color: #fca5a5; }
+      .btn-danger:hover { background: var(--red-soft); }
+      .btn[disabled] { opacity: 0.55; cursor: not-allowed; }
+      .btn-row { display: flex; flex-wrap: wrap; gap: 10px; }
+
+      /* Messages */
+      .msg { font-size: 0.92rem; margin-top: 12px; min-height: 1.2em; }
+      .msg:empty { margin-top: 0; min-height: 0; }
+      .msg.error { color: var(--red); }
+      .msg.ok { color: var(--green-dark); }
+      .alert {
+        border-radius: 10px; padding: 10px 14px; font-size: 0.92rem; margin-top: 12px;
+      }
+      .alert.error { background: var(--red-soft); color: #991b1b; border: 1px solid #fecaca; }
+      .alert:empty, .alert[hidden] { display: none; }
+
+      /* Editor layout */
+      .editor { display: grid; grid-template-columns: minmax(0, 512px) 1fr; gap: 24px; align-items: start; }
+      @media (max-width: 860px) { .editor { grid-template-columns: 1fr; } .preview-col { max-width: 512px; margin: 0 auto; width: 100%; } }
+
+      .preview-wrap {
+        position: relative; width: 100%; aspect-ratio: 1 / 1;
+        border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
+        background-color: #fff;
+        background-image:
+          linear-gradient(45deg, #e2e5ea 25%, transparent 25%),
+          linear-gradient(-45deg, #e2e5ea 25%, transparent 25%),
+          linear-gradient(45deg, transparent 75%, #e2e5ea 75%),
+          linear-gradient(-45deg, transparent 75%, #e2e5ea 75%);
+        background-size: 24px 24px;
+        background-position: 0 0, 0 12px, 12px -12px, -12px 0;
+      }
+      .preview-wrap canvas { display: block; width: 100%; height: 100%; }
+      .preview-empty {
+        position: absolute; inset: 0; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; gap: 8px; text-align: center;
+        color: var(--faint); padding: 20px; background: rgba(255,255,255,0.72);
+      }
+      .preview-empty svg { width: 44px; height: 44px; stroke: #9ca3af; }
+      .preview-meta { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--faint); margin-top: 8px; }
+
+      /* Controls */
+      .controls { display: flex; flex-direction: column; gap: 18px; }
+      .control-group { border-top: 1px solid var(--line); padding-top: 16px; }
+      .control-group:first-child { border-top: none; padding-top: 0; }
+      .control-label { font-weight: 600; font-size: 0.95rem; margin-bottom: 8px; display: block; }
+      .control-note { font-size: 0.85rem; color: var(--muted); margin-top: 6px; }
+
+      .check-row { display: flex; gap: 10px; align-items: flex-start; cursor: pointer; padding: 6px 0; }
+      .check-row input[type="checkbox"] { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--green); flex: none; cursor: pointer; }
+      .check-row .check-text { font-weight: 600; font-size: 0.98rem; }
+      .check-row .check-sub { display: block; font-weight: 400; font-size: 0.85rem; color: var(--muted); margin-top: 2px; }
+
+      .progress-wrap { margin-top: 10px; }
+      .progress-track { height: 10px; border-radius: 999px; background: #ececf1; overflow: hidden; }
+      .progress-fill { height: 100%; width: 0%; background: var(--green); border-radius: 999px; transition: width 0.2s ease; }
+      .progress-status { font-size: 0.87rem; color: var(--muted); margin-top: 6px; }
+      .progress-status.error { color: var(--red); }
+      .progress-status.ok { color: var(--green-dark); }
+
+      .segmented { display: inline-flex; background: #ececf1; border-radius: 10px; padding: 3px; gap: 2px; flex-wrap: wrap; }
+      .segmented label {
+        display: inline-flex; align-items: center; gap: 7px;
+        min-height: 38px; padding: 6px 14px; border-radius: 8px;
+        font-size: 0.92rem; font-weight: 600; color: var(--muted); cursor: pointer;
+      }
+      .segmented input[type="radio"] { width: 17px; height: 17px; margin: 0; flex: none; accent-color: var(--green); cursor: pointer; }
+      .segmented label:has(input:checked) { background: #fff; color: var(--ink); box-shadow: var(--shadow); }
+      .segmented label:has(input:focus-visible) { outline: 3px solid rgba(22,163,74,0.45); outline-offset: 1px; }
+
+      .field-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
+      .field { display: flex; flex-direction: column; gap: 6px; }
+      .field label { font-size: 0.87rem; font-weight: 600; color: var(--muted); }
+      input[type="text"] {
+        font: inherit; font-size: 0.98rem; color: var(--ink);
+        border: 1px solid var(--line-strong); border-radius: 10px; padding: 10px 12px;
+        background: #fff; min-height: 44px; width: 100%;
+      }
+      input[type="text"]:focus { border-color: var(--green); outline: 3px solid rgba(22,163,74,0.25); }
+      select {
+        font: inherit; font-size: 0.95rem; color: var(--ink);
+        border: 1px solid var(--line-strong); border-radius: 10px; padding: 9px 10px; background: #fff; min-height: 44px;
+      }
+      input[type="color"] {
+        width: 52px; height: 44px; padding: 3px; border: 1px solid var(--line-strong);
+        border-radius: 10px; background: #fff; cursor: pointer;
+      }
+      input[type="range"] { width: 100%; accent-color: var(--green); min-height: 36px; cursor: pointer; }
+      .range-row { display: flex; align-items: center; gap: 12px; }
+      .range-row output { font-size: 0.9rem; font-weight: 600; min-width: 52px; text-align: right; color: var(--muted); }
+      .text-input-wrap { flex: 1 1 220px; }
+      .char-count { font-size: 0.8rem; color: var(--faint); text-align: right; margin-top: 4px; }
+
+      /* Pack + recent grids */
+      .pack-top { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end; justify-content: space-between; }
+      .pack-name-field { flex: 1 1 240px; max-width: 380px; }
+      .pack-count { font-weight: 700; font-size: 0.95rem; color: var(--muted); white-space: nowrap; }
+      .pack-count strong { color: var(--ink); }
+      .grid {
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+        gap: 12px; margin-top: 16px;
+      }
+      .grid:empty { margin-top: 0; }
+      .thumb {
+        border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #fff;
+        display: flex; flex-direction: column;
+      }
+      .thumb .thumb-img {
+        aspect-ratio: 1 / 1; display: block; width: 100%; object-fit: contain;
+        background-color: #fff;
+        background-image:
+          linear-gradient(45deg, #e8eaee 25%, transparent 25%),
+          linear-gradient(-45deg, #e8eaee 25%, transparent 25%),
+          linear-gradient(45deg, transparent 75%, #e8eaee 75%),
+          linear-gradient(-45deg, transparent 75%, #e8eaee 75%);
+        background-size: 16px 16px;
+        background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+      }
+      .thumb-actions { display: flex; border-top: 1px solid var(--line); }
+      .thumb-actions a, .thumb-actions button {
+        flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+        min-height: 38px; font-size: 0.82rem; font-weight: 600; padding: 6px 4px;
+        background: #fff; border: none; cursor: pointer; font-family: inherit;
+      }
+      .thumb-actions a { color: var(--green-dark); text-decoration: none; border-right: 1px solid var(--line); }
+      .thumb-actions a:hover { background: var(--green-soft); }
+      .thumb-actions button { color: var(--red); }
+      .thumb-actions button:hover { background: var(--red-soft); }
+      .thumb-actions svg { width: 14px; height: 14px; }
+      button.thumb-img-btn { padding: 0; border: none; background: none; cursor: pointer; display: block; width: 100%; }
+      .empty-note { color: var(--faint); font-size: 0.92rem; border: 1px dashed var(--line-strong); border-radius: 10px; padding: 18px; text-align: center; margin-top: 16px; }
+      .empty-note[hidden] { display: none; }
+
+      /* Help */
+      .help-steps { margin: 0; padding-left: 22px; color: var(--ink); }
+      .help-steps li { margin-bottom: 8px; }
+      .help-steps li:last-child { margin-bottom: 0; }
+      .help-steps .muted { color: var(--muted); }
+
+      /* Footer */
+      footer { margin-top: 26px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.9rem; }
+      footer .foot-row { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; justify-content: space-between; }
+      .channel-link { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; min-height: 36px; }
+      .channel-link svg { width: 20px; height: 20px; }
+
+      @media (max-width: 560px) {
+        .wrap { padding: 14px 12px 32px; }
+        .card { padding: 16px; }
+        .site-head h1 { font-size: 1.25rem; }
+        .load-actions .btn, .btn-row .btn { flex: 1 1 auto; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * { transition: none !important; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="site-head">
+        <img src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone logo" width="44" height="44" />
+        <div>
+          <h1>DTZ WhatsApp Sticker Maker</h1>
+          <p>Turn any photo into a 512 × 512 WhatsApp sticker — free, right in your browser.</p>
+        </div>
+      </header>
+
+      <!-- 1. Load a photo -->
+      <section class="card" aria-labelledby="loadHeading">
+        <div class="card-head"><span class="step-num" aria-hidden="true">1</span><h2 id="loadHeading">Load a photo</h2></div>
+        <p class="sub">JPG, PNG or WebP, up to 10 MB. Your photo stays on your device — nothing is uploaded.</p>
+
+        <div class="dropzone" id="dropZone" role="button" tabindex="0" aria-label="Choose a photo, or drag and drop one here">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4m0 0 4 4m-4-4L8 8"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
+          <div class="dz-title">Drag and drop a photo here</div>
+          <div class="dz-hint">or tap to choose a file — you can also paste with Ctrl+V</div>
+        </div>
+        <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" hidden />
+
+        <div class="load-actions">
+          <button type="button" class="btn btn-primary" id="chooseBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></svg>
+            Choose photo
+          </button>
+          <button type="button" class="btn btn-secondary" id="sampleBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.8-4.5 4.3 1.1 6.1L12 17l-5.4 2.8 1.1-6.1L3.2 9.4l6.1-.8z"/></svg>
+            Use a sample photo
+          </button>
+        </div>
+
+        <div class="file-info" id="fileInfo" hidden></div>
+        <div class="alert error" id="loadError" hidden role="alert"></div>
+      </section>
+
+      <!-- 2. Make your sticker -->
+      <section class="card" aria-labelledby="makeHeading">
+        <div class="card-head"><span class="step-num" aria-hidden="true">2</span><h2 id="makeHeading">Make your sticker</h2></div>
+        <p class="sub">The preview updates live as you change the controls. The final sticker is always 512 × 512.</p>
+
+        <div class="editor">
+          <div class="preview-col">
+            <div class="preview-wrap">
+              <canvas id="previewCanvas" width="512" height="512" aria-label="Sticker preview"></canvas>
+              <div class="preview-empty" id="previewEmpty">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21"/></svg>
+                <div>No photo loaded yet.<br />Load a photo in step 1 to start.</div>
+              </div>
+            </div>
+            <div class="preview-meta"><span>Preview</span><span>512 × 512 · WebP</span></div>
+          </div>
+
+          <div class="controls">
+            <div class="control-group">
+              <label class="check-row" for="bgToggle">
+                <input type="checkbox" id="bgToggle" />
+                <span>
+                  <span class="check-text">Remove background (AI)</span>
+                  <span class="check-sub">Runs on your device. The first use downloads an AI model of about 40 MB, then it is cached for next time.</span>
+                </span>
+              </label>
+              <div class="progress-wrap" id="bgProgressWrap" hidden>
+                <div class="progress-track"><div class="progress-fill" id="bgProgressFill"></div></div>
+                <div class="progress-status" id="bgStatus" role="status"></div>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <span class="control-label" id="fitLabel">Photo fit</span>
+              <div class="segmented" role="radiogroup" aria-labelledby="fitLabel">
+                <label><input type="radio" name="fitMode" id="fitContain" value="fit" checked /><span class="seg">Fit — whole photo</span></label>
+                <label><input type="radio" name="fitMode" id="fitCover" value="fill" /><span class="seg">Fill — crop square</span></label>
+              </div>
+              <p class="control-note">Fit keeps the whole photo visible. Fill zooms in so the photo covers the full square.</p>
+            </div>
+
+            <div class="control-group">
+              <span class="control-label" id="outlineLabel">Outline</span>
+              <div class="segmented" role="radiogroup" aria-labelledby="outlineLabel">
+                <label><input type="radio" name="outlineMode" id="outlineNone" value="none" checked /><span class="seg">None</span></label>
+                <label><input type="radio" name="outlineMode" id="outlineWhite" value="white" /><span class="seg">White</span></label>
+                <label><input type="radio" name="outlineMode" id="outlineBlack" value="black" /><span class="seg">Black</span></label>
+                <label><input type="radio" name="outlineMode" id="outlineCustom" value="custom" /><span class="seg">Custom</span></label>
+              </div>
+              <div class="field-row" style="margin-top:12px;">
+                <div class="field">
+                  <label for="outlineColor">Custom outline color</label>
+                  <input type="color" id="outlineColor" value="#16a34a" />
+                </div>
+                <div class="field" style="flex:1 1 200px;">
+                  <label for="outlineThickness">Outline thickness</label>
+                  <div class="range-row">
+                    <input type="range" id="outlineThickness" min="2" max="30" step="1" value="10" />
+                    <output id="outlineThicknessVal" for="outlineThickness">10 px</output>
+                  </div>
+                </div>
+              </div>
+              <p class="control-note">The outline follows the shape of your photo. It stands out most after removing the background.</p>
+            </div>
+
+            <div class="control-group">
+              <span class="control-label">Sticker text <span style="color:var(--faint); font-weight:400;">(optional)</span></span>
+              <div class="text-input-wrap">
+                <input type="text" id="stickerText" maxlength="30" placeholder="e.g. DTZ" autocomplete="off" aria-label="Sticker text, up to 30 characters" />
+                <div class="char-count"><span id="charCount">0</span> / 30</div>
+              </div>
+              <div class="field-row" style="margin-top:6px;">
+                <div class="field">
+                  <label for="textPosition">Position</label>
+                  <select id="textPosition">
+                    <option value="bottom" selected>Bottom</option>
+                    <option value="top">Top</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="textColor">Text color</label>
+                  <input type="color" id="textColor" value="#ffffff" />
+                </div>
+                <div class="field" style="flex:1 1 180px;">
+                  <label for="textSize">Text size</label>
+                  <div class="range-row">
+                    <input type="range" id="textSize" min="28" max="96" step="2" value="56" />
+                    <output id="textSizeVal" for="textSize">56 px</output>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="control-group">
+              <div class="btn-row">
+                <button type="button" class="btn btn-primary" id="downloadBtn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m0 0 4-4m-4 4-4-4"/><path d="M4 19h16"/></svg>
+                  Download Sticker (.webp)
+                </button>
+                <button type="button" class="btn btn-secondary" id="addToPackBtn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                  Add to Pack
+                </button>
+                <button type="button" class="btn btn-secondary" id="rerenderBtn">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.6-6.3"/><path d="M21 3v6h-6"/></svg>
+                  Re-render
+                </button>
+              </div>
+              <div class="msg" id="editorMsg" role="status"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. Sticker pack -->
+      <section class="card" aria-labelledby="packHeading">
+        <div class="card-head"><span class="step-num" aria-hidden="true">3</span><h2 id="packHeading">Your sticker pack</h2></div>
+        <p class="sub">Collect up to 30 stickers, then download them all in one ZIP file.</p>
+
+        <div class="pack-top">
+          <div class="field pack-name-field">
+            <label for="packName">Pack name</label>
+            <input type="text" id="packName" value="DTZ Stickers" maxlength="50" autocomplete="off" />
+          </div>
+          <div class="pack-count" id="packCount"><strong>0</strong> / 30 stickers</div>
+        </div>
+
+        <div class="empty-note" id="packEmpty">Your pack is empty. Make a sticker above and tap “Add to Pack”.</div>
+        <div class="grid" id="packGrid"></div>
+
+        <div class="btn-row" style="margin-top:16px;">
+          <button type="button" class="btn btn-primary" id="downloadPackBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m0 0 4-4m-4 4-4-4"/><path d="M4 19h16"/></svg>
+            Download Pack (.zip)
+          </button>
+          <button type="button" class="btn btn-danger" id="clearPackBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+            Clear Pack
+          </button>
+        </div>
+        <div class="msg" id="packMsg" role="status"></div>
+      </section>
+
+      <!-- 4. Recent stickers -->
+      <section class="card" aria-labelledby="recentHeading">
+        <div class="card-head"><span class="step-num" aria-hidden="true">4</span><h2 id="recentHeading">Recent stickers</h2></div>
+        <p class="sub">Your last 8 stickers are kept on this device. Tap one to download it again.</p>
+
+        <div class="empty-note" id="recentEmpty">No recent stickers yet. Downloaded and packed stickers will appear here.</div>
+        <div class="grid" id="recentGrid"></div>
+
+        <div class="btn-row" style="margin-top:16px;">
+          <button type="button" class="btn btn-danger" id="clearRecentBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+            Clear recent
+          </button>
+        </div>
+        <div class="msg" id="recentMsg" role="status"></div>
+      </section>
+
+      <!-- 5. Help -->
+      <section class="card" aria-labelledby="helpHeading">
+        <div class="card-head">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transform: translateY(3px);"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+          <h2 id="helpHeading">How to use a sticker in WhatsApp</h2>
+        </div>
+        <ol class="help-steps">
+          <li>Download your sticker as a <strong>.webp</strong> file, or download a whole pack as a <strong>.zip</strong> and unzip it first.</li>
+          <li>Open any chat in <strong>WhatsApp</strong>, tap the sticker icon, then tap <strong>Create</strong> and pick the sticker file. <span class="muted">(Availability of “Create” depends on your WhatsApp version.)</span></li>
+          <li>Or import the files with a sticker-maker app such as <strong>Sticker.ly</strong> or <strong>Sticker Maker</strong>: open the app, create a new pack, add your .webp files, and tap “Add to WhatsApp”.</li>
+          <li>For a full pack in WhatsApp, a pack needs at least 3 stickers — the ZIP from step 3 gives you all the files ready to import.</li>
+        </ol>
+      </section>
+
+      <footer>
+        <div class="foot-row">
+          <span>Dark Tech Zone — free tools for the community.</span>
+          <a class="channel-link" href="https://whatsapp.com/channel/0029Vb9oK008V0txIkc3oj3z" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="#16a34a" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.6-6.1c-.3-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.3-.7.8-.8 1-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4 0-.5.2-.7l.5-.6c.1-.2.1-.4 0-.5l-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.1s.9 2.4 1 2.6c.1.2 1.8 2.8 4.4 3.9.6.3 1.1.4 1.5.6.6.2 1.2.2 1.6.1.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.2-.2-.5-.3z"/></svg>
+            Join the Dark Tech Zone WhatsApp channel
+          </a>
+        </div>
+      </footer>
+    </div>
+
+    <script>
+      (function () {
+        'use strict';
+
+        var SIZE = 512;
+        var MAX_FILE_BYTES = 10 * 1024 * 1024;
+        var ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+        var PACK_MAX = 30;
+        var RECENT_MAX = 8;
+        var RECENT_KEY = 'dtzStickerRecent';
+        var BG_LIB_URL = 'https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.5.5/+esm';
+
+        function $(id) { return document.getElementById(id); }
+
+        var dropZone = $('dropZone'), fileInput = $('fileInput'),
+            chooseBtn = $('chooseBtn'), sampleBtn = $('sampleBtn'),
+            fileInfo = $('fileInfo'), loadError = $('loadError'),
+            previewCanvas = $('previewCanvas'), previewEmpty = $('previewEmpty'),
+            bgToggle = $('bgToggle'), bgProgressWrap = $('bgProgressWrap'),
+            bgProgressFill = $('bgProgressFill'), bgStatus = $('bgStatus'),
+            outlineColor = $('outlineColor'), outlineThickness = $('outlineThickness'),
+            outlineThicknessVal = $('outlineThicknessVal'),
+            stickerText = $('stickerText'), charCount = $('charCount'),
+            textPosition = $('textPosition'), textColor = $('textColor'),
+            textSize = $('textSize'), textSizeVal = $('textSizeVal'),
+            downloadBtn = $('downloadBtn'), addToPackBtn = $('addToPackBtn'),
+            rerenderBtn = $('rerenderBtn'), editorMsg = $('editorMsg'),
+            packName = $('packName'), packCount = $('packCount'),
+            packGrid = $('packGrid'), packEmpty = $('packEmpty'),
+            downloadPackBtn = $('downloadPackBtn'), clearPackBtn = $('clearPackBtn'),
+            packMsg = $('packMsg'),
+            recentGrid = $('recentGrid'), recentEmpty = $('recentEmpty'),
+            clearRecentBtn = $('clearRecentBtn'), recentMsg = $('recentMsg');
+
+        var pctx = previewCanvas.getContext('2d');
+
+        var STATE = {
+          sourceImg: null,      // HTMLImageElement of the loaded photo
+          sourceBlob: null,     // original Blob (for the AI engine)
+          cutoutImg: null,      // HTMLImageElement after background removal
+          bgBusy: false,
+          bgFailed: false,
+          pack: []              // [{ dataUrl }]
+        };
+
+        /* ---------- helpers ---------- */
+
+        function setMsg(el, text, kind) {
+          el.textContent = text || '';
+          el.className = 'msg' + (kind ? ' ' + kind : '');
+        }
+        function showLoadError(text) {
+          if (text) { loadError.textContent = text; loadError.hidden = false; }
+          else { loadError.textContent = ''; loadError.hidden = true; }
+        }
+        function downloadURI(uri, filename) {
+          var a = document.createElement('a');
+          a.href = uri; a.download = filename;
+          document.body.appendChild(a); a.click();
+          setTimeout(function () { document.body.removeChild(a); }, 0);
+        }
+        function canvasToBlobPromise(canvas, type, quality) {
+          return new Promise(function (resolve) {
+            if (canvas.toBlob) {
+              canvas.toBlob(function (b) { resolve(b); }, type, quality);
+            } else { resolve(null); }
+          });
+        }
+        function loadImageFromURL(url) {
+          return new Promise(function (resolve, reject) {
+            var img = new Image();
+            img.onload = function () { resolve(img); };
+            img.onerror = function () { reject(new Error('image load failed')); };
+            img.src = url;
+          });
+        }
+        function getCheckedValue(name) {
+          var el = document.querySelector('input[name="' + name + '"]:checked');
+          return el ? el.value : '';
+        }
+        function safeFileBase(name) {
+          var base = (name || 'DTZ Stickers').trim().replace(/[\\/:*?"<>|]+/g, '').replace(/\s+/g, '-');
+          return base || 'DTZ-Stickers';
+        }
+
+        /* ---------- step 1: load a photo ---------- */
+
+        function describeFile(file) {
+          var kb = file.size / 1024;
+          var size = kb >= 1024 ? (kb / 1024).toFixed(2) + ' MB' : Math.max(1, Math.round(kb)) + ' KB';
+          return { name: file.name || 'pasted image', size: size };
+        }
+
+        function acceptFile(file) {
+          showLoadError('');
+          if (!file) { showLoadError('No file was received. Try choosing the photo again.'); return; }
+          var type = (file.type || '').toLowerCase();
+          var nameOk = /\.(jpe?g|png|webp)$/i.test(file.name || '');
+          if (ALLOWED_TYPES.indexOf(type) === -1 && !(type === '' && nameOk)) {
+            showLoadError('That file is not a supported photo. Please use a JPG, PNG or WebP image.');
+            return;
+          }
+          if (file.size > MAX_FILE_BYTES) {
+            showLoadError('That photo is too large (' + describeFile(file).size + '). The limit is 10 MB — please pick a smaller photo.');
+            return;
+          }
+          var url = URL.createObjectURL(file);
+          loadImageFromURL(url).then(function (img) {
+            setSource(img, file, file.name || 'photo');
+          }).catch(function () {
+            URL.revokeObjectURL(url);
+            showLoadError('That photo could not be read. It may be corrupted — try a different JPG, PNG or WebP file.');
+          });
+        }
+
+        function setSource(img, blob, label) {
+          STATE.sourceImg = img;
+          STATE.sourceBlob = blob || null;
+          STATE.cutoutImg = null;
+          STATE.bgFailed = false;
+          var info = label || 'Photo';
+          if (blob) { info += ' · ' + describeFile(blob).size; }
+          info += ' · ' + img.naturalWidth + ' × ' + img.naturalHeight + ' px';
+          fileInfo.innerHTML = '';
+          var strong = document.createElement('strong');
+          strong.textContent = 'Loaded: ';
+          fileInfo.appendChild(strong);
+          fileInfo.appendChild(document.createTextNode(info));
+          fileInfo.hidden = false;
+          setMsg(editorMsg, '', '');
+          if (bgToggle.checked) { runBackgroundRemoval(); } else { render(); }
+        }
+
+        dropZone.addEventListener('click', function () { fileInput.click(); });
+        dropZone.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }
+        });
+        chooseBtn.addEventListener('click', function () { fileInput.click(); });
+        fileInput.addEventListener('change', function () {
+          if (fileInput.files && fileInput.files[0]) { acceptFile(fileInput.files[0]); }
+          fileInput.value = '';
+        });
+        ['dragenter', 'dragover'].forEach(function (ev) {
+          dropZone.addEventListener(ev, function (e) { e.preventDefault(); dropZone.classList.add('dragging'); });
+        });
+        ['dragleave', 'drop'].forEach(function (ev) {
+          dropZone.addEventListener(ev, function (e) { e.preventDefault(); dropZone.classList.remove('dragging'); });
+        });
+        dropZone.addEventListener('drop', function (e) {
+          var files = e.dataTransfer && e.dataTransfer.files;
+          if (files && files[0]) { acceptFile(files[0]); }
+          else { showLoadError('Nothing was dropped. Drag an image file onto the box, or tap to choose one.'); }
+        });
+        document.addEventListener('paste', function (e) {
+          var items = (e.clipboardData || window.clipboardData);
+          if (!items) { return; }
+          var files = items.files;
+          if (files && files.length) {
+            for (var i = 0; i < files.length; i++) {
+              if ((files[i].type || '').indexOf('image/') === 0) { acceptFile(files[i]); return; }
+            }
+          }
+        });
+
+        function drawStar(ctx, cx, cy, spikes, outer, inner) {
+          var rot = Math.PI / 2 * 3, x = cx, y = cy, step = Math.PI / spikes;
+          ctx.beginPath();
+          ctx.moveTo(cx, cy - outer);
+          for (var i = 0; i < spikes; i++) {
+            x = cx + Math.cos(rot) * outer; y = cy + Math.sin(rot) * outer;
+            ctx.lineTo(x, y); rot += step;
+            x = cx + Math.cos(rot) * inner; y = cy + Math.sin(rot) * inner;
+            ctx.lineTo(x, y); rot += step;
+          }
+          ctx.lineTo(cx, cy - outer);
+          ctx.closePath();
+        }
+
+        sampleBtn.addEventListener('click', function () {
+          showLoadError('');
+          var c = document.createElement('canvas');
+          c.width = SIZE; c.height = SIZE;
+          var x = c.getContext('2d');
+          var grad = x.createLinearGradient(0, 0, SIZE, SIZE);
+          grad.addColorStop(0, '#052e16');
+          grad.addColorStop(0.55, '#14532d');
+          grad.addColorStop(1, '#16a34a');
+          x.fillStyle = grad; x.fillRect(0, 0, SIZE, SIZE);
+          x.strokeStyle = 'rgba(255,255,255,0.14)'; x.lineWidth = 2;
+          for (var g = 64; g < SIZE; g += 64) {
+            x.beginPath(); x.moveTo(g, 0); x.lineTo(g, SIZE); x.stroke();
+            x.beginPath(); x.moveTo(0, g); x.lineTo(SIZE, g); x.stroke();
+          }
+          drawStar(x, SIZE / 2, 218, 5, 118, 48);
+          x.fillStyle = '#facc15';
+          x.shadowColor = 'rgba(0,0,0,0.35)'; x.shadowBlur = 18; x.shadowOffsetY = 6;
+          x.fill();
+          x.shadowColor = 'transparent'; x.shadowBlur = 0; x.shadowOffsetY = 0;
+          x.fillStyle = '#ffffff';
+          x.font = '800 92px system-ui, -apple-system, "Segoe UI", Arial, sans-serif';
+          x.textAlign = 'center'; x.textBaseline = 'middle';
+          x.fillText('DTZ', SIZE / 2, 392);
+          x.font = '600 26px system-ui, -apple-system, "Segoe UI", Arial, sans-serif';
+          x.fillStyle = 'rgba(255,255,255,0.85)';
+          x.fillText('DARK TECH ZONE', SIZE / 2, 448);
+          canvasToBlobPromise(c, 'image/png').then(function (blob) {
+            if (!blob) { showLoadError('The sample photo could not be created in this browser.'); return; }
+            var url = URL.createObjectURL(blob);
+            loadImageFromURL(url).then(function (img) {
+              setSource(img, blob, 'Sample photo');
+            }).catch(function () {
+              showLoadError('The sample photo could not be loaded. Try choosing a photo instead.');
+            });
+          });
+        });
+
+        /* ---------- step 2: rendering ---------- */
+
+        function currentSubject() {
+          if (bgToggle.checked && STATE.cutoutImg) { return STATE.cutoutImg; }
+          return STATE.sourceImg;
+        }
+
+        function drawFitted(ctx, img, mode) {
+          var iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height;
+          if (!iw || !ih) { return; }
+          var scale = mode === 'fill' ? Math.max(SIZE / iw, SIZE / ih) : Math.min(SIZE / iw, SIZE / ih);
+          var w = iw * scale, h = ih * scale;
+          ctx.drawImage(img, (SIZE - w) / 2, (SIZE - h) / 2, w, h);
+        }
+
+        function buildOutlined(subjectCanvas, color, thickness) {
+          var sil = document.createElement('canvas');
+          sil.width = SIZE; sil.height = SIZE;
+          var sctx = sil.getContext('2d');
+          sctx.drawImage(subjectCanvas, 0, 0);
+          sctx.globalCompositeOperation = 'source-in';
+          sctx.fillStyle = color;
+          sctx.fillRect(0, 0, SIZE, SIZE);
+
+          var out = document.createElement('canvas');
+          out.width = SIZE; out.height = SIZE;
+          var octx = out.getContext('2d');
+          var steps = 24;
+          for (var i = 0; i < steps; i++) {
+            var a = (i / steps) * Math.PI * 2;
+            octx.drawImage(sil, Math.cos(a) * thickness, Math.sin(a) * thickness);
+            octx.drawImage(sil, Math.cos(a) * thickness * 0.55, Math.sin(a) * thickness * 0.55);
+          }
+          octx.drawImage(subjectCanvas, 0, 0);
+          return out;
+        }
+
+        function drawStickerText(ctx) {
+          var text = stickerText.value.trim();
+          if (!text) { return; }
+          var size = parseInt(textSize.value, 10) || 56;
+          ctx.save();
+          ctx.font = '800 ' + size + 'px system-ui, -apple-system, "Segoe UI", Arial, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          var maxW = SIZE - 24;
+          var w = ctx.measureText(text).width;
+          if (w > maxW) {
+            var scaled = Math.max(16, Math.floor(size * maxW / w));
+            ctx.font = '800 ' + scaled + 'px system-ui, -apple-system, "Segoe UI", Arial, sans-serif';
+            size = scaled;
+          }
+          var y = textPosition.value === 'top' ? (size / 2 + 16) : (SIZE - size / 2 - 16);
+          ctx.lineWidth = Math.max(4, size / 7);
+          ctx.strokeStyle = 'rgba(0,0,0,0.65)';
+          ctx.lineJoin = 'round';
+          ctx.strokeText(text, SIZE / 2, y);
+          ctx.fillStyle = textColor.value;
+          ctx.fillText(text, SIZE / 2, y);
+          ctx.restore();
+        }
+
+        function render() {
+          pctx.clearRect(0, 0, SIZE, SIZE);
+          var subject = currentSubject();
+          if (!subject) {
+            previewEmpty.style.display = 'flex';
+            return;
+          }
+          previewEmpty.style.display = 'none';
+
+          var base = document.createElement('canvas');
+          base.width = SIZE; base.height = SIZE;
+          var bctx = base.getContext('2d');
+          drawFitted(bctx, subject, getCheckedValue('fitMode'));
+
+          var outlineMode = getCheckedValue('outlineMode');
+          var finalCanvas = base;
+          if (outlineMode !== 'none') {
+            var color = outlineMode === 'white' ? '#ffffff'
+                      : outlineMode === 'black' ? '#000000'
+                      : outlineColor.value;
+            var thickness = parseInt(outlineThickness.value, 10) || 10;
+            finalCanvas = buildOutlined(base, color, thickness);
+          }
+
+          pctx.drawImage(finalCanvas, 0, 0);
+          drawStickerText(pctx);
+        }
+
+        /* ---------- background removal (AI) ---------- */
+
+        function setBgStatus(text, kind) {
+          bgStatus.textContent = text || '';
+          bgStatus.className = 'progress-status' + (kind ? ' ' + kind : '');
+        }
+
+        function runBackgroundRemoval() {
+          if (!STATE.sourceImg || !STATE.sourceBlob) {
+            bgProgressWrap.hidden = false;
+            bgProgressFill.style.width = '0%';
+            setBgStatus('Load a photo first, then turn this on to remove its background.', 'error');
+            render();
+            return;
+          }
+          if (STATE.cutoutImg) { render(); return; }
+          if (STATE.bgBusy) { return; }
+          STATE.bgBusy = true;
+          STATE.bgFailed = false;
+          bgProgressWrap.hidden = false;
+          bgProgressFill.style.width = '4%';
+          setBgStatus('Loading the AI background-removal engine…', '');
+
+          import(BG_LIB_URL).then(function (mod) {
+            var removeBackground = mod.removeBackground || (mod.default && mod.default.removeBackground) || mod.default;
+            if (typeof removeBackground !== 'function') {
+              throw new Error('engine export missing');
+            }
+            setBgStatus('Downloading the AI model (about 40 MB on first use, then cached)…', '');
+            return removeBackground(STATE.sourceBlob, {
+              model: 'isnet_quint8',
+              output: { format: 'image/png', quality: 1 },
+              progress: function (key, current, total) {
+                if (total && total > 0) {
+                  var pct = Math.min(99, Math.round((current / total) * 100));
+                  bgProgressFill.style.width = pct + '%';
+                  if (String(key).indexOf('compute') === 0) {
+                    setBgStatus('Removing the background… ' + pct + '%', '');
+                  } else {
+                    setBgStatus('Downloading the AI model… ' + pct + '% (about 40 MB on first use, then cached)', '');
+                  }
+                }
+              }
+            });
+          }).then(function (blob) {
+            var url = URL.createObjectURL(blob);
+            return loadImageFromURL(url).then(function (img) {
+              STATE.cutoutImg = img;
+              bgProgressFill.style.width = '100%';
+              setBgStatus('Background removed. You can turn the switch off any time to use the original photo.', 'ok');
+              STATE.bgBusy = false;
+              render();
+            });
+          }).catch(function () {
+            STATE.bgBusy = false;
+            STATE.bgFailed = true;
+            bgProgressFill.style.width = '0%';
+            setBgStatus('Background removal failed. Check your internet connection and try again — press Re-render or untick and re-tick the switch to retry.', 'error');
+            render();
+          });
+        }
+
+        bgToggle.addEventListener('change', function () {
+          if (bgToggle.checked) {
+            runBackgroundRemoval();
+          } else {
+            if (!STATE.bgBusy) { bgProgressWrap.hidden = true; }
+            render();
+          }
+        });
+
+        /* ---------- control wiring ---------- */
+
+        document.querySelectorAll('input[name="fitMode"]').forEach(function (el) {
+          el.addEventListener('change', render);
+        });
+        document.querySelectorAll('input[name="outlineMode"]').forEach(function (el) {
+          el.addEventListener('change', render);
+        });
+        outlineColor.addEventListener('input', function () {
+          if (getCheckedValue('outlineMode') === 'custom') { render(); }
+        });
+        outlineThickness.addEventListener('input', function () {
+          outlineThicknessVal.textContent = outlineThickness.value + ' px';
+          render();
+        });
+        stickerText.addEventListener('input', function () {
+          charCount.textContent = stickerText.value.length;
+          render();
+        });
+        textPosition.addEventListener('change', render);
+        textColor.addEventListener('input', render);
+        textSize.addEventListener('input', function () {
+          textSizeVal.textContent = textSize.value + ' px';
+          render();
+        });
+
+        rerenderBtn.addEventListener('click', function () {
+          if (!STATE.sourceImg) {
+            setMsg(editorMsg, 'Load a photo first — there is nothing to render yet.', 'error');
+            return;
+          }
+          if (bgToggle.checked && !STATE.cutoutImg && !STATE.bgBusy) {
+            runBackgroundRemoval();
+            setMsg(editorMsg, 'Re-running background removal…', '');
+            return;
+          }
+          render();
+          setMsg(editorMsg, 'Preview updated.', 'ok');
+        });
+
+        /* ---------- sticker output ---------- */
+
+        function requireSticker(actionText) {
+          if (!STATE.sourceImg) {
+            setMsg(editorMsg, 'Load a photo first — there is no sticker to ' + actionText + ' yet.', 'error');
+            return false;
+          }
+          render();
+          return true;
+        }
+
+        function stickerDataURL() {
+          try { return previewCanvas.toDataURL('image/webp', 0.92); }
+          catch (e) { return previewCanvas.toDataURL('image/png'); }
+        }
+
+        downloadBtn.addEventListener('click', function () {
+          if (!requireSticker('download')) { return; }
+          canvasToBlobPromise(previewCanvas, 'image/webp', 0.92).then(function (blob) {
+            if (blob) {
+              var url = URL.createObjectURL(blob);
+              downloadURI(url, 'dtz-sticker.webp');
+              setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+              pushRecent(stickerDataURL());
+              setMsg(editorMsg, 'Sticker downloaded as dtz-sticker.webp (512 × 512).', 'ok');
+            } else {
+              downloadURI(stickerDataURL(), 'dtz-sticker.webp');
+              pushRecent(stickerDataURL());
+              setMsg(editorMsg, 'Sticker downloaded (512 × 512).', 'ok');
+            }
+          });
+        });
+
+        addToPackBtn.addEventListener('click', function () {
+          if (!requireSticker('add')) { return; }
+          if (STATE.pack.length >= PACK_MAX) {
+            setMsg(editorMsg, 'Your pack is full — it already has 30 stickers. Download the pack or remove a sticker to make room.', 'error');
+            setMsg(packMsg, 'Pack is full (30 / 30). Remove a sticker or download the pack to continue.', 'error');
+            return;
+          }
+          STATE.pack.push({ dataUrl: stickerDataURL() });
+          renderPack();
+          pushRecent(stickerDataURL());
+          setMsg(editorMsg, 'Added to your pack (' + STATE.pack.length + ' / ' + PACK_MAX + ').', 'ok');
+        });
+
+        /* ---------- step 3: pack ---------- */
+
+        function pad2(n) { return (n < 10 ? '0' : '') + n; }
+
+        var trashSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>';
+        var dlSVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m0 0 4-4m-4 4-4-4"/><path d="M4 19h16"/></svg>';
+
+        function renderPack() {
+          packGrid.innerHTML = '';
+          packCount.innerHTML = '';
+          var strong = document.createElement('strong');
+          strong.textContent = STATE.pack.length;
+          packCount.appendChild(strong);
+          packCount.appendChild(document.createTextNode(' / ' + PACK_MAX + ' stickers'));
+          packEmpty.hidden = STATE.pack.length > 0;
+
+          STATE.pack.forEach(function (item, idx) {
+            var cell = document.createElement('div');
+            cell.className = 'thumb';
+
+            var img = document.createElement('img');
+            img.className = 'thumb-img';
+            img.src = item.dataUrl;
+            img.alt = 'Pack sticker ' + (idx + 1);
+            cell.appendChild(img);
+
+            var actions = document.createElement('div');
+            actions.className = 'thumb-actions';
+
+            var a = document.createElement('a');
+            a.href = item.dataUrl;
+            a.download = 'sticker-' + pad2(idx + 1) + '.webp';
+            a.innerHTML = dlSVG + '<span>Save</span>';
+            a.setAttribute('aria-label', 'Download sticker ' + (idx + 1));
+            actions.appendChild(a);
+
+            var rm = document.createElement('button');
+            rm.type = 'button';
+            rm.innerHTML = trashSVG + '<span>Remove</span>';
+            rm.setAttribute('aria-label', 'Remove sticker ' + (idx + 1) + ' from pack');
+            rm.addEventListener('click', function () {
+              STATE.pack.splice(idx, 1);
+              renderPack();
+              setMsg(packMsg, 'Sticker removed. Pack now has ' + STATE.pack.length + ' / ' + PACK_MAX + '.', '');
+            });
+            actions.appendChild(rm);
+
+            cell.appendChild(actions);
+            packGrid.appendChild(cell);
+          });
+        }
+
+        function dataURLToBlob(dataUrl) {
+          var parts = dataUrl.split(',');
+          var mime = (parts[0].match(/:(.*?);/) || [])[1] || 'image/webp';
+          var bin = atob(parts[1]);
+          var arr = new Uint8Array(bin.length);
+          for (var i = 0; i < bin.length; i++) { arr[i] = bin.charCodeAt(i); }
+          return new Blob([arr], { type: mime });
+        }
+
+        downloadPackBtn.addEventListener('click', function () {
+          if (!STATE.pack.length) {
+            setMsg(packMsg, 'Your pack is empty. Add at least one sticker before downloading the pack.', 'error');
+            return;
+          }
+          if (typeof JSZip === 'undefined') {
+            setMsg(packMsg, 'The ZIP library failed to load, so the pack cannot be zipped right now. Check your connection, reload the page, and try again — or download stickers one by one from the grid.', 'error');
+            return;
+          }
+          setMsg(packMsg, 'Building your ZIP…', '');
+          downloadPackBtn.disabled = true;
+          var zip = new JSZip();
+          STATE.pack.forEach(function (item, idx) {
+            zip.file('sticker-' + pad2(idx + 1) + '.webp', dataURLToBlob(item.dataUrl));
+          });
+          zip.generateAsync({ type: 'blob' }).then(function (blob) {
+            var url = URL.createObjectURL(blob);
+            downloadURI(url, safeFileBase(packName.value) + '.zip');
+            setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+            downloadPackBtn.disabled = false;
+            setMsg(packMsg, 'Pack downloaded: ' + STATE.pack.length + ' sticker' + (STATE.pack.length === 1 ? '' : 's') + ' in the ZIP.', 'ok');
+          }).catch(function () {
+            downloadPackBtn.disabled = false;
+            setMsg(packMsg, 'Building the ZIP failed. Try downloading the stickers one by one from the grid instead.', 'error');
+          });
+        });
+
+        clearPackBtn.addEventListener('click', function () {
+          if (!STATE.pack.length) {
+            setMsg(packMsg, 'Your pack is already empty.', '');
+            return;
+          }
+          STATE.pack = [];
+          renderPack();
+          setMsg(packMsg, 'Pack cleared.', 'ok');
+        });
+
+        /* ---------- step 4: recent stickers (this device only) ---------- */
+
+        var recents = [];
+        try {
+          var stored = window.localStorage.getItem(RECENT_KEY);
+          if (stored) {
+            var parsed = JSON.parse(stored);
+            if (Array.isArray(parsed)) {
+              recents = parsed.filter(function (s) { return typeof s === 'string' && s.indexOf('data:image/') === 0; }).slice(0, RECENT_MAX);
+            }
+          }
+        } catch (e) { recents = []; }
+
+        function saveRecents() {
+          try { window.localStorage.setItem(RECENT_KEY, JSON.stringify(recents)); return true; }
+          catch (e) { return false; }
+        }
+
+        function renderRecents() {
+          recentGrid.innerHTML = '';
+          recentEmpty.hidden = recents.length > 0;
+          recents.forEach(function (dataUrl, idx) {
+            var cell = document.createElement('div');
+            cell.className = 'thumb';
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'thumb-img-btn';
+            btn.setAttribute('aria-label', 'Download recent sticker ' + (idx + 1) + ' again');
+            var img = document.createElement('img');
+            img.className = 'thumb-img';
+            img.src = dataUrl;
+            img.alt = 'Recent sticker ' + (idx + 1) + ' — tap to download again';
+            btn.appendChild(img);
+            btn.addEventListener('click', function () {
+              downloadURI(dataUrl, 'dtz-sticker-recent-' + (idx + 1) + '.webp');
+              setMsg(recentMsg, 'Recent sticker ' + (idx + 1) + ' downloaded again.', 'ok');
+            });
+            cell.appendChild(btn);
+            recentGrid.appendChild(cell);
+          });
+        }
+
+        function pushRecent(dataUrl) {
+          if (!dataUrl) { return; }
+          recents.unshift(dataUrl);
+          recents = recents.slice(0, RECENT_MAX);
+          if (!saveRecents()) {
+            // Storage may be full: keep shrinking until it fits or give up quietly.
+            while (recents.length > 1) {
+              recents.pop();
+              if (saveRecents()) { break; }
+            }
+          }
+          renderRecents();
+        }
+
+        clearRecentBtn.addEventListener('click', function () {
+          if (!recents.length) {
+            setMsg(recentMsg, 'Recent stickers are already empty.', '');
+            return;
+          }
+          recents = [];
+          try { window.localStorage.removeItem(RECENT_KEY); } catch (e) {}
+          renderRecents();
+          setMsg(recentMsg, 'Recent stickers cleared from this device.', 'ok');
+        });
+
+        /* ---------- init ---------- */
+        charCount.textContent = stickerText.value.length;
+        outlineThicknessVal.textContent = outlineThickness.value + ' px';
+        textSizeVal.textContent = textSize.value + ' px';
+        renderPack();
+        renderRecents();
+        render();
+      })();
+    </script>
+  </body>
+</html>
