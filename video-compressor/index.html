@@ -286,7 +286,7 @@ function loadFFmpeg(){
   setStatus($("exportStatus"),"Loading video engine (~25 MB, first time only)…");
   $("engineNote").textContent="Loading engine…";
   ffmpegLoading=(function(){
-    ffmpeg=window.FFmpeg.createFFmpeg({log:false, corePath:CORE_URL});
+    ffmpeg=window.FFmpeg.createFFmpeg({log:false, corePath:CORE_URL, mainName:"main"});
     ffmpeg.setProgress(function(p){
       if(p && isFinite(p.ratio) && p.ratio>=0){
         $("meterBar").style.width=Math.min(100,Math.round(p.ratio*100))+"%";
