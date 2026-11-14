@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light" />
+<title>DTZ Video Compressor — Dark Tech Zone</title>
+<meta name="description" content="Shrink any video for WhatsApp Status, Telegram or sharing — real H.264 compression in your browser, nothing uploaded, no signup. Pick WhatsApp Status, Small or Tiny and download a real MP4." />
+<link rel="icon" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" />
+<script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.11.0/dist/ffmpeg.min.js"></script>
+<style>
+  :root{
+    --bg:#f7f7f8; --card:#ffffff; --ink:#171717; --muted:#6b7280; --line:#e5e7eb;
+    --green:#16a34a; --green-d:#15803d; --red:#dc2626; --chip:#f3f4f6;
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:780px;margin:0 auto;padding:20px 16px 64px}
+  header{display:flex;align-items:center;gap:12px;margin:6px 0 4px}
+  header img{width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid #e5e7eb}
+  header h1{font-size:21px;margin:0;line-height:1.2}
+  header p{margin:0;color:var(--muted);font-size:13px}
+  .badge{display:inline-block;margin-left:auto;font-size:12px;color:var(--green-d);background:#dcfce7;border:1px solid #bbf7d0;padding:3px 9px;border-radius:999px;white-space:nowrap}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-top:14px}
+  .card h2{font-size:15px;margin:0 0 4px}
+  .card .sub{color:var(--muted);font-size:13px;margin:0 0 12px}
+  .drop{border:2px dashed #cbd5e1;border-radius:12px;padding:26px 16px;text-align:center;color:var(--muted);cursor:pointer;transition:.15s}
+  .drop:hover,.drop.over{border-color:var(--green);background:#f0fdf4;color:var(--ink)}
+  .drop svg{display:block;margin:0 auto 8px}
+  .drop b{color:var(--ink)}
+  .drop input{display:none}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .row + .row{margin-top:10px}
+  button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid var(--line);background:#fff;padding:9px 14px}
+  button:hover{background:#f9fafb}
+  button.primary{background:var(--green);border-color:var(--green);color:#fff;font-weight:600}
+  button.primary:hover{background:var(--green-d)}
+  button.danger{color:var(--red);border-color:#fecaca}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  .btn-sm{padding:6px 10px;font-size:13px}
+  label{font-size:13px;color:var(--muted)}
+  select,input[type=number]{font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink)}
+  input[type=range]{accent-color:var(--green)}
+  .fileinfo{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:13px}
+  .fileinfo b{font-size:14px}
+  .pill{font-size:12px;background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:2px 9px;color:#374151}
+  .pill.green{background:#dcfce7;border-color:#bbf7d0;color:var(--green-d)}
+  .hint{font-size:12px;color:var(--muted);margin:8px 0 0}
+  .meter{height:8px;background:#eef2f7;border-radius:99px;overflow:hidden}
+  .meter > div{height:100%;width:0%;background:var(--green);transition:width .15s}
+  .status{font-size:13px;color:var(--muted);margin:8px 0 0;min-height:20px}
+  .status.err{color:var(--red)}
+  .status.ok{color:var(--green-d)}
+  .result{display:none;border:1px solid #bbf7d0;background:#f0fdf4;border-radius:12px;padding:14px}
+  .result.show{display:block}
+  .result h3{margin:0 0 4px;font-size:15px}
+  .result p{margin:0 0 10px;font-size:13px;color:#374151}
+  .recent{list-style:none;margin:0;padding:0}
+  .recent li{display:flex;gap:8px;align-items:center;padding:9px 2px;border-top:1px solid var(--line);font-size:13px;cursor:pointer}
+  .recent li:first-child{border-top:none}
+  .recent li:hover{color:var(--green-d)}
+  .recent .t{margin-left:auto;color:var(--muted);font-size:12px;white-space:nowrap}
+  .empty{color:var(--muted);font-size:13px}
+  .limits{font-size:12px;color:var(--muted)}
+  .limits li{margin:3px 0}
+  footer{margin-top:22px;text-align:center;color:var(--muted);font-size:12px}
+  footer a{color:var(--green-d);text-decoration:none}
+  .check{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink)}
+  .check input{accent-color:var(--green);width:16px;height:16px}
+  video.preview{width:100%;max-height:320px;background:#000;border-radius:12px;border:1px solid var(--line)}
+  .presets{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  .preset{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:12px;padding:12px;cursor:pointer;background:#fff}
+  .preset:hover{border-color:#bbf7d0}
+  .preset.sel{border-color:var(--green);background:#f0fdf4;box-shadow:0 0 0 1px var(--green)}
+  .preset b{display:block;font-size:14px}
+  .preset span{font-size:12px;color:var(--muted)}
+  .preset input{width:18px;height:18px;accent-color:var(--green);flex:none}
+  .field{display:flex;flex-direction:column;gap:4px}
+  .field label{font-size:13px;color:var(--muted)}
+  .field .val{font-size:13px;color:var(--ink)}
+  .sel{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end}
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13px}
+  .compare div{border:1px solid var(--line);border-radius:10px;padding:10px}
+  .compare b{display:block;font-size:13px}
+  .compare .big{font-size:18px;font-weight:700}
+  @media (max-width:560px){ header h1{font-size:18px} .wrap{padding:14px 12px 48px} .presets{grid-template-columns:1fr} .compare{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <img src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone logo" />
+    <div>
+      <h1>DTZ Video Compressor</h1>
+      <p>Shrink videos for WhatsApp, Telegram &amp; sharing &mdash; free, no signup</p>
+    </div>
+    <span class="badge">100% in your browser</span>
+  </header>
+
+  <!-- 1. LOAD VIDEO -->
+  <section class="card" id="cardLoad">
+    <h2>1. Load a video</h2>
+    <p class="sub">MP4, MOV, WebM, MKV, AVI or 3GP &mdash; up to 100 MB. Your video never leaves your device; compression runs entirely in this tab.</p>
+    <div class="drop" id="drop" tabindex="0" role="button" aria-label="Upload a video file">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      <b>Tap to choose a video</b><br/>or drag &amp; drop a video file here
+      <input type="file" id="fileInput" accept="video/*,.mp4,.mov,.webm,.mkv,.avi,.3gp" />
+    </div>
+    <div class="row" style="margin-top:12px">
+      <button id="btnSample" type="button">Use a sample clip</button>
+      <span class="hint" style="margin:0">No file handy? Try a 3-second demo clip recorded right in your browser.</span>
+    </div>
+    <p class="status" id="loadStatus" role="status"></p>
+  </section>
+
+  <!-- 2. SETTINGS -->
+  <section class="card" id="cardSettings" hidden>
+    <h2>2. Pick a size</h2>
+    <p class="sub">Smaller size = smaller file. Quality stays good for phone screens at every preset.</p>
+    <div class="fileinfo" style="margin-bottom:12px">
+      <b id="fileName">&mdash;</b>
+      <span class="pill" id="fileSize">&mdash;</span>
+      <span class="pill" id="fileMeta">&mdash;</span>
+      <button class="btn-sm danger" id="btnRemove" type="button">Remove</button>
+    </div>
+    <video class="preview" id="preview" controls playsinline preload="metadata"></video>
+    <div class="presets" id="presets" style="margin-top:14px">
+      <label class="preset sel" data-preset="whatsapp">
+        <input type="radio" name="preset" value="whatsapp" checked />
+        <div><b>WhatsApp Status</b>
+        <span>720p &middot; best balance &middot; aims under the 16 MB status limit for short clips</span></div>
+      </label>
+      <label class="preset" data-preset="small">
+        <input type="radio" name="preset" value="small" />
+        <div><b>Small &mdash; 720p</b>
+        <span>720p &middot; higher quality &middot; good for Telegram &amp; sharing</span></div>
+      </label>
+      <label class="preset" data-preset="tiny">
+        <input type="radio" name="preset" value="tiny" />
+        <div><b>Tiny &mdash; 480p</b>
+        <span>480p &middot; smallest file &middot; fine for status &amp; slow data</span></div>
+      </label>
+      <label class="preset" data-preset="custom">
+        <input type="radio" name="preset" value="custom" />
+        <div><b>Custom</b>
+        <span>Choose your own resolution, quality &amp; audio</span></div>
+      </label>
+    </div>
+    <div class="sel" id="customRow" style="margin-top:14px;display:none">
+      <div class="field"><label for="optRes">Resolution</label>
+        <select id="optRes">
+          <option value="0">Keep original</option>
+          <option value="1920">1080p (1920 wide)</option>
+          <option value="1280" selected>720p (1280 wide)</option>
+          <option value="854">480p (854 wide)</option>
+          <option value="640">360p (640 wide)</option>
+        </select>
+      </div>
+      <div class="field"><label for="optCrf">Quality (CRF) <span class="val" id="crfVal">28</span></label>
+        <input type="range" id="optCrf" min="23" max="32" step="1" value="28" style="width:150px" />
+      </div>
+      <div class="field"><label for="optAudio">Audio</label>
+        <select id="optAudio">
+          <option value="128">128 kbps</option>
+          <option value="96" selected>96 kbps</option>
+          <option value="64">64 kbps</option>
+          <option value="0">Remove audio</option>
+        </select>
+      </div>
+    </div>
+    <p class="hint" id="presetNote">WhatsApp Status preset: 720p, CRF 28, 96 kbps audio. A 30-second status clip usually lands well under 16 MB; very long videos may still exceed it &mdash; check the result size below.</p>
+  </section>
+
+  <!-- 3. COMPRESS -->
+  <section class="card" id="cardExport" hidden>
+    <h2>3. Compress &amp; download</h2>
+    <p class="sub">The first run downloads the video engine (~25 MB) once, then compresses on your device. Longer videos take longer &mdash; keep this tab open.</p>
+    <div class="row">
+      <button class="primary" id="btnCompress" type="button">Compress video</button>
+      <span class="hint" style="margin:0" id="engineNote">Engine not loaded yet.</span>
+    </div>
+    <div class="meter" style="margin-top:12px"><div id="meterBar"></div></div>
+    <p class="status" id="exportStatus" role="status"></p>
+    <div class="result" id="resultBox">
+      <h3>Your compressed video is ready</h3>
+      <div class="compare" style="margin-bottom:12px">
+        <div><b>Before</b><span class="big" id="beforeSize">&mdash;</span><br/><span id="beforeMeta">&mdash;</span></div>
+        <div><b>After</b><span class="big" id="afterSize">&mdash;</span><br/><span id="afterMeta">&mdash;</span></div>
+      </div>
+      <p id="resultMeta">&mdash;</p>
+      <div class="row">
+        <a id="dlLink" href="#" download="video-compressed.mp4" style="text-decoration:none"><button class="primary" type="button">Download MP4</button></a>
+        <button id="btnAgain" type="button">Compress another</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- RECENT -->
+  <section class="card">
+    <h2>Recent compressions</h2>
+    <p class="sub">Saved on this device only. Tap one to re-choose that file and compress it again.</p>
+    <ul class="recent" id="recentList"></ul>
+    <p class="empty" id="recentEmpty">No videos compressed yet.</p>
+    <div class="row" style="margin-top:8px"><button class="btn-sm" id="btnClearRecent" type="button">Clear history</button></div>
+  </section>
+
+  <section class="card">
+    <h2>How it works &amp; limits</h2>
+    <ul class="limits">
+      <li>Compression uses real H.264 (libx264) encoding inside your browser via ffmpeg.wasm &mdash; nothing is uploaded to any server.</li>
+      <li>The engine (~25 MB) downloads once from jsDelivr on first use. If it cannot load, check your connection and reload.</li>
+      <li>Works best in Chrome or Edge on desktop and Android. On iPhone, use Safari and keep the tab in the foreground while it runs.</li>
+      <li>Very large or very long videos use a lot of memory &mdash; the file cap is 100 MB. A 1-minute 720p clip usually takes under a minute.</li>
+      <li>Output is always MP4 (H.264 + AAC) with faststart, so it plays instantly on WhatsApp, Telegram and any phone.</li>
+    </ul>
+  </section>
+
+  <footer>Dark Tech Zone &middot; Free tools, no signup &middot; <a href="https://www.darktechzon.site/">darktechzon.site</a> &middot; <a href="https://whatsapp.com/channel/0029Vb9oK008V0txIkc3oj3z">WhatsApp Channel</a></footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id);};
+var MAX_BYTES=100*1024*1024;
+var CORE_URL="https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js";
+var ffmpeg=null, ffmpegLoaded=false, ffmpegLoading=null;
+var fileName="video", fileSize=0, inW=0, inH=0, inDur=0, inExt="mp4", lastFile=null, lastBlobUrl=null, outBlobUrl=null;
+var ffmpegOK=(typeof window.FFmpeg!=="undefined" && window.FFmpeg && window.FFmpeg.createFFmpeg);
+
+var PRESETS={
+  whatsapp:{res:1280, crf:28, audio:96, note:"WhatsApp Status preset: 720p, CRF 28, 96 kbps audio. A 30-second status clip usually lands well under 16 MB; very long videos may still exceed it — check the result size below."},
+  small:{res:1280, crf:26, audio:128, note:"Small preset: 720p, CRF 26 (higher quality), 128 kbps audio. Good for Telegram and sharing."},
+  tiny:{res:854, crf:30, audio:64, note:"Tiny preset: 480p, CRF 30, 64 kbps audio. Smallest file — fine for status and slow data."},
+  custom:{res:0, crf:28, audio:96, note:"Custom: choose resolution, quality and audio below."}
+};
+
+function fmtTime(s){ s=Math.max(0,s); var m=Math.floor(s/60), r=s-m*60; return m+":"+ (r<10?"0":"") + r.toFixed(1); }
+function fmtBytes(n){ if(n<1024) return n+" B"; if(n<1048576) return (n/1024).toFixed(1)+" KB"; return (n/1048576).toFixed(2)+" MB"; }
+function setStatus(el,msg,cls){ el.textContent=msg||""; el.className="status"+(cls?" "+cls:""); }
+function currentPreset(){
+  var r=document.querySelector('input[name="preset"]:checked');
+  return r?r.value:"whatsapp";
+}
+function applyPresetUI(){
+  var p=currentPreset();
+  document.querySelectorAll(".preset").forEach(function(el){
+    el.classList.toggle("sel", el.getAttribute("data-preset")===p);
+  });
+  $("customRow").style.display=(p==="custom")?"flex":"none";
+  $("presetNote").textContent=PRESETS[p].note;
+  if(p==="custom"){
+    $("optCrf").value=PRESETS.custom.crf;
+    $("crfVal").textContent=PRESETS.custom.crf;
+  }
+}
+function buildArgs(){
+  var p=currentPreset(), args=["-i","input."+inExt];
+  var res, crf, audio;
+  if(p==="custom"){
+    res=parseInt($("optRes").value,10)||0;
+    crf=parseInt($("optCrf").value,10)||28;
+    audio=parseInt($("optAudio").value,10);
+  } else {
+    res=PRESETS[p].res; crf=PRESETS[p].crf; audio=PRESETS[p].audio;
+  }
+  var targetW=res>0?Math.min(res,inW||res):(inW||0);
+  if(targetW>0 && inW>0 && targetW<inW){
+    args.push("-vf","scale="+targetW+":-2");
+  }
+  args.push("-c:v","libx264","-crf",String(crf),"-preset","veryfast");
+  if(audio===0){ args.push("-an"); }
+  else { args.push("-c:a","aac","-b:a",String(audio)+"k"); }
+  args.push("-movflags","+faststart","output.mp4");
+  return args;
+}
+function loadFFmpeg(){
+  if(ffmpegLoaded) return Promise.resolve();
+  if(ffmpegLoading) return ffmpegLoading;
+  if(!ffmpegOK){
+    return Promise.reject(new Error("Video engine script did not load. Check your connection and reload the page."));
+  }
+  setStatus($("exportStatus"),"Loading video engine (~25 MB, first time only)…");
+  $("engineNote").textContent="Loading engine…";
+  ffmpegLoading=(function(){
+    ffmpeg=window.FFmpeg.createFFmpeg({log:false, corePath:CORE_URL});
+    ffmpeg.setProgress(function(p){
+      if(p && isFinite(p.ratio) && p.ratio>=0){
+        $("meterBar").style.width=Math.min(100,Math.round(p.ratio*100))+"%";
+        setStatus($("exportStatus"),"Compressing… "+Math.round(p.ratio*100)+"%");
+      }
+    });
+    return ffmpeg.load().then(function(){
+      ffmpegLoaded=true;
+      $("engineNote").textContent="Engine ready.";
+      setStatus($("exportStatus"),"Engine ready — press Compress video.");
+      return true;
+    });
+  })();
+  ffmpegLoading.catch(function(e){
+    ffmpegLoading=null;
+    $("engineNote").textContent="Engine failed to load.";
+    setStatus($("exportStatus"),"Could not load the video engine ("+(e&&e.message?e.message:"network error")+"). Check your connection and reload.","err");
+  });
+  return ffmpegLoading;
+}
+function probeVideo(url,cb){
+  var v=document.createElement("video");
+  v.preload="metadata"; v.muted=true;
+  var done=false;
+  function finish(){
+    if(done) return; done=true;
+    cb({w:v.videoWidth||0, h:v.videoHeight||0, dur:(isFinite(v.duration)?v.duration:0)||0});
+    v.src=""; v.remove();
+  }
+  v.onloadedmetadata=function(){
+    // MediaRecorder WebM often reports Infinity duration until a seek forces it.
+    if(!isFinite(v.duration)){
+      v.currentTime=Number.MAX_SAFE_INTEGER;
+      v.ondurationchange=function(){ finish(); };
+      setTimeout(finish,1500);
+    } else {
+      finish();
+    }
+  };
+  v.onerror=function(){ finish(); };
+  v.src=url;
+}
+function afterLoad(blob,name,ext){
+  if(lastBlobUrl) URL.revokeObjectURL(lastBlobUrl);
+  lastBlobUrl=URL.createObjectURL(blob);
+  var pv=$("preview");
+  pv.src=lastBlobUrl;
+  probeVideo(lastBlobUrl,function(info){
+    inW=info.w; inH=info.h; inDur=info.dur;
+    $("fileName").textContent=name;
+    $("fileSize").textContent=fmtBytes(fileSize);
+    var meta=[];
+    if(inW&&inH) meta.push(inW+"×"+inH);
+    if(inDur) meta.push(fmtTime(inDur));
+    meta.push(ext.toUpperCase());
+    $("fileMeta").textContent=meta.join(" · ")||"Video";
+    $("cardSettings").hidden=false; $("cardExport").hidden=false;
+    $("resultBox").classList.remove("show");
+    $("meterBar").style.width="0%";
+    setStatus($("exportStatus"),"");
+    applyPresetUI();
+    $("cardSettings").scrollIntoView({behavior:"smooth",block:"start"});
+    saveRecent();
+  });
+}
+function handleFile(file){
+  if(!file) return;
+  if(file.size>MAX_BYTES){ setStatus($("loadStatus"),"File too large — max 100 MB.","err"); return; }
+  lastFile=file; fileSize=file.size;
+  fileName=file.name.replace(/\.[^.]+$/,"")||"video";
+  inExt=(file.name.split(".").pop()||"mp4").toLowerCase();
+  if(inExt==="3gp") inExt="3gp";
+  setStatus($("loadStatus"),"Loaded: "+file.name+" ("+fmtBytes(file.size)+")","ok");
+  afterLoad(file,fileName,inExt);
+}
+function buildSampleClip(){
+  if(!window.MediaRecorder){
+    setStatus($("loadStatus"),"Your browser cannot record the sample clip — please choose a video file instead.","err");
+    return;
+  }
+  setStatus($("loadStatus"),"Recording a 3-second sample clip in your browser…");
+  var cv=document.createElement("canvas"); cv.width=640; cv.height=360;
+  var ctx=cv.getContext("2d");
+  var stream=cv.captureStream(30);
+  var mime="";
+  if(MediaRecorder.isTypeSupported("video/webm;codecs=vp9")) mime="video/webm;codecs=vp9";
+  else if(MediaRecorder.isTypeSupported("video/webm;codecs=vp8")) mime="video/webm;codecs=vp8";
+  else if(MediaRecorder.isTypeSupported("video/webm")) mime="video/webm";
+  var rec;
+  try{ rec=new MediaRecorder(stream, mime?{mimeType:mime,videoBitsPerSecond:2500000}:{videoBitsPerSecond:2500000}); }
+  catch(e){ setStatus($("loadStatus"),"Could not start the sample recorder in this browser.","err"); return; }
+  var chunks=[];
+  rec.ondataavailable=function(e){ if(e.data&&e.data.size) chunks.push(e.data); };
+  rec.onstop=function(){
+    var blob=new Blob(chunks,{type:"video/webm"});
+    if(!blob.size){ setStatus($("loadStatus"),"Sample clip came out empty — please choose a video file.","err"); return; }
+    lastFile=null; fileSize=blob.size; fileName="sample-clip"; inExt="webm";
+    setStatus($("loadStatus"),"Sample clip ready ("+fmtBytes(blob.size)+") — pick a preset and compress it.","ok");
+    afterLoad(blob,fileName,"webm");
+  };
+  rec.start();
+  var t0=performance.now();
+  function frame(){
+    var t=(performance.now()-t0)/1000;
+    var g=ctx.createLinearGradient(0,0,640,360);
+    g.addColorStop(0,"#16a34a"); g.addColorStop(1,"#0ea5e9");
+    ctx.fillStyle=g; ctx.fillRect(0,0,640,360);
+    ctx.fillStyle="rgba(255,255,255,0.9)";
+    ctx.beginPath(); ctx.arc(320+Math.sin(t*3)*160, 150+Math.cos(t*2)*60, 46, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle="#ffffff"; ctx.font="bold 44px sans-serif"; ctx.textAlign="center";
+    ctx.fillText("DTZ SAMPLE", 320, 280);
+    ctx.font="22px sans-serif"; ctx.fillText(t.toFixed(1)+"s", 320, 320);
+    if(t<3.1) requestAnimationFrame(frame); else rec.stop();
+  }
+  requestAnimationFrame(frame);
+}
+/* ---- upload wiring ---- */
+var drop=$("drop"), fi=$("fileInput");
+drop.addEventListener("click",function(){ fi.click(); });
+drop.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); fi.click(); } });
+fi.addEventListener("change",function(){ handleFile(fi.files[0]); fi.value=""; });
+["dragenter","dragover"].forEach(function(ev){ drop.addEventListener(ev,function(e){ e.preventDefault(); drop.classList.add("over"); }); });
+["dragleave","drop"].forEach(function(ev){ drop.addEventListener(ev,function(e){ e.preventDefault(); drop.classList.remove("over"); }); });
+drop.addEventListener("drop",function(e){ handleFile(e.dataTransfer.files[0]); });
+$("btnSample").addEventListener("click",buildSampleClip);
+$("btnRemove").addEventListener("click",function(){
+  lastFile=null; inW=0; inH=0; inDur=0;
+  if(lastBlobUrl){ URL.revokeObjectURL(lastBlobUrl); lastBlobUrl=null; }
+  $("preview").removeAttribute("src"); $("preview").load();
+  $("cardSettings").hidden=true; $("cardExport").hidden=true;
+  setStatus($("loadStatus"),"");
+});
+document.querySelectorAll('input[name="preset"]').forEach(function(r){
+  r.addEventListener("change",applyPresetUI);
+});
+$("optCrf").addEventListener("input",function(){ $("crfVal").textContent=this.value; });
+/* ---- compress ---- */
+$("btnCompress").addEventListener("click",function(){
+  if(!lastFile && !lastBlobUrl){ setStatus($("exportStatus"),"Load a video first.","err"); return; }
+  var btn=$("btnCompress"); btn.disabled=true;
+  $("resultBox").classList.remove("show");
+  $("meterBar").style.width="0%";
+  loadFFmpeg().then(function(){
+    if(!ffmpegLoaded){ btn.disabled=false; return; }
+    setStatus($("exportStatus"),"Reading your video into the engine…");
+    var srcBlob=lastFile;
+    var readPromise;
+    if(srcBlob){ readPromise=Promise.resolve(srcBlob); }
+    else { readPromise=fetch(lastBlobUrl).then(function(r){ return r.blob(); }); }
+    return readPromise.then(function(blob){
+      return window.FFmpeg.fetchFile(blob);
+    }).then(function(data){
+      try{ ffmpeg.FS("unlink","input."+inExt); }catch(e){}
+      try{ ffmpeg.FS("unlink","output.mp4"); }catch(e){}
+      ffmpeg.FS("writeFile","input."+inExt,data);
+      var args=buildArgs();
+      setStatus($("exportStatus"),"Compressing… 0%");
+      return ffmpeg.run.apply(ffmpeg,args);
+    }).then(function(){
+      var out=ffmpeg.FS("readFile","output.mp4");
+      var blob=new Blob([out.buffer],{type:"video/mp4"});
+      finishCompress(blob);
+      try{ ffmpeg.FS("unlink","input."+inExt); }catch(e){}
+      try{ ffmpeg.FS("unlink","output.mp4"); }catch(e){}
+    }).catch(function(e){
+      var msg=(e&&e.message)?e.message:"encoding failed";
+      setStatus($("exportStatus"),"Compression failed: "+msg+". Try a smaller file, or reload and try again.","err");
+      $("meterBar").style.width="0%";
+    }).then(function(){ btn.disabled=false; });
+  }).catch(function(){
+    btn.disabled=false;
+  });
+});
+function finishCompress(blob){
+  if(outBlobUrl) URL.revokeObjectURL(outBlobUrl);
+  outBlobUrl=URL.createObjectURL(blob);
+  var base=(fileName||"video").replace(/[^\w\-]+/g,"-").replace(/-+/g,"-").replace(/^-|-$/g,"")||"video";
+  var dl=$("dlLink");
+  dl.href=outBlobUrl; dl.download=base+"-compressed.mp4";
+  var saved=fileSize>0?Math.max(0,Math.round((1-blob.size/fileSize)*100)):0;
+  $("beforeSize").textContent=fmtBytes(fileSize);
+  $("beforeMeta").textContent=(inW&&inH?inW+"×"+inH:"")+(inDur?" · "+fmtTime(inDur):"");
+  $("afterSize").textContent=fmtBytes(blob.size);
+  var afterMeta=[];
+  var p=currentPreset();
+  afterMeta.push(p==="custom" ? "Custom" : (p==="tiny" ? "480p" : "720p"));
+  afterMeta.push("MP4 · H.264");
+  $("afterMeta").textContent=afterMeta.join(" · ");
+  if(blob.size>=fileSize){
+    $("resultMeta").textContent="This video was already well compressed — the output is about the same size ("+saved+"% smaller). Try the Tiny preset for a smaller file.";
+  } else {
+    $("resultMeta").textContent="Saved "+saved+"% — "+fmtBytes(fileSize-blob.size)+" smaller than the original. "+(blob.size<=16*1024*1024?"Under 16 MB — fits WhatsApp Status.":"Over 16 MB — too big for one WhatsApp Status, but fine for Telegram and sharing.");
+  }
+  $("resultBox").classList.add("show");
+  $("meterBar").style.width="100%";
+  setStatus($("exportStatus"),"Done — your compressed video is ready to download.","ok");
+  saveRecent(blob.size);
+  $("resultBox").scrollIntoView({behavior:"smooth",block:"center"});
+}
+$("btnAgain").addEventListener("click",function(){
+  $("resultBox").classList.remove("show");
+  setStatus($("exportStatus"),"");
+  $("meterBar").style.width="0%";
+  $("cardLoad").scrollIntoView({behavior:"smooth",block:"start"});
+});
+/* ---- recent ---- */
+function getRecent(){ try{ return JSON.parse(localStorage.getItem("dtz-video-recent")||"[]"); }catch(e){ return []; } }
+function saveRecent(outSize){
+  if(!fileName) return;
+  var list=getRecent().filter(function(r){ return r.name!==fileName; });
+  list.unshift({name:fileName,size:fileSize,out:outSize||0,preset:currentPreset(),ts:Date.now()});
+  try{ localStorage.setItem("dtz-video-recent",JSON.stringify(list.slice(0,8))); }catch(e){}
+  renderRecent();
+}
+function renderRecent(){
+  var list=getRecent(), ul=$("recentList");
+  ul.innerHTML="";
+  $("recentEmpty").style.display=list.length?"none":"block";
+  list.forEach(function(r){
+    var li=document.createElement("li");
+    var d=new Date(r.ts);
+    li.innerHTML="<span></span><span class='t'></span>";
+    var label=r.name+" — "+fmtBytes(r.size);
+    if(r.out) label+=" → "+fmtBytes(r.out);
+    li.firstChild.textContent=label;
+    li.lastChild.textContent=d.toLocaleDateString();
+    li.title="Load this video again (re-choose the file)";
+    li.addEventListener("click",function(){ setStatus($("loadStatus"),"Re-choose the file \""+r.name+"\" to compress it again.",""); drop.scrollIntoView({behavior:"smooth"}); });
+    ul.appendChild(li);
+  });
+}
+$("btnClearRecent").addEventListener("click",function(){
+  try{ localStorage.removeItem("dtz-video-recent"); }catch(e){}
+  renderRecent();
+});
+renderRecent();
+applyPresetUI();
+if(!ffmpegOK){ setStatus($("loadStatus"),"Note: the video engine script failed to load — check your connection and reload the page.","err"); }
+})();
+</script>
+</body>
+</html>
