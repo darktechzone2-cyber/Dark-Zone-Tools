@@ -658,7 +658,7 @@
           else if (key === "FEATURES"){
             var rawLines = body.split("\n"), feats = [];
             for (var k = 0; k < rawLines.length; k++){
-              var line = rawLines[k].replace(/^\s*[-•*]\s*/, "").replace(/^\s*\d+[.)]\s*/, "").trim();
+              var line = rawLines[k].replace(/^\s*[-•*]\s*/, "").replace(/^\s*\d+[.)]\s+/, "").trim();
               if (line) feats.push(line);
             }
             out.features = feats;
