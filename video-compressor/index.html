@@ -226,7 +226,7 @@
 "use strict";
 var $=function(id){return document.getElementById(id);};
 var MAX_BYTES=100*1024*1024;
-var CORE_URL="https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js";
+var CORE_URL="https://cdn.jsdelivr.net/npm/@ffmpeg/core-st@0.11.0/dist/ffmpeg-core.js";
 var ffmpeg=null, ffmpegLoaded=false, ffmpegLoading=null;
 var fileName="video", fileSize=0, inW=0, inH=0, inDur=0, inExt="mp4", lastFile=null, lastBlobUrl=null, outBlobUrl=null;
 var ffmpegOK=(typeof window.FFmpeg!=="undefined" && window.FFmpeg && window.FFmpeg.createFFmpeg);
