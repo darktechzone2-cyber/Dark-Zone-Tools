@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTZ AI Quiz Generator — Dark Tech Zone</title>
+<meta name="description" content="Type any topic and Dark Tech Zone AI writes a real multiple-choice quiz for you — play it, check your score, and download it. Free, no signup.">
+<link rel="icon" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg">
+<style>
+:root{--bg:#f7f7f8;--card:#fff;--ink:#1a1a1e;--muted:#6b7280;--line:#e5e7eb;--green:#16a34a;--green-d:#15803d;--red:#dc2626;--red-d:#b91c1c;--blue:#2563eb;--soft:#f3f4f6}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+header{background:var(--card);border-bottom:1px solid var(--line);padding:14px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header img{width:40px;height:40px;border-radius:50%;object-fit:cover}
+header h1{font-size:19px;font-weight:700}
+header p{font-size:13px;color:var(--muted)}
+.pill{margin-left:auto;font-size:12px;font-weight:600;padding:5px 11px;border-radius:999px;background:#f3f4f6;color:var(--muted);display:flex;align-items:center;gap:6px;white-space:nowrap}
+.pill .dot{width:8px;height:8px;border-radius:50%;background:#9ca3af}
+.pill.on{background:#dcfce7;color:#166534}
+.pill.on .dot{background:#16a34a}
+.pill.off{background:#fee2e2;color:#991b1b}
+.pill.off .dot{background:#dc2626}
+main{max-width:760px;margin:0 auto;padding:24px 16px 60px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px}
+h2{font-size:17px;margin-bottom:4px}
+.sub{font-size:13px;color:var(--muted);margin-bottom:14px}
+label{display:block;font-size:13px;font-weight:600;margin:14px 0 6px}
+input[type=text]{width:100%;padding:12px 14px;border:1px solid #d1d5db;border-radius:10px;font-size:15px;font-family:inherit;outline:none}
+input[type=text]:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(22,163,74,.15)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{border:1px solid var(--line);background:var(--soft);border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer}
+.chip:hover{border-color:var(--green);color:var(--green-d)}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.seg label{margin:0}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg span{display:inline-block;padding:8px 14px;border:1px solid #d1d5db;border-radius:999px;font-size:13px;font-weight:600;cursor:pointer;background:#fff}
+.seg input:checked+span{background:var(--green);border-color:var(--green);color:#fff}
+.seg input:focus-visible+span{box-shadow:0 0 0 3px rgba(22,163,74,.3)}
+.btn{display:inline-block;border:none;border-radius:10px;padding:12px 20px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-green{background:var(--green);color:#fff;width:100%;margin-top:18px}
+.btn-green:hover{background:var(--green-d)}
+.btn-green:disabled{background:#9ca3af;cursor:not-allowed}
+.btn-red{background:var(--red);color:#fff}
+.btn-red:hover{background:var(--red-d)}
+.btn-ghost{background:#fff;border:1px solid #d1d5db;color:var(--ink)}
+.btn-ghost:hover{border-color:var(--green);color:var(--green-d)}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.btn-row .btn{width:auto;padding:10px 16px;font-size:14px;margin-top:0}
+.status{font-size:13px;color:var(--muted);margin-top:12px;min-height:20px}
+.status.err{color:var(--red);font-weight:600}
+.hidden{display:none!important}
+.progress{height:8px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin:6px 0 16px}
+.progress i{display:block;height:100%;background:var(--green);width:0%;transition:width .3s}
+.qcount{font-size:13px;color:var(--muted);margin-bottom:12px}
+.qtext{font-size:17px;font-weight:700;margin-bottom:14px}
+.opts{display:grid;gap:10px}
+.opt{text-align:left;width:100%;padding:13px 15px;border:1.5px solid #d1d5db;border-radius:10px;background:#fff;font-size:15px;cursor:pointer;font-family:inherit;display:flex;gap:10px;align-items:flex-start;line-height:1.45}
+.opt b{flex-shrink:0;width:24px;height:24px;border-radius:50%;border:1.5px solid #9ca3af;display:inline-flex;align-items:center;justify-content:center;font-size:13px}
+.opt:hover:not(:disabled){border-color:var(--green)}
+.opt:disabled{cursor:default}
+.opt.correct{border-color:var(--green);background:#f0fdf4}
+.opt.correct b{background:var(--green);border-color:var(--green);color:#fff}
+.opt.wrong{border-color:var(--red);background:#fef2f2}
+.opt.wrong b{background:var(--red);border-color:var(--red);color:#fff}
+.opt.dim{opacity:.6}
+.explain{margin-top:14px;padding:12px 14px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;font-size:14px}
+.explain b{color:var(--green-d)}
+.score-big{font-size:52px;font-weight:800;text-align:center;line-height:1.1}
+.score-sub{text-align:center;color:var(--muted);font-size:15px;margin:6px 0 4px}
+.score-msg{text-align:center;font-size:16px;font-weight:700;margin-bottom:6px}
+.review{margin-top:16px;border-top:1px solid var(--line);padding-top:12px}
+.review-item{padding:12px 0;border-bottom:1px solid #f0f1f3;font-size:14px}
+.review-item:last-child{border-bottom:none}
+.review-item .rq{font-weight:700;margin-bottom:4px}
+.review-item .ra{color:var(--green-d)}
+.review-item .rw{color:var(--red)}
+.recent h3{font-size:16px;margin-bottom:10px}
+.recent ul{list-style:none}
+.recent li{padding:9px 2px;border-bottom:1px solid #f0f1f3;font-size:14px;display:flex;gap:8px;align-items:center}
+.recent li:last-child{border-bottom:none}
+.recent button{background:none;border:none;color:var(--ink);font-size:14px;cursor:pointer;text-align:left;padding:0;font-family:inherit;flex:1}
+.recent button:hover{color:var(--green-d)}
+.recent .x{margin-left:auto;background:none;border:none;color:var(--muted);font-size:16px;padding:2px 6px;cursor:pointer;flex:none}
+.recent .dir{font-size:12px;color:var(--muted);white-space:nowrap}
+.empty{font-size:13px;color:var(--muted)}
+.note{font-size:13px;color:var(--muted)}
+.note b{color:var(--ink)}
+footer{text-align:center;padding:20px;font-size:13px;color:var(--muted)}
+footer a{color:var(--green-d);text-decoration:none;font-weight:600}
+footer a:hover{text-decoration:underline}
+@media(max-width:560px){.score-big{font-size:42px}.btn-row .btn{flex:1}}
+</style>
+</head>
+<body>
+<header>
+  <img src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone logo">
+  <div>
+    <h1>DTZ AI Quiz Generator</h1>
+    <p>Dark Tech Zone — free AI quiz maker</p>
+  </div>
+  <span class="pill" id="statusPill"><span class="dot"></span><span id="statusText">Checking AI…</span></span>
+</header>
+
+<main>
+  <!-- SETUP -->
+  <div class="card" id="setupCard">
+    <h2>Make a quiz on any topic</h2>
+    <p class="sub">Dark Tech Zone AI writes real multiple-choice questions. Play the quiz, see your score, and download it to share.</p>
+
+    <label for="topicInput">Quiz topic</label>
+    <input type="text" id="topicInput" maxlength="200" placeholder="e.g. Computer Networks, Pakistan GK, Islamic Studies…">
+    <div class="chips" id="exampleChips"></div>
+
+    <label>Number of questions</label>
+    <div class="seg" id="countSeg">
+      <label><input type="radio" name="qcount" value="5" checked><span>5 questions</span></label>
+      <label><input type="radio" name="qcount" value="10"><span>10 questions</span></label>
+      <label><input type="radio" name="qcount" value="15"><span>15 questions</span></label>
+    </div>
+
+    <label>Difficulty</label>
+    <div class="seg" id="diffSeg">
+      <label><input type="radio" name="diff" value="Easy" checked><span>Easy</span></label>
+      <label><input type="radio" name="diff" value="Medium"><span>Medium</span></label>
+      <label><input type="radio" name="diff" value="Hard"><span>Hard</span></label>
+    </div>
+
+    <label>Language</label>
+    <div class="seg" id="langSeg">
+      <label><input type="radio" name="lang" value="English" checked><span>English</span></label>
+      <label><input type="radio" name="lang" value="Roman Urdu"><span>Roman Urdu</span></label>
+      <label><input type="radio" name="lang" value="Urdu script"><span>Urdu script</span></label>
+    </div>
+
+    <button class="btn btn-green" id="btnGenerate">Generate Quiz</button>
+    <div class="btn-row hidden" id="genRow">
+      <button class="btn btn-red" id="btnStop">Stop</button>
+    </div>
+    <p class="status" id="genStatus"></p>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="card hidden" id="quizCard">
+    <div class="qcount" id="quizMeta"></div>
+    <div class="progress"><i id="progBar"></i></div>
+    <div class="qtext" id="qText" dir="auto"></div>
+    <div class="opts" id="optsBox"></div>
+    <div class="explain hidden" id="explainBox"></div>
+    <div class="btn-row">
+      <button class="btn btn-green hidden" id="btnNext">Next Question</button>
+      <button class="btn btn-ghost hidden" id="btnSeeScore">See My Score</button>
+    </div>
+  </div>
+
+  <!-- SCORE -->
+  <div class="card hidden" id="scoreCard">
+    <div class="score-big" id="scoreBig"></div>
+    <div class="score-sub" id="scoreSub"></div>
+    <div class="score-msg" id="scoreMsg"></div>
+    <div class="btn-row" style="justify-content:center">
+      <button class="btn btn-green" id="btnRetake">Play Again</button>
+      <button class="btn btn-ghost" id="btnDownload">Download Quiz (.txt)</button>
+      <button class="btn btn-ghost" id="btnCopyAll">Copy Quiz</button>
+      <button class="btn btn-ghost" id="btnNew">New Topic</button>
+    </div>
+    <div class="review" id="reviewBox"></div>
+  </div>
+
+  <!-- RECENT -->
+  <div class="card recent">
+    <h3>Recent quizzes</h3>
+    <ul id="recentList"></ul>
+    <p class="empty" id="recentEmpty">No quizzes yet — your last 8 will show here.</p>
+    <div class="btn-row"><button class="btn btn-ghost" id="btnClearRecent">Clear history</button></div>
+  </div>
+
+  <p class="note"><b>Honest limits:</b> Questions are written by AI, so on rare topics a fact can be slightly off — read the answers once before using a quiz in a test or exam. The correct answer is always shown after you pick, with a short explanation. Nothing you type is stored on any server; recent quizzes live only in your own browser.</p>
+</main>
+
+<footer>
+  Made by <a href="https://www.darktechzon.site/" target="_blank" rel="noopener">Dark Tech Zone</a> &middot;
+  <a href="https://whatsapp.com/channel/0029Vb9oK008V0txIkc3oj3z" target="_blank" rel="noopener">Dark Tech Zone on WhatsApp</a>
+</footer>
+
+<script>
+var API = "https://dark-tech-zone-ai.vercel.app/api/chat";
+var HEALTH = "https://dark-tech-zone-ai.vercel.app/api/health";
+var KEY = "DarkTech";
+var RECENT_KEY = "dtz-quiz-recent-v1";
+var LETTERS = ["A", "B", "C", "D"];
+
+var topicInput = document.getElementById("topicInput");
+var btnGenerate = document.getElementById("btnGenerate");
+var btnStop = document.getElementById("btnStop");
+var genRow = document.getElementById("genRow");
+var genStatus = document.getElementById("genStatus");
+var setupCard = document.getElementById("setupCard");
+var quizCard = document.getElementById("quizCard");
+var scoreCard = document.getElementById("scoreCard");
+var statusPill = document.getElementById("statusPill");
+var statusText = document.getElementById("statusText");
+var recentList = document.getElementById("recentList");
+var recentEmpty = document.getElementById("recentEmpty");
+
+var abortCtrl = null;
+var questions = [];
+var currentQuiz = null; // {topic, count, diff, lang, questions}
+var qi = 0, score = 0, answered = false;
+var userAnswers = [];
+
+var EXAMPLES = ["Computer Networks", "Pakistan General Knowledge", "Islamic Studies", "Basic English Grammar", "Human Body & Health", "World Geography"];
+
+function buildPrompt(topic, count, diff, lang) {
+  return "Write a multiple choice quiz with exactly " + count + " questions about \"" + topic + "\". Difficulty: " + diff + ". Language: " + lang + " (write the questions, all 4 options and the explanations in " + lang + ").\n" +
+    "Rules: every question must have exactly 4 options labelled A) B) C) D). The correct answer must be spread across A, B, C and D — do not make most answers B. Keep each question to one or two lines. Each explanation is one short sentence. Use ONLY this exact format, no intro, no outro, no markdown, no extra text:\n" +
+    "Q1: <question>\nA) <option>\nB) <option>\nC) <option>\nD) <option>\nAnswer: <letter>\nExplanation: <one sentence>\n" +
+    "Repeat Q2, Q3 and so on up to Q" + count + ".";
+}
+
+function parseQuiz(text) {
+  var out = [];
+  var blocks = text.split(/\n(?=Q\s*\d+\s*:)/);
+  for (var i = 0; i < blocks.length; i++) {
+    var b = blocks[i].trim();
+    if (!/^Q\s*\d+\s*:/.test(b)) continue;
+    var lines = b.split("\n").map(function (l) { return l.trim(); }).filter(Boolean);
+    var qLine = lines[0].replace(/^Q\s*\d+\s*:\s*/, "");
+    var opts = [null, null, null, null];
+    var ans = -1, expl = "";
+    for (var j = 1; j < lines.length; j++) {
+      var m = lines[j].match(/^([A-Da-d])\)\s*(.+)$/);
+      if (m) { opts["ABCD".indexOf(m[1].toUpperCase())] = m[2].trim(); continue; }
+      var am = lines[j].match(/^Answer\s*:\s*([A-Da-d])\b/);
+      if (am) { ans = "ABCD".indexOf(am[1].toUpperCase()); continue; }
+      var em = lines[j].match(/^Explanation\s*:\s*(.+)$/);
+      if (em) { expl = em[1].trim(); continue; }
+    }
+    if (qLine && opts[0] && opts[1] && opts[2] && opts[3] && ans >= 0) {
+      out.push({ q: qLine, options: opts, answer: ans, explanation: expl });
+    }
+  }
+  return out;
+}
+
+function quizToText(quiz) {
+  var s = "DTZ AI Quiz — " + quiz.topic + " (" + quiz.diff + ", " + quiz.lang + ")\n";
+  s += "Made by Dark Tech Zone — https://www.darktechzon.site/\n\n";
+  quiz.questions.forEach(function (qq, idx) {
+    s += "Q" + (idx + 1) + ": " + qq.q + "\n";
+    qq.options.forEach(function (o, k) { s += LETTERS[k] + ") " + o + "\n"; });
+    s += "Answer: " + LETTERS[qq.answer] + "\n";
+    if (qq.explanation) s += "Explanation: " + qq.explanation + "\n";
+    s += "\n";
+  });
+  return s;
+}
+
+function shuffle(arr) {
+  for (var i = arr.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+  }
+  return arr;
+}
+
+function getRecent() {
+  try { return JSON.parse(localStorage.getItem(RECENT_KEY) || "[]"); } catch (e) { return []; }
+}
+function saveRecent(quiz) {
+  try {
+    var list = getRecent().filter(function (r) { return r.topic !== quiz.topic || r.count !== quiz.count; });
+    list.unshift({ topic: quiz.topic, count: quiz.count, diff: quiz.diff, lang: quiz.lang, questions: quiz.questions });
+    localStorage.setItem(RECENT_KEY, JSON.stringify(list.slice(0, 8)));
+  } catch (e) {}
+}
+function renderRecent() {
+  var list = getRecent();
+  recentList.innerHTML = "";
+  recentEmpty.style.display = list.length ? "none" : "block";
+  list.forEach(function (r, idx) {
+    var li = document.createElement("li");
+    var b = document.createElement("button");
+    b.textContent = r.topic + " — " + r.questions.length + " questions";
+    b.addEventListener("click", function () { loadQuiz(r); });
+    var d = document.createElement("span");
+    d.className = "dir";
+    d.textContent = r.diff + " · " + r.lang;
+    var x = document.createElement("button");
+    x.className = "x"; x.textContent = "×"; x.setAttribute("aria-label", "Remove");
+    x.addEventListener("click", function () {
+      var l = getRecent(); l.splice(idx, 1);
+      try { localStorage.setItem(RECENT_KEY, JSON.stringify(l)); } catch (e) {}
+      renderRecent();
+    });
+    li.appendChild(b); li.appendChild(d); li.appendChild(x);
+    recentList.appendChild(li);
+  });
+}
+
+function showCard(which) {
+  setupCard.classList.toggle("hidden", which !== "setup");
+  quizCard.classList.toggle("hidden", which !== "quiz");
+  scoreCard.classList.toggle("hidden", which !== "score");
+}
+
+function loadQuiz(quiz) {
+  currentQuiz = quiz;
+  questions = quiz.questions.map(function (qq) {
+    var order = shuffle([0, 1, 2, 3]);
+    return {
+      q: qq.q,
+      options: order.map(function (k) { return qq.options[k]; }),
+      answer: order.indexOf(qq.answer),
+      explanation: qq.explanation,
+      origAnswer: qq.answer
+    };
+  });
+  qi = 0; score = 0; userAnswers = [];
+  showCard("quiz");
+  renderQuestion();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function renderQuestion() {
+  var qq = questions[qi];
+  answered = false;
+  document.getElementById("quizMeta").textContent =
+    currentQuiz.topic + "  ·  Question " + (qi + 1) + " of " + questions.length + "  ·  Score so far: " + score;
+  document.getElementById("progBar").style.width = Math.round((qi / questions.length) * 100) + "%";
+  document.getElementById("qText").textContent = qq.q;
+  var box = document.getElementById("optsBox");
+  box.innerHTML = "";
+  qq.options.forEach(function (opt, k) {
+    var b = document.createElement("button");
+    b.className = "opt"; b.setAttribute("dir", "auto");
+    var letter = document.createElement("b"); letter.textContent = LETTERS[k];
+    var span = document.createElement("span"); span.textContent = opt;
+    b.appendChild(letter); b.appendChild(span);
+    b.addEventListener("click", function () { answer(k, b); });
+    box.appendChild(b);
+  });
+  var eb = document.getElementById("explainBox");
+  eb.classList.add("hidden"); eb.innerHTML = "";
+  document.getElementById("btnNext").classList.add("hidden");
+  document.getElementById("btnSeeScore").classList.add("hidden");
+}
+
+function answer(k, btn) {
+  if (answered) return;
+  answered = true;
+  var qq = questions[qi];
+  var correct = (k === qq.answer);
+  if (correct) score++;
+  userAnswers.push({ picked: k, correct: correct });
+  var btns = document.getElementById("optsBox").children;
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].disabled = true;
+    if (i === qq.answer) btns[i].classList.add("correct");
+    else if (i === k) btns[i].classList.add("wrong");
+    else btns[i].classList.add("dim");
+  }
+  var eb = document.getElementById("explainBox");
+  eb.innerHTML = "<b>" + (correct ? "Correct!" : "Not quite — the right answer is " + LETTERS[qq.answer] + ".") + "</b>" +
+    (qq.explanation ? "<br>" + escapeHtml(qq.explanation) : "");
+  eb.classList.remove("hidden");
+  document.getElementById("quizMeta").textContent =
+    currentQuiz.topic + "  ·  Question " + (qi + 1) + " of " + questions.length + "  ·  Score so far: " + score;
+  document.getElementById("progBar").style.width = Math.round(((qi + 1) / questions.length) * 100) + "%";
+  if (qi < questions.length - 1) document.getElementById("btnNext").classList.remove("hidden");
+  else document.getElementById("btnSeeScore").classList.remove("hidden");
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function showScore() {
+  var total = questions.length;
+  var pct = Math.round((score / total) * 100);
+  document.getElementById("scoreBig").textContent = score + " / " + total;
+  document.getElementById("scoreSub").textContent = pct + "% correct — " + currentQuiz.topic;
+  var msg = pct === 100 ? "Perfect score — outstanding!" :
+    pct >= 80 ? "Excellent — you really know this topic." :
+    pct >= 60 ? "Good work — a little revision and you will ace it." :
+    pct >= 40 ? "Fair start — try the quiz again to improve." :
+    "Keep practising — play again and watch your score climb.";
+  document.getElementById("scoreMsg").textContent = msg;
+  var rb = document.getElementById("reviewBox");
+  rb.innerHTML = "";
+  questions.forEach(function (qq, idx) {
+    var ua = userAnswers[idx];
+    var div = document.createElement("div");
+    div.className = "review-item";
+    var q = document.createElement("div"); q.className = "rq"; q.setAttribute("dir", "auto");
+    q.textContent = "Q" + (idx + 1) + ": " + qq.q;
+    var a = document.createElement("div");
+    a.className = ua && ua.correct ? "ra" : "rw";
+    a.textContent = (ua && ua.correct ? "You got it right: " : "Correct answer: ") + LETTERS[qq.answer] + ") " + qq.options[qq.answer] +
+      (ua && !ua.correct ? "  (you picked " + LETTERS[ua.picked] + ")" : "");
+    div.appendChild(q); div.appendChild(a);
+    if (qq.explanation) {
+      var e = document.createElement("div"); e.textContent = qq.explanation; div.appendChild(e);
+    }
+    rb.appendChild(div);
+  });
+  showCard("score");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function setStatus(msg, isErr) {
+  genStatus.textContent = msg;
+  genStatus.classList.toggle("err", !!isErr);
+}
+
+async function checkHealth() {
+  try {
+    var r = await fetch(HEALTH, { method: "GET" });
+    if (r.ok) {
+      statusPill.classList.add("on"); statusPill.classList.remove("off");
+      statusText.textContent = "AI Online";
+    } else throw new Error("offline");
+  } catch (e) {
+    statusPill.classList.add("off"); statusPill.classList.remove("on");
+    statusText.textContent = "AI Offline";
+  }
+}
+
+async function generate() {
+  var topic = topicInput.value.trim();
+  if (!topic) { setStatus("Please type a quiz topic first.", true); topicInput.focus(); return; }
+  var count = parseInt((document.querySelector('input[name="qcount"]:checked') || {}).value || "5", 10);
+  var diff = (document.querySelector('input[name="diff"]:checked') || {}).value || "Easy";
+  var lang = (document.querySelector('input[name="lang"]:checked') || {}).value || "English";
+
+  btnGenerate.disabled = true;
+  genRow.classList.remove("hidden");
+  setStatus("Asking Dark Tech Zone AI to write your quiz…");
+  abortCtrl = new AbortController();
+  var full = "";
+  try {
+    var res = await fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-API-Key": KEY },
+      body: JSON.stringify({ q: buildPrompt(topic, count, diff, lang) }),
+      signal: abortCtrl.signal
+    });
+    if (!res.ok) throw new Error("API error " + res.status);
+    var reader = res.body.getReader();
+    var dec = new TextDecoder();
+    var buf = "";
+    while (true) {
+      var step = await reader.read();
+      if (step.done) break;
+      buf += dec.decode(step.value, { stream: true });
+      var lines = buf.split("\n");
+      buf = lines.pop();
+      for (var i = 0; i < lines.length; i++) {
+        var line = lines[i].trim();
+        if (line.indexOf("data:") !== 0) continue;
+        var payload = line.slice(5).trim();
+        if (payload === "[DONE]") continue;
+        try {
+          var obj = JSON.parse(payload);
+          if (obj.chunk) {
+            full += obj.chunk;
+            var soFar = parseQuiz(full).length;
+            if (soFar > 0) setStatus("Writing question " + Math.min(soFar + 1, count) + " of " + count + "…");
+          }
+        } catch (e) {}
+      }
+    }
+    var parsed = parseQuiz(full);
+    if (parsed.length < 3) {
+      setStatus("The AI answer did not come out as a quiz (" + parsed.length + " usable questions). Please try again — a shorter or simpler topic usually works.", true);
+      return;
+    }
+    if (parsed.length < count) {
+      setStatus("Got " + parsed.length + " of " + count + " questions — playing with what came back.");
+    } else {
+      setStatus("");
+    }
+    var quiz = { topic: topic, count: parsed.length, diff: diff, lang: lang, questions: parsed };
+    saveRecent(quiz);
+    renderRecent();
+    loadQuiz(quiz);
+  } catch (e) {
+    if (e && e.name === "AbortError") { setStatus("Stopped."); return; }
+    setStatus("Could not reach the AI right now — check your connection and try again.", true);
+  } finally {
+    btnGenerate.disabled = false;
+    genRow.classList.add("hidden");
+    abortCtrl = null;
+  }
+}
+
+btnGenerate.addEventListener("click", generate);
+topicInput.addEventListener("keydown", function (e) { if (e.key === "Enter") generate(); });
+btnStop.addEventListener("click", function () { if (abortCtrl) abortCtrl.abort(); });
+document.getElementById("btnNext").addEventListener("click", function () { qi++; renderQuestion(); });
+document.getElementById("btnSeeScore").addEventListener("click", showScore);
+document.getElementById("btnRetake").addEventListener("click", function () { if (currentQuiz) loadQuiz(currentQuiz); });
+document.getElementById("btnNew").addEventListener("click", function () { showCard("setup"); setStatus(""); });
+document.getElementById("btnDownload").addEventListener("click", function () {
+  if (!currentQuiz) return;
+  var blob = new Blob([quizToText(currentQuiz)], { type: "text/plain;charset=utf-8" });
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "dtz-quiz-" + currentQuiz.topic.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") + ".txt";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function () { URL.revokeObjectURL(a.href); }, 5000);
+});
+document.getElementById("btnCopyAll").addEventListener("click", function () {
+  if (!currentQuiz) return;
+  var t = quizToText(currentQuiz);
+  var done = function () { document.getElementById("btnCopyAll").textContent = "Copied!"; setTimeout(function () { document.getElementById("btnCopyAll").textContent = "Copy Quiz"; }, 2000); };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(t).then(done, function () { fallbackCopy(t); done(); });
+  } else { fallbackCopy(t); done(); }
+});
+function fallbackCopy(text) {
+  var ta = document.createElement("textarea");
+  ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand("copy"); } catch (e) {}
+  ta.remove();
+}
+document.getElementById("btnClearRecent").addEventListener("click", function () {
+  try { localStorage.removeItem(RECENT_KEY); } catch (e) {}
+  renderRecent();
+});
+
+var chipsBox = document.getElementById("exampleChips");
+EXAMPLES.forEach(function (ex) {
+  var c = document.createElement("button");
+  c.type = "button"; c.className = "chip"; c.textContent = ex;
+  c.addEventListener("click", function () { topicInput.value = ex; topicInput.focus(); });
+  chipsBox.appendChild(c);
+});
+
+checkHealth();
+renderRecent();
+</script>
+</body>
+</html>
