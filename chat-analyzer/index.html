@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTZ WhatsApp Chat Analyzer — Dark Tech Zone</title>
+<meta name="description" content="Upload your WhatsApp chat export (.txt) and see who talks most, busiest hours, top words and emojis — 100% on your device, nothing uploaded. Free, no signup.">
+<link rel="icon" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg">
+<style>
+:root{--bg:#f7f7f8;--card:#fff;--ink:#1a1a1e;--muted:#6b7280;--line:#e5e7eb;--green:#16a34a;--green-d:#15803d;--red:#dc2626;--red-d:#b91c1c;--blue:#2563eb;--soft:#f3f4f6}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+header{background:var(--card);border-bottom:1px solid var(--line);padding:14px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header img{width:40px;height:40px;border-radius:50%;object-fit:cover}
+header h1{font-size:19px;font-weight:700}
+header p{font-size:13px;color:var(--muted)}
+.pill{margin-left:auto;font-size:12px;font-weight:600;padding:5px 11px;border-radius:999px;background:#dcfce7;color:#166534;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.pill .dot{width:8px;height:8px;border-radius:50%;background:#16a34a}
+main{max-width:760px;margin:0 auto;padding:24px 16px 60px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px}
+h2{font-size:17px;margin-bottom:4px}
+.sub{font-size:13px;color:var(--muted);margin-bottom:14px}
+label{display:block;font-size:13px;font-weight:600;margin:14px 0 6px}
+textarea{width:100%;min-height:120px;padding:12px 14px;border:1px solid #d1d5db;border-radius:10px;font-size:14px;font-family:inherit;outline:none;resize:vertical}
+textarea:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(22,163,74,.15)}
+.drop{border:2px dashed #d1d5db;border-radius:12px;padding:26px 16px;text-align:center;color:var(--muted);font-size:14px;cursor:pointer;transition:.2s;background:var(--soft)}
+.drop:hover,.drop.over{border-color:var(--green);color:var(--green-d);background:#f0fdf4}
+.drop b{color:var(--ink)}
+.btn{display:inline-block;border:none;border-radius:10px;padding:12px 20px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-green{background:var(--green);color:#fff;width:100%;margin-top:18px}
+.btn-green:hover{background:var(--green-d)}
+.btn-green:disabled{background:#9ca3af;cursor:not-allowed}
+.btn-ghost{background:#fff;border:1px solid #d1d5db;color:var(--ink)}
+.btn-ghost:hover{border-color:var(--green);color:var(--green-d)}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.btn-row .btn{width:auto;padding:10px 16px;font-size:14px;margin-top:0}
+.status{font-size:13px;color:var(--muted);margin-top:12px;min-height:20px}
+.status.err{color:var(--red);font-weight:600}
+.hidden{display:none!important}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.stat{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:14px 12px;text-align:center}
+.stat b{display:block;font-size:24px;line-height:1.2}
+.stat span{font-size:12px;color:var(--muted)}
+.bar-row{display:grid;grid-template-columns:110px 1fr 52px;gap:10px;align-items:center;margin:8px 0;font-size:13px}
+.bar-row .nm{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-track{height:14px;background:#e5e7eb;border-radius:999px;overflow:hidden}
+.bar-track i{display:block;height:100%;background:var(--green);border-radius:999px}
+.bar-row .ct{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.hour-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:6px;align-items:end;height:120px;margin-top:8px}
+.hour-col{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.hour-col i{display:block;width:100%;background:var(--green);border-radius:4px 4px 0 0;min-height:2px}
+.hour-col span{font-size:10px;color:var(--muted);margin-top:4px}
+.day-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;align-items:end;height:110px;margin-top:8px}
+.day-col{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.day-col i{display:block;width:100%;background:var(--blue);border-radius:4px 4px 0 0;min-height:2px}
+.day-col span{font-size:11px;color:var(--muted);margin-top:4px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{border:1px solid var(--line);background:var(--soft);border-radius:999px;padding:6px 12px;font-size:13px}
+.chip b{color:var(--green-d)}
+.emoji-chip{font-size:20px;padding:6px 12px}
+.emoji-chip b{font-size:13px;color:var(--muted);vertical-align:middle}
+.kv{display:grid;grid-template-columns:150px 1fr;gap:6px 12px;font-size:14px;margin-top:6px}
+.kv dt{color:var(--muted)}
+.kv dd{font-weight:600}
+.quote{background:var(--soft);border-left:3px solid var(--green);border-radius:0 10px 10px 0;padding:12px 14px;font-size:14px;margin-top:10px;white-space:pre-wrap;word-break:break-word}
+.note{font-size:12px;color:var(--muted);margin-top:12px}
+.recent-item{display:flex;justify-content:space-between;gap:10px;padding:10px 2px;border-bottom:1px solid var(--line);font-size:13px;cursor:pointer}
+.recent-item:last-child{border-bottom:none}
+.recent-item:hover{color:var(--green-d)}
+.recent-item small{color:var(--muted);white-space:nowrap}
+footer{text-align:center;font-size:12px;color:var(--muted);margin-top:8px}
+footer a{color:var(--green-d);font-weight:600;text-decoration:none}
+.howto{font-size:14px;color:var(--muted)}
+.howto ol{margin:6px 0 0 20px}
+.howto li{margin:4px 0}
+@media(max-width:560px){.stats{grid-template-columns:repeat(2,1fr)}.bar-row{grid-template-columns:84px 1fr 44px}.hour-grid{grid-template-columns:repeat(6,1fr)}.kv{grid-template-columns:120px 1fr}}
+</style>
+</head>
+<body>
+<header>
+<img src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone logo">
+<div><h1>DTZ WhatsApp Chat Analyzer</h1><p>Dark Tech Zone — free, no signup</p></div>
+<div class="pill"><span class="dot"></span>100% On-Device</div>
+</header>
+<main>
+
+<div class="card">
+<h2>Analyze your WhatsApp chat</h2>
+<p class="sub">Export any chat from WhatsApp (Chat &gt; More &gt; Export chat &gt; Without media) and drop the .txt file here. Everything runs in your browser — your chat never leaves your phone or computer.</p>
+<div class="drop" id="dropZone" tabindex="0" role="button" aria-label="Upload chat file">
+<b>Drop your _chat.txt file here</b><br>or tap to choose a file &middot; up to 20 MB
+<input type="file" id="fileInput" accept=".txt,text/plain" class="hidden">
+</div>
+<label for="pasteBox">Or paste the chat text directly</label>
+<textarea id="pasteBox" placeholder="12/03/2024, 10:23 pm - Ali: Hello everyone! ..."></textarea>
+<div class="btn-row">
+<button class="btn btn-green" id="btnAnalyze" style="flex:1">Analyze Chat</button>
+<button class="btn btn-ghost" id="btnSample">Try sample chat</button>
+<button class="btn btn-ghost hidden" id="btnClear">Clear</button>
+</div>
+<div class="status" id="status"></div>
+</div>
+
+<div class="card howto">
+<h2>How to export a chat</h2>
+<div class="howto"><ol>
+<li>Open the chat in WhatsApp.</li>
+<li>Tap the chat name, then scroll to <b>Export chat</b>.</li>
+<li>Choose <b>Without media</b> and save/share the .txt file.</li>
+<li>Upload that file here — or paste its text above.</li>
+</ol></div>
+<p class="note">Works with Android and iPhone exports, 12-hour and 24-hour times, and day-first or month-first dates (auto-detected). System messages (like "Messages are end-to-end encrypted") are counted separately and never assigned to a person.</p>
+</div>
+
+<div id="results" class="hidden">
+<div class="card">
+<h2>Overview</h2>
+<p class="sub" id="overviewSub"></p>
+<div class="stats">
+<div class="stat"><b id="stTotal">0</b><span>Total messages</span></div>
+<div class="stat"><b id="stPeople">0</b><span>Participants</span></div>
+<div class="stat"><b id="stDays">0</b><span>Days covered</span></div>
+<div class="stat"><b id="stPerDay">0</b><span>Messages / day</span></div>
+<div class="stat"><b id="stMedia">0</b><span>Photos &amp; media</span></div>
+<div class="stat"><b id="stLinks">0</b><span>Links shared</span></div>
+</div>
+<dl class="kv">
+<dt>Chat from</dt><dd id="kvFirst">—</dd>
+<dt>Chat to</dt><dd id="kvLast">—</dd>
+<dt>Most active</dt><dd id="kvTop">—</dd>
+<dt>Busiest hour</dt><dd id="kvHour">—</dd>
+<dt>Busiest day</dt><dd id="kvDay">—</dd>
+</dl>
+</div>
+
+<div class="card">
+<h2>Messages per person</h2>
+<p class="sub">Who talks the most in this chat</p>
+<div id="senderBars"></div>
+</div>
+
+<div class="card">
+<h2>Busiest hours</h2>
+<p class="sub">When this chat is most active (24-hour clock)</p>
+<div class="hour-grid" id="hourGrid"></div>
+</div>
+
+<div class="card">
+<h2>Busiest days</h2>
+<p class="sub">Which weekday gets the most messages</p>
+<div class="day-grid" id="dayGrid"></div>
+</div>
+
+<div class="card">
+<h2>Top words</h2>
+<p class="sub">Most-used words (common filler words removed)</p>
+<div class="chips" id="wordChips"></div>
+</div>
+
+<div class="card">
+<h2>Top emojis</h2>
+<p class="sub">Most-used emojis in this chat</p>
+<div class="chips" id="emojiChips"></div>
+</div>
+
+<div class="card">
+<h2>Longest message</h2>
+<p class="sub" id="longestMeta"></p>
+<div class="quote" id="longestQuote"></div>
+<div class="btn-row">
+<button class="btn btn-green" id="btnDownload">Download Report (.txt)</button>
+<button class="btn btn-ghost" id="btnCopy">Copy Summary</button>
+</div>
+</div>
+</div>
+
+<div class="card hidden" id="recentCard">
+<h2>Recent analyses</h2>
+<p class="sub">Only file names and counts are saved on this device — never your chat text. Tap one to re-open its report.</p>
+<div id="recentList"></div>
+<div class="btn-row"><button class="btn btn-ghost" id="btnClearRecent">Clear history</button></div>
+</div>
+
+<footer>Free tool by <a href="https://www.darktechzon.site/" target="_blank" rel="noopener">Dark Tech Zone</a> &middot; Join our WhatsApp channel: <a href="https://whatsapp.com/channel/0029Vb9oK008V0txIkc3oj3z" target="_blank" rel="noopener">Dark Tech Zone</a></footer>
+</main>
+<script>
+// DTZ WhatsApp Chat Analyzer — shared parser (used by index.html and Node tests)
+// Parses WhatsApp .txt chat exports (Android + iOS formats).
+
+const MEDIA_RE = /(?:<\s*media omitted\s*>|image omitted|video omitted|audio omitted|document omitted|gif omitted|sticker omitted|contact omitted|location:)/i;
+const URL_RE = /(https?:\/\/[^\s]+|www\.[^\s]+)/gi;
+const EMOJI_RE = /(\p{Extended_Pictographic}(?:\uFE0F)?(?:\u200D\p{Extended_Pictographic}(?:\uFE0F)?)*)/gu;
+
+// Android: 12/03/2024, 10:23 PM - Ali: hello   (also 24h, 2-digit year)
+// iOS:     [12/03/2024, 10:23:45 PM] Ali: hello
+const LINE_RE = /^(?:\[)?(\d{1,2})\/(\d{1,2})\/(\d{2,4}),?\s+(\d{1,2}):(\d{2})(?::(\d{2}))?\s*([AP]M)?\]?\s*[-–]?\s*(.*)$/i;
+
+function parseChat(text) {
+  const rawLines = text.replace(/\r\n/g, '\n').replace(/\u200E/g, '').split('\n');
+  const msgs = [];
+  let current = null;
+  const dateHints = [];
+  for (const line of rawLines) {
+    const m = line.match(LINE_RE);
+    if (m) {
+      const a = parseInt(m[1], 10), b = parseInt(m[2], 10);
+      dateHints.push([a, b]);
+      let year = parseInt(m[3], 10);
+      if (year < 100) year += 2000;
+      let hour = parseInt(m[4], 10);
+      const min = parseInt(m[5], 10);
+      const sec = m[6] ? parseInt(m[6], 10) : 0;
+      const ampm = m[7] ? m[7].toUpperCase() : null;
+      if (ampm === 'PM' && hour < 12) hour += 12;
+      if (ampm === 'AM' && hour === 12) hour = 0;
+      const rest = m[8] || '';
+      const colon = rest.indexOf(': ');
+      let sender = null, body = rest;
+      if (colon > 0 && colon < 40) { sender = rest.slice(0, colon); body = rest.slice(colon + 2); }
+      current = { a, b, year, hour, min, sec, sender, body, system: sender === null };
+      msgs.push(current);
+    } else if (current && line.trim() !== '') {
+      current.body += '\n' + line;
+    }
+  }
+  // Resolve DD/MM vs MM/DD: if any first field > 12 -> DD/MM; if any second > 12 -> MM/DD; default DD/MM
+  let dayFirst = true;
+  if (dateHints.some(([a]) => a > 12)) dayFirst = true;
+  else if (dateHints.some(([, b]) => b > 12)) dayFirst = false;
+  for (const msg of msgs) {
+    const day = dayFirst ? msg.a : msg.b;
+    const month = dayFirst ? msg.b : msg.a;
+    msg.date = new Date(msg.year, month - 1, day, msg.hour, msg.min, msg.sec);
+    delete msg.a; delete msg.b;
+  }
+  return msgs.filter(m => !isNaN(m.date.getTime()));
+}
+
+const STOPWORDS = new Set(('the and to of a in is you that it he was for on are as with his they i at be this have from or one had by word but not what all were we when your can said there use an each which she do how their if will up other about out many then them these so some her would make like him into time has look two more write go see number no way could people my than first water been call who oil its now find long down day did get come made may part over new sound take only little work know place year live me back give most very after thing our just name good sentence man think say great where help through much before line right too mean old any same tell boy follow came want show also around form three small set put end does another well large must big even such because turn here why ask went men read need land different home us move try kind hand picture again change off play spell air away animal house point page letter mother answer found study still learn should world high every near add food between own below country plant last school father keep tree never start city earth eye light thought head under story saw left few while along might close something seem next hard open example begin life always those both paper together got group often run important until children side feet car mile night walk white sea began grow took river four carry state once book hear stop without second later miss idea enough eat face watch far real almost let above girl sometimes cut young talk soon list song feel fact family direct leave door product black short class wind question happen complete ship area half rock order fire south problem piece told knew pass since top whole king space heard best hour better true during hundred five remember step early hold west ground interest reach fast sing listen six table travel night morning evening today tomorrow yesterday please thanks thank ok okay hmm lol haha ya ye hai ka ki ke mein main tum aap hum kya nahi haan aur bhi se ko ne tha thi the ho ja kar raha rahi rahe karo kare mera meri mere tera teri acha achaa theek bahut bohot zara ab phir jab tab kahan kyun kaise bas sirf yaar bhai jan g good morning salam assalam walaikum').split(' '));
+
+function analyze(msgs) {
+  const chat = msgs.filter(m => !m.system);
+  const systemCount = msgs.length - chat.length;
+  const senders = {};
+  const hours = new Array(24).fill(0);
+  const days = new Array(7).fill(0);
+  const words = {};
+  const emojis = {};
+  let media = 0, links = 0, longest = null;
+  let first = null, last = null;
+  for (const m of chat) {
+    senders[m.sender] = (senders[m.sender] || 0) + 1;
+    hours[m.date.getHours()]++;
+    days[m.date.getDay()]++;
+    if (!first || m.date < first) first = m.date;
+    if (!last || m.date > last) last = m.date;
+    const body = m.body;
+    if (MEDIA_RE.test(body)) media++;
+    const foundLinks = body.match(URL_RE);
+    if (foundLinks) links += foundLinks.length;
+    if (!longest || body.length > longest.body.length) longest = m;
+    for (const e of (body.match(EMOJI_RE) || [])) emojis[e] = (emojis[e] || 0) + 1;
+    const clean = body.replace(URL_RE, ' ').replace(EMOJI_RE, ' ').replace(/[^\p{L}\p{N}\s]/gu, ' ');
+    for (const w of clean.toLowerCase().split(/\s+/)) {
+      if (w.length >= 3 && !STOPWORDS.has(w) && !/^\d+$/.test(w)) words[w] = (words[w] || 0) + 1;
+    }
+  }
+  const daySpan = first && last ? Math.max(1, Math.floor((new Date(last.getFullYear(), last.getMonth(), last.getDate()) - new Date(first.getFullYear(), first.getMonth(), first.getDate())) / 86400000) + 1) : 0;
+  const top = (obj, n) => Object.entries(obj).sort((x, y) => y[1] - x[1]).slice(0, n);
+  return {
+    total: msgs.length, chat: chat.length, system: systemCount,
+    senders: top(senders, 20), senderCount: Object.keys(senders).length,
+    hours, days, daySpan,
+    perDay: daySpan ? (chat.length / daySpan) : 0,
+    media, links, words: top(words, 15), emojis: top(emojis, 10),
+    longest: longest ? { sender: longest.sender, len: longest.body.length, preview: longest.body.slice(0, 160) } : null,
+    first, last,
+    busiestHour: hours.indexOf(Math.max(...hours)),
+    busiestDay: days.indexOf(Math.max(...days))
+  };
+}
+
+const DAY_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const $ = id => document.getElementById(id);
+const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const fmtDate = d => d.toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'}) + ' ' + d.toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'});
+const fmtHour = h => String(h).padStart(2,'0') + ':00';
+
+let lastAnalysis = null, lastName = 'chat', lastText = '';
+
+function sampleChat() {
+return `12/03/2024, 10:23 pm - Ali: Hello everyone! 😀
+12/03/2024, 10:24 pm - Hassan: Salam Ali, kya haal hai?
+12/03/2024, 10:25 pm - Ali: All good yaar, new video is live on the channel
+12/03/2024, 10:26 pm - Sara: Just watched it, amazing editing 🔥
+12/03/2024, 10:27 pm - Hassan: The thumbnail was so good
+12/03/2024, 10:28 pm - Ali: Thanks! Next one is about AI tools
+12/03/2024, 10:29 pm - Sara: <Media omitted>
+12/03/2024, 10:30 pm - Hassan: 😂😂😂
+12/03/2024, 10:31 pm - Ali: Check this https://www.darktechzon.site/
+13/03/2024, 09:00 am - Ali: Good morning
+13/03/2024, 09:01 am - Messages and calls are end-to-end encrypted. No one outside of this chat, not even WhatsApp, can read or listen to them.
+13/03/2024, 09:05 am - Sara: Morning! Did you see the cricket match last night?
+13/03/2024, 09:06 am - Hassan: Yes! Last over was crazy 🏏
+13/03/2024, 09:07 am - Ali: Pakistan won by 1 wicket, unbelievable finish
+13/03/2024, 09:08 am - Sara: I missed it, was sleeping 😴
+13/03/2024, 09:10 am - Hassan: Watch the highlights here https://example.com/highlights
+13/03/2024, 06:45 pm - Ali: New tool idea: WhatsApp chat analyzer
+13/03/2024, 06:46 pm - Sara: That sounds useful, everyone exports chats
+13/03/2024, 06:47 pm - Hassan: Yes, and make it free, no upload
+13/03/2024, 06:48 pm - Ali: Exactly, 100% on device
+14/03/2024, 11:15 am - Sara: <Media omitted>
+14/03/2024, 11:16 am - Sara: Look at this sunset photo 🌅
+14/03/2024, 11:17 am - Ali: Beautiful! Where is this?
+14/03/2024, 11:18 am - Sara: Murree, last weekend trip
+14/03/2024, 11:20 am - Hassan: I want to go too, plan a trip?
+14/03/2024, 11:21 am - Ali: Sure, next month inshallah
+15/03/2024, 08:00 pm - Hassan: Reminder: group call tomorrow at 8
+15/03/2024, 08:01 pm - Ali: Noted 👍
+15/03/2024, 08:02 pm - Sara: I will join, topic is the new AI bot
+15/03/2024, 08:03 pm - Hassan: Bring your questions, we will discuss everything
+16/03/2024, 10:00 am - Ali: Good morning all, call link is ready
+16/03/2024, 10:01 am - Sara: Joining in 5 minutes
+16/03/2024, 10:02 am - Hassan: Same here, see you on the call 😀`;
+}
+
+function render(a) {
+  $('overviewSub').textContent = 'Chat "' + lastName + '" — ' + a.chat + ' messages from ' + a.senderCount + ' people' + (a.system ? ' (' + a.system + ' system messages not counted)' : '') + '.';
+  $('stTotal').textContent = a.chat.toLocaleString();
+  $('stPeople').textContent = a.senderCount;
+  $('stDays').textContent = a.daySpan;
+  $('stPerDay').textContent = Math.round(a.perDay);
+  $('stMedia').textContent = a.media;
+  $('stLinks').textContent = a.links;
+  $('kvFirst').textContent = a.first ? fmtDate(a.first) : '—';
+  $('kvLast').textContent = a.last ? fmtDate(a.last) : '—';
+  $('kvTop').textContent = a.senders.length ? a.senders[0][0] + ' (' + a.senders[0][1].toLocaleString() + ' messages, ' + Math.round(a.senders[0][1] / a.chat * 100) + '%)' : '—';
+  $('kvHour').textContent = fmtHour(a.busiestHour) + ' (' + a.hours[a.busiestHour] + ' messages)';
+  $('kvDay').textContent = DAY_NAMES[a.busiestDay] + ' (' + a.days[a.busiestDay] + ' messages)';
+  const maxSender = a.senders.length ? a.senders[0][1] : 1;
+  $('senderBars').innerHTML = a.senders.map(([n, c]) =>
+    '<div class="bar-row"><span class="nm" title="' + esc(n) + '">' + esc(n) + '</span><div class="bar-track"><i style="width:' + Math.max(2, Math.round(c / maxSender * 100)) + '%"></i></div><span class="ct">' + c.toLocaleString() + '</span></div>').join('');
+  const maxHour = Math.max(...a.hours, 1);
+  $('hourGrid').innerHTML = a.hours.map((c, h) =>
+    '<div class="hour-col" title="' + fmtHour(h) + ' — ' + c + ' messages"><i style="height:' + Math.max(2, Math.round(c / maxHour * 88)) + 'px"></i><span>' + h + '</span></div>').join('');
+  const maxDay = Math.max(...a.days, 1);
+  $('dayGrid').innerHTML = a.days.map((c, d) =>
+    '<div class="day-col" title="' + DAY_NAMES[d] + ' — ' + c + ' messages"><i style="height:' + Math.max(2, Math.round(c / maxDay * 80)) + 'px"></i><span>' + DAY_NAMES[d].slice(0, 3) + '</span></div>').join('');
+  $('wordChips').innerHTML = a.words.length ? a.words.map(([w, c]) => '<span class="chip">' + esc(w) + ' <b>&times;' + c + '</b></span>').join('') : '<span class="sub">No repeated words found.</span>';
+  $('emojiChips').innerHTML = a.emojis.length ? a.emojis.map(([e, c]) => '<span class="chip emoji-chip">' + e + ' <b>&times;' + c + '</b></span>').join('') : '<span class="sub">No emojis used in this chat.</span>';
+  if (a.longest) {
+    $('longestMeta').textContent = a.longest.sender + ' — ' + a.longest.len + ' characters';
+    $('longestQuote').textContent = a.longest.preview + (a.longest.len > 160 ? '…' : '');
+  } else { $('longestMeta').textContent = ''; $('longestQuote').textContent = ''; }
+  $('results').classList.remove('hidden');
+  $('btnClear').classList.remove('hidden');
+  $('results').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function reportText(a) {
+  const L = [];
+  L.push('DTZ WhatsApp Chat Analyzer — Report');
+  L.push('Chat: ' + lastName);
+  L.push('Generated: ' + new Date().toLocaleString('en-GB'));
+  L.push('');
+  L.push('Total messages: ' + a.chat + ' (plus ' + a.system + ' system messages)');
+  L.push('Participants: ' + a.senderCount);
+  L.push('Days covered: ' + a.daySpan + ' (' + (a.first ? fmtDate(a.first) : '—') + ' to ' + (a.last ? fmtDate(a.last) : '—') + ')');
+  L.push('Messages per day: ' + a.perDay.toFixed(1));
+  L.push('Media shared: ' + a.media + ' | Links shared: ' + a.links);
+  L.push('Most active: ' + (a.senders[0] ? a.senders[0][0] + ' (' + a.senders[0][1] + ')' : '—'));
+  L.push('Busiest hour: ' + fmtHour(a.busiestHour) + ' | Busiest day: ' + DAY_NAMES[a.busiestDay]);
+  L.push('');
+  L.push('Messages per person:');
+  a.senders.forEach(([n, c]) => L.push('  ' + n + ': ' + c));
+  L.push('');
+  L.push('Top words:');
+  a.words.forEach(([w, c]) => L.push('  ' + w + ': ' + c));
+  L.push('');
+  L.push('Top emojis:');
+  a.emojis.forEach(([e, c]) => L.push('  ' + e + ': ' + c));
+  if (a.longest) { L.push(''); L.push('Longest message (' + a.longest.sender + ', ' + a.longest.len + ' chars):'); L.push(a.longest.preview); }
+  L.push('');
+  L.push('Free tool by Dark Tech Zone — https://www.darktechzon.site/');
+  return L.join('\n');
+}
+
+function saveRecent(name, total) {
+  try {
+    const list = JSON.parse(localStorage.getItem('dtz-chat-analyzer-recent') || '[]');
+    list.unshift({name, total, when: Date.now()});
+    localStorage.setItem('dtz-chat-analyzer-recent', JSON.stringify(list.slice(0, 5)));
+    loadRecent();
+  } catch (e) {}
+}
+
+function loadRecent() {
+  let list = [];
+  try { list = JSON.parse(localStorage.getItem('dtz-chat-analyzer-recent') || '[]'); } catch (e) {}
+  if (!list.length) { $('recentCard').classList.add('hidden'); return; }
+  $('recentCard').classList.remove('hidden');
+  $('recentList').innerHTML = list.map((r, i) =>
+    '<div class="recent-item" data-i="' + i + '"><span>' + esc(r.name) + ' — ' + r.total.toLocaleString() + ' messages</span><small>' + new Date(r.when).toLocaleDateString('en-GB') + '</small></div>').join('');
+}
+
+function analyzeText(text, name) {
+  if (!text || !text.trim()) { $('status').textContent = 'Please upload a .txt file or paste chat text first.'; $('status').classList.add('err'); return; }
+  const msgs = parseChat(text);
+  if (!msgs.length) { $('status').textContent = 'No WhatsApp messages found. Make sure this is a chat export (.txt) from WhatsApp.'; $('status').classList.add('err'); return; }
+  const a = analyze(msgs);
+  lastAnalysis = a; lastName = name || 'chat'; lastText = text;
+  $('status').textContent = 'Analyzed ' + a.chat + ' messages from ' + a.senderCount + ' people across ' + a.daySpan + ' days.';
+  $('status').classList.remove('err');
+  render(a);
+  saveRecent(lastName, a.chat);
+}
+
+const dropZone = $('dropZone'), fileInput = $('fileInput');
+dropZone.addEventListener('click', () => fileInput.click());
+dropZone.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); } });
+['dragover','dragenter'].forEach(ev => dropZone.addEventListener(ev, e => { e.preventDefault(); dropZone.classList.add('over'); }));
+['dragleave','drop'].forEach(ev => dropZone.addEventListener(ev, e => { e.preventDefault(); dropZone.classList.remove('over'); }));
+dropZone.addEventListener('drop', e => { const f = e.dataTransfer.files[0]; if (f) readFile(f); });
+fileInput.addEventListener('change', () => { if (fileInput.files[0]) readFile(fileInput.files[0]); });
+
+function readFile(f) {
+  if (f.size > 20 * 1024 * 1024) { $('status').textContent = 'File is too large (max 20 MB). Export without media and try again.'; $('status').classList.add('err'); return; }
+  const r = new FileReader();
+  r.onload = () => analyzeText(String(r.result || ''), f.name.replace(/\.txt$/i, ''));
+  r.onerror = () => { $('status').textContent = 'Could not read that file. Try again.'; $('status').classList.add('err'); };
+  r.readAsText(f);
+}
+
+$('btnAnalyze').addEventListener('click', () => analyzeText($('pasteBox').value, 'pasted chat'));
+$('btnSample').addEventListener('click', () => { $('pasteBox').value = sampleChat(); analyzeText(sampleChat(), 'Sample chat'); });
+$('btnClear').addEventListener('click', () => { $('pasteBox').value = ''; fileInput.value = ''; $('results').classList.add('hidden'); $('status').textContent = ''; $('btnClear').classList.add('hidden'); });
+$('btnDownload').addEventListener('click', () => {
+  if (!lastAnalysis) return;
+  const blob = new Blob([reportText(lastAnalysis)], {type: 'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'dtz-chat-report-' + lastName.replace(/[^a-z0-9]+/gi, '-').toLowerCase() + '.txt';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+});
+$('btnCopy').addEventListener('click', async () => {
+  if (!lastAnalysis) return;
+  const txt = reportText(lastAnalysis);
+  try { await navigator.clipboard.writeText(txt); $('btnCopy').textContent = 'Copied!'; setTimeout(() => $('btnCopy').textContent = 'Copy Summary', 2000); }
+  catch (e) {
+    const ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); $('btnCopy').textContent = 'Copied!'; setTimeout(() => $('btnCopy').textContent = 'Copy Summary', 2000); } catch (e2) { $('btnCopy').textContent = 'Copy failed — use Download'; }
+    ta.remove();
+  }
+});
+$('btnClearRecent').addEventListener('click', () => { try { localStorage.removeItem('dtz-chat-analyzer-recent'); } catch (e) {} loadRecent(); });
+$('recentList').addEventListener('click', e => {
+  const item = e.target.closest('.recent-item'); if (!item) return;
+  if (lastText) { analyzeText(lastText, lastName); }
+  else { $('status').textContent = 'That report was from an earlier visit — upload the file again to re-analyze it.'; $('status').classList.add('err'); }
+});
+loadRecent();
+</script>
+</body>
+</html>
