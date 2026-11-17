@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTZ YouTube Thumbnail Maker — Dark Tech Zone</title>
+<meta name="description" content="Design a real 1280x720 YouTube thumbnail in your browser: upload a photo or pick a gradient, add bold title text, subtitle and accent bar, then download a PNG or JPG. 100% on your device, free, no signup.">
+<link rel="icon" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg">
+<style>
+:root{--bg:#f7f7f8;--card:#fff;--ink:#1a1a1e;--muted:#6b7280;--line:#e5e7eb;--green:#16a34a;--green-d:#15803d;--red:#dc2626;--blue:#2563eb;--soft:#f3f4f6}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+header{background:var(--card);border-bottom:1px solid var(--line);padding:14px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header img{width:40px;height:40px;border-radius:50%;object-fit:cover}
+header h1{font-size:19px;font-weight:700}
+header p{font-size:13px;color:var(--muted)}
+.pill{margin-left:auto;font-size:12px;font-weight:600;padding:5px 11px;border-radius:999px;background:#dcfce7;color:#166534;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.pill .dot{width:8px;height:8px;border-radius:50%;background:#16a34a}
+main{max-width:860px;margin:0 auto;padding:24px 16px 60px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px}
+h2{font-size:17px;margin-bottom:4px}
+.sub{font-size:13px;color:var(--muted);margin-bottom:14px}
+label{display:block;font-size:13px;font-weight:600;margin:14px 0 6px}
+input[type=text],textarea,select{width:100%;padding:11px 13px;border:1px solid #d1d5db;border-radius:10px;font-size:14px;font-family:inherit;outline:none;background:#fff}
+input[type=text]:focus,textarea:focus,select:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(22,163,74,.15)}
+textarea{min-height:74px;resize:vertical}
+input[type=color]{width:52px;height:38px;padding:2px;border:1px solid #d1d5db;border-radius:8px;background:#fff;cursor:pointer;vertical-align:middle}
+input[type=range]{width:100%;accent-color:var(--green)}
+input[type=checkbox]{width:18px;height:18px;accent-color:var(--green);vertical-align:-3px;margin-right:6px}
+.drop{border:2px dashed #d1d5db;border-radius:12px;padding:20px 16px;text-align:center;color:var(--muted);font-size:14px;cursor:pointer;transition:.2s;background:var(--soft)}
+.drop:hover,.drop.over{border-color:var(--green);color:var(--green-d);background:#f0fdf4}
+.drop b{color:var(--ink)}
+.btn{display:inline-block;border:none;border-radius:10px;padding:12px 20px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-green{background:var(--green);color:#fff}
+.btn-green:hover{background:var(--green-d)}
+.btn-green:disabled{background:#9ca3af;cursor:not-allowed}
+.btn-ghost{background:#fff;border:1px solid #d1d5db;color:var(--ink)}
+.btn-ghost:hover{border-color:var(--green);color:var(--green-d)}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.btn-row .btn{width:auto;padding:10px 16px;font-size:14px;margin-top:0}
+.btn-main{width:100%;margin-top:18px}
+.status{font-size:13px;color:var(--muted);margin-top:12px;min-height:20px}
+.status.err{color:var(--red);font-weight:600}
+.hidden{display:none!important}
+.preview-wrap{background:#111827;border-radius:12px;padding:10px;margin-bottom:6px}
+canvas#previewCanvas{width:100%;height:auto;display:block;border-radius:8px;cursor:grab;touch-action:none}
+canvas#previewCanvas.dragging{cursor:grabbing}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chip{border:1px solid var(--line);background:var(--soft);border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer;font-family:inherit}
+.chip:hover{border-color:var(--green)}
+.chip.active{background:var(--green);color:#fff;border-color:var(--green)}
+.grad-chip{width:52px;height:34px;border-radius:8px;border:2px solid transparent;padding:0;cursor:pointer}
+.grad-chip.active{border-color:var(--ink);outline:2px solid var(--green)}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg .chip.active{background:var(--green);color:#fff;border-color:var(--green)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 14px}
+.field-note{font-size:12px;color:var(--muted);font-weight:400}
+.note{font-size:12px;color:var(--muted);margin-top:12px}
+.recent-item{display:flex;gap:12px;align-items:center;padding:10px 2px;border-bottom:1px solid var(--line);font-size:13px;cursor:pointer}
+.recent-item:last-child{border-bottom:none}
+.recent-item:hover{color:var(--green-d)}
+.recent-item img{width:96px;height:54px;object-fit:cover;border-radius:6px;border:1px solid var(--line)}
+.recent-item small{color:var(--muted);white-space:nowrap;margin-left:auto}
+footer{text-align:center;font-size:12px;color:var(--muted);margin-top:8px}
+footer a{color:var(--green-d);font-weight:600;text-decoration:none}
+@media(max-width:560px){.row2,.row3{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+<img src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone logo">
+<div><h1>DTZ YouTube Thumbnail Maker</h1><p>Dark Tech Zone — free, no signup</p></div>
+<div class="pill"><span class="dot"></span>100% On-Device</div>
+</header>
+<main>
+
+<div class="card">
+<h2>Your thumbnail — live preview</h2>
+<p class="sub">Real 1280 &times; 720 canvas, exactly what YouTube wants. Drag the photo to move it. Every change updates instantly.</p>
+<div class="preview-wrap"><canvas id="previewCanvas" width="1280" height="720"></canvas></div>
+<p class="note">Tip: keep the main words inside the dashed safe zone — YouTube crops the corners on phones.</p>
+<div class="btn-row">
+<button class="btn btn-green" id="btnDownloadPng">Download PNG</button>
+<button class="btn btn-green" id="btnDownloadJpg">Download JPG</button>
+<button class="btn btn-ghost" id="btnCopy">Copy Image</button>
+<button class="btn btn-ghost" id="btnReset">Reset</button>
+</div>
+<div class="status" id="status"></div>
+</div>
+
+<div class="card">
+<h2>1. Background</h2>
+<p class="sub">Upload your own photo, or pick a gradient. The photo fills the whole thumbnail.</p>
+<div class="drop" id="dropZone" tabindex="0" role="button" aria-label="Upload background photo">
+<b>Drop a photo here</b><br>or tap to choose an image &middot; JPG / PNG / WebP, up to 10 MB
+<input type="file" id="fileInput" accept="image/*" class="hidden">
+</div>
+<div class="btn-row"><button class="btn btn-ghost hidden" id="btnRemoveBg">Remove photo (use gradient)</button></div>
+<label>Gradient background</label>
+<div class="chips" id="gradientChips"></div>
+<div class="row2">
+<div><label for="bgColor">Solid colour <span class="field-note">(used when "Solid" gradient is picked)</span></label>
+<input type="color" id="bgColor" value="#16a34a"></div>
+<div><label for="darkenRange">Darken background — <span id="darkenVal">35%</span></label>
+<input type="range" id="darkenRange" min="0" max="80" value="35"></div>
+</div>
+<div id="imgControls" class="hidden">
+<label for="zoomRange">Photo zoom — <span id="zoomVal">100%</span></label>
+<input type="range" id="zoomRange" min="100" max="250" value="100">
+<p class="note">Drag the photo in the preview above to move it.</p>
+</div>
+</div>
+
+<div class="card">
+<h2>2. Title text</h2>
+<p class="sub">The big bold words. Short titles in ALL CAPS get the most clicks.</p>
+<label for="titleInput">Title</label>
+<textarea id="titleInput" maxlength="120" placeholder="HOW TO MAKE VIRAL VIDEOS">HOW TO MAKE VIRAL VIDEOS</textarea>
+<div class="row3">
+<div><label for="fontSelect">Font</label>
+<select id="fontSelect">
+<option value="Arial Black, Arial, sans-serif">Extra Bold (Arial Black)</option>
+<option value="Impact, Arial Black, sans-serif">Impact</option>
+<option value="Verdana, sans-serif">Verdana Bold</option>
+<option value="Georgia, serif">Georgia Bold</option>
+<option value="Trebuchet MS, sans-serif">Trebuchet Bold</option>
+</select></div>
+<div><label for="titleSize">Text size — <span id="titleSizeVal">96</span>px</label>
+<input type="range" id="titleSize" min="48" max="150" value="96"></div>
+<div><label for="titleColor">Text colour</label><input type="color" id="titleColor" value="#ffffff"></div>
+</div>
+<div class="row3">
+<div><label>Position</label>
+<div class="seg" id="posSeg">
+<button type="button" class="chip" data-pos="top">Top</button>
+<button type="button" class="chip active" data-pos="center">Centre</button>
+<button type="button" class="chip" data-pos="bottom">Bottom</button>
+</div></div>
+<div><label>Align</label>
+<div class="seg" id="alignSeg">
+<button type="button" class="chip" data-align="left">Left</button>
+<button type="button" class="chip active" data-align="center">Centre</button>
+<button type="button" class="chip" data-align="right">Right</button>
+</div></div>
+<div><label>Style</label>
+<label style="font-weight:400;margin-top:2px"><input type="checkbox" id="strokeToggle" checked>Black outline</label>
+<label style="font-weight:400"><input type="checkbox" id="shadowToggle" checked>Drop shadow</label>
+</div>
+</div>
+</div>
+
+<div class="card">
+<h2>3. Subtitle &amp; accent</h2>
+<p class="sub">A small badge line under the title, plus a colour bar for extra punch.</p>
+<label for="subtitleInput">Subtitle / badge <span class="field-note">(leave empty for none)</span></label>
+<input type="text" id="subtitleInput" maxlength="60" placeholder="No Camera Needed" value="No Camera Needed">
+<div class="row3">
+<div><label for="subtitleColor">Badge text</label><input type="color" id="subtitleColor" value="#ffffff"></div>
+<div><label for="subtitleBg">Badge background</label><input type="color" id="subtitleBg" value="#dc2626"></div>
+<div><label>Accent bar</label>
+<label style="font-weight:400;margin-top:2px"><input type="checkbox" id="accentToggle" checked>Show accent bar</label>
+<input type="color" id="accentColor" value="#facc15" style="margin-top:6px">
+</div>
+</div>
+<label style="font-weight:400;margin-top:14px"><input type="checkbox" id="safeToggle" checked>Show YouTube safe zone (dashed guide)</label>
+</div>
+
+<div class="card">
+<h2>4. One-tap templates</h2>
+<p class="sub">Pick a style — it sets the background, title colour and accent bar. Your title text stays as you wrote it.</p>
+<div class="chips" id="templateChips"></div>
+<div class="btn-row"><button class="btn btn-ghost" id="btnSample">Load sample thumbnail</button></div>
+</div>
+
+<div class="card hidden" id="recentCard">
+<h2>Recent thumbnails</h2>
+<p class="sub">Small previews saved on this device only. Tap one to load its settings back.</p>
+<div id="recentList"></div>
+<div class="btn-row"><button class="btn btn-ghost" id="btnClearRecent">Clear history</button></div>
+</div>
+
+<footer>Free tool by <a href="https://www.darktechzon.site/" target="_blank" rel="noopener">Dark Tech Zone</a> &middot; Join our WhatsApp channel: <a href="https://whatsapp.com/channel/0029Vb9oK008V0txIkc3oj3z" target="_blank" rel="noopener">Dark Tech Zone</a></footer>
+</main>
+<script>
+// DTZ YouTube Thumbnail Maker — pure helpers (tested in Node) above the DOM wiring marker.
+// === PURE LOGIC (no DOM) ===
+const W = 1280, H = 720;
+const GRADIENTS = [
+  {name:'Green', c1:'#16a34a', c2:'#052e16', angle:135},
+  {name:'Dark', c1:'#1f2937', c2:'#000000', angle:135},
+  {name:'Red', c1:'#dc2626', c2:'#450a0a', angle:135},
+  {name:'Blue', c1:'#2563eb', c2:'#172554', angle:135},
+  {name:'Purple', c1:'#9333ea', c2:'#3b0764', angle:135},
+  {name:'Orange', c1:'#ea580c', c2:'#431407', angle:135},
+  {name:'Solid', c1:null, c2:null, angle:135}
+];
+const TEMPLATES = [
+  {name:'Tech Review', grad:0, title:'#ffffff', accent:'#facc15', subBg:'#dc2626'},
+  {name:'Breaking', grad:2, title:'#ffffff', accent:'#ffffff', subBg:'#111827'},
+  {name:'Tutorial', grad:3, title:'#ffffff', accent:'#22c55e', subBg:'#16a34a'},
+  {name:'Gaming', grad:4, title:'#facc15', accent:'#a855f7', subBg:'#111827'},
+  {name:'Vlog', grad:5, title:'#ffffff', accent:'#ffffff', subBg:'#ea580c'}
+];
+
+// Cover-fit: image (iw x ih) drawn onto (W x H) with zoom factor; returns draw rect.
+function coverRect(iw, ih, zoom) {
+  const scale = Math.max(W / iw, H / ih) * zoom;
+  const dw = iw * scale, dh = ih * scale;
+  return {dw, dh, scale};
+}
+
+// Word-wrap text into lines that fit maxWidth using ctx.measureText.
+function wrapLines(ctx, text, maxWidth) {
+  const out = [];
+  for (const raw of String(text).split('\n')) {
+    const words = raw.split(/\s+/).filter(Boolean);
+    if (!words.length) { out.push(''); continue; }
+    let line = words[0];
+    for (let i = 1; i < words.length; i++) {
+      const trial = line + ' ' + words[i];
+      if (ctx.measureText(trial).width <= maxWidth) line = trial;
+      else { out.push(line); line = words[i]; }
+    }
+    out.push(line);
+  }
+  return out;
+}
+
+// Rounded-rect path helper (works on any 2d context).
+function roundRectPath(ctx, x, y, w, h, r) {
+  const rr = Math.min(r, w / 2, h / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + rr, y);
+  ctx.arcTo(x + w, y, x + w, y + h, rr);
+  ctx.arcTo(x + w, y + h, x, y + h, rr);
+  ctx.arcTo(x, y + h, x, y, rr);
+  ctx.arcTo(x, y, x + w, y, rr);
+  ctx.closePath();
+}
+
+// Layout: given state + measured lines, return y positions for title block + subtitle.
+function titleLayout(lines, lineHeight, pos, subtitle) {
+  const blockH = lines.length * lineHeight + (subtitle ? 26 + 56 : 0);
+  let top;
+  if (pos === 'top') top = 56;
+  else if (pos === 'bottom') top = H - 56 - blockH;
+  else top = (H - blockH) / 2;
+  return {top, blockH};
+}
+// === DOM WIRING BELOW ===
+
+const $ = id => document.getElementById(id);
+const canvas = $('previewCanvas');
+const ctx = canvas.getContext('2d');
+
+const DEFAULTS = {
+  grad: 0, bgColor: '#16a34a', darken: 35,
+  title: 'HOW TO MAKE VIRAL VIDEOS', font: 'Arial Black, Arial, sans-serif',
+  titleSize: 96, titleColor: '#ffffff', stroke: true, shadow: true,
+  pos: 'center', align: 'center',
+  subtitle: 'No Camera Needed', subtitleColor: '#ffffff', subtitleBg: '#dc2626',
+  accent: true, accentColor: '#facc15', safe: true, zoom: 1, imgX: 0, imgY: 0
+};
+let state = Object.assign({}, DEFAULTS);
+let bgImg = null; // HTMLImageElement or null
+let bgImgName = '';
+
+function readState() {
+  state.title = $('titleInput').value;
+  state.font = $('fontSelect').value;
+  state.titleSize = parseInt($('titleSize').value, 10);
+  state.titleColor = $('titleColor').value;
+  state.stroke = $('strokeToggle').checked;
+  state.shadow = $('shadowToggle').checked;
+  state.subtitle = $('subtitleInput').value;
+  state.subtitleColor = $('subtitleColor').value;
+  state.subtitleBg = $('subtitleBg').value;
+  state.accent = $('accentToggle').checked;
+  state.accentColor = $('accentColor').value;
+  state.safe = $('safeToggle').checked;
+  state.bgColor = $('bgColor').value;
+  state.darken = parseInt($('darkenRange').value, 10);
+  state.zoom = parseInt($('zoomRange').value, 10) / 100;
+}
+
+function render() {
+  readState();
+  $('titleSizeVal').textContent = state.titleSize;
+  $('darkenVal').textContent = state.darken + '%';
+  $('zoomVal').textContent = Math.round(state.zoom * 100) + '%';
+  // Background
+  if (bgImg) {
+    const r = coverRect(bgImg.naturalWidth, bgImg.naturalHeight, state.zoom);
+    const dx = (W - r.dw) / 2 + state.imgX;
+    const dy = (H - r.dh) / 2 + state.imgY;
+    ctx.drawImage(bgImg, dx, dy, r.dw, r.dh);
+  } else {
+    const g = GRADIENTS[state.grad];
+    if (g.c1 === null) {
+      ctx.fillStyle = state.bgColor;
+      ctx.fillRect(0, 0, W, H);
+    } else {
+      const rad = g.angle * Math.PI / 180;
+      const x1 = W / 2 - Math.cos(rad) * W / 2, y1 = H / 2 - Math.sin(rad) * H / 2;
+      const x2 = W / 2 + Math.cos(rad) * W / 2, y2 = H / 2 + Math.sin(rad) * H / 2;
+      const grad = ctx.createLinearGradient(x1, y1, x2, y2);
+      grad.addColorStop(0, g.c1); grad.addColorStop(1, g.c2);
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, W, H);
+    }
+  }
+  // Darken overlay
+  if (state.darken > 0) {
+    ctx.fillStyle = 'rgba(0,0,0,' + (state.darken / 100) + ')';
+    ctx.fillRect(0, 0, W, H);
+  }
+  // Accent bar
+  if (state.accent) {
+    ctx.fillStyle = state.accentColor;
+    ctx.fillRect(0, 0, W, 18);
+    ctx.fillRect(0, H - 18, W, 18);
+  }
+  // Title
+  const maxW = W - 140;
+  const lineHeight = Math.round(state.titleSize * 1.08);
+  ctx.font = '900 ' + state.titleSize + 'px ' + state.font;
+  ctx.textBaseline = 'top';
+  const lines = wrapLines(ctx, state.title || '', maxW);
+  const layout = titleLayout(lines, lineHeight, state.pos, state.subtitle.trim());
+  let y = layout.top;
+  ctx.textAlign = state.align;
+  const tx = state.align === 'left' ? 70 : state.align === 'right' ? W - 70 : W / 2;
+  for (const line of lines) {
+    if (!line) { y += lineHeight; continue; }
+    ctx.shadowColor = state.shadow ? 'rgba(0,0,0,0.55)' : 'transparent';
+    ctx.shadowBlur = state.shadow ? 18 : 0;
+    ctx.shadowOffsetY = state.shadow ? 6 : 0;
+    if (state.stroke) { ctx.lineWidth = Math.max(4, Math.round(state.titleSize / 12)); ctx.strokeStyle = '#000000'; ctx.lineJoin = 'round'; ctx.strokeText(line, tx, y); }
+    ctx.fillStyle = state.titleColor;
+    ctx.fillText(line, tx, y);
+    y += lineHeight;
+  }
+  ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+  // Subtitle pill
+  const sub = state.subtitle.trim();
+  if (sub) {
+    ctx.font = '700 34px Arial, sans-serif';
+    const tw = ctx.measureText(sub).width;
+    const pw = tw + 48, ph = 56;
+    const px = state.align === 'left' ? 70 : state.align === 'right' ? W - 70 - pw : (W - pw) / 2;
+    const py = y + 26;
+    roundRectPath(ctx, px, py, pw, ph, 28);
+    ctx.fillStyle = state.subtitleBg;
+    ctx.fill();
+    ctx.fillStyle = state.subtitleColor;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(sub, px + 24, py + ph / 2 + 1);
+    ctx.textBaseline = 'top';
+  }
+  // Safe zone guide
+  if (state.safe) {
+    ctx.strokeStyle = 'rgba(255,255,255,0.65)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([14, 10]);
+    ctx.strokeRect(24, 24, W - 48, H - 48);
+    ctx.setLineDash([]);
+  }
+}
+
+function setStatus(msg, err) {
+  $('status').textContent = msg || '';
+  $('status').classList.toggle('err', !!err);
+}
+
+function download(blob, name) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+}
+
+function slugifyTitle() {
+  const s = (state.title || 'thumbnail').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  return s.slice(0, 40) || 'thumbnail';
+}
+
+function saveRecent() {
+  try {
+    const small = document.createElement('canvas');
+    small.width = 320; small.height = 180;
+    small.getContext('2d').drawImage(canvas, 0, 0, 320, 180);
+    const list = JSON.parse(localStorage.getItem('dtz-thumbnail-recent') || '[]');
+    list.unshift({title: state.title || 'Untitled', img: small.toDataURL('image/jpeg', 0.72), when: Date.now(), snap: snapshotState()});
+    localStorage.setItem('dtz-thumbnail-recent', JSON.stringify(list.slice(0, 8)));
+    loadRecent();
+  } catch (e) { /* storage full or blocked — recent is best-effort */ }
+}
+
+function snapshotState() {
+  return {grad: state.grad, bgColor: state.bgColor, darken: state.darken, title: state.title, font: state.font, titleSize: state.titleSize, titleColor: state.titleColor, stroke: state.stroke, shadow: state.shadow, pos: state.pos, align: state.align, subtitle: state.subtitle, subtitleColor: state.subtitleColor, subtitleBg: state.subtitleBg, accent: state.accent, accentColor: state.accentColor, safe: state.safe};
+}
+
+function applySnapshot(s) {
+  Object.assign(state, s);
+  $('titleInput').value = state.title;
+  $('fontSelect').value = state.font;
+  $('titleSize').value = state.titleSize;
+  $('titleColor').value = state.titleColor;
+  $('strokeToggle').checked = state.stroke;
+  $('shadowToggle').checked = state.shadow;
+  $('subtitleInput').value = state.subtitle;
+  $('subtitleColor').value = state.subtitleColor;
+  $('subtitleBg').value = state.subtitleBg;
+  $('accentToggle').checked = state.accent;
+  $('accentColor').value = state.accentColor;
+  $('safeToggle').checked = state.safe;
+  $('bgColor').value = state.bgColor;
+  $('darkenRange').value = state.darken;
+  document.querySelectorAll('#gradientChips .grad-chip').forEach(c => c.classList.toggle('active', parseInt(c.dataset.grad, 10) === state.grad));
+  document.querySelectorAll('#posSeg .chip').forEach(c => c.classList.toggle('active', c.dataset.pos === state.pos));
+  document.querySelectorAll('#alignSeg .chip').forEach(c => c.classList.toggle('active', c.dataset.align === state.align));
+  render();
+}
+
+function loadRecent() {
+  let list = [];
+  try { list = JSON.parse(localStorage.getItem('dtz-thumbnail-recent') || '[]'); } catch (e) {}
+  if (!list.length) { $('recentCard').classList.add('hidden'); return; }
+  $('recentCard').classList.remove('hidden');
+  $('recentList').innerHTML = list.map((r, i) =>
+    '<div class="recent-item" data-i="' + i + '"><img src="' + r.img + '" alt=""><span>' + escHtml(r.title || 'Untitled') + '</span><small>' + new Date(r.when).toLocaleDateString('en-GB') + '</small></div>').join('');
+  $('recentList').querySelectorAll('.recent-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const r = list[parseInt(el.dataset.i, 10)];
+      if (r && r.snap) { applySnapshot(r.snap); setStatus('Loaded "' + (r.title || 'Untitled') + '" — edit and download again.'); window.scrollTo({top: 0, behavior: 'smooth'}); }
+    });
+  });
+}
+
+function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// Gradient chips
+(function buildGradients() {
+  const box = $('gradientChips');
+  GRADIENTS.forEach((g, i) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'grad-chip' + (i === state.grad ? ' active' : '');
+    b.dataset.grad = i;
+    b.title = g.name;
+    b.style.background = g.c1 === null ? '#9ca3af' : 'linear-gradient(135deg,' + g.c1 + ',' + g.c2 + ')';
+    b.addEventListener('click', () => {
+      state.grad = i;
+      box.querySelectorAll('.grad-chip').forEach(c => c.classList.toggle('active', parseInt(c.dataset.grad, 10) === i));
+      render();
+    });
+    box.appendChild(b);
+  });
+})();
+
+// Template chips
+(function buildTemplates() {
+  const box = $('templateChips');
+  TEMPLATES.forEach(t => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'chip';
+    b.textContent = t.name;
+    b.addEventListener('click', () => {
+      state.grad = t.grad;
+      state.titleColor = t.title;
+      state.accentColor = t.accent;
+      state.subtitleBg = t.subBg;
+      $('titleColor').value = t.title;
+      $('accentColor').value = t.accent;
+      $('subtitleBg').value = t.subBg;
+      document.querySelectorAll('#gradientChips .grad-chip').forEach(c => c.classList.toggle('active', parseInt(c.dataset.grad, 10) === t.grad));
+      render();
+      setStatus('Template "' + t.name + '" applied.');
+    });
+    box.appendChild(b);
+  });
+})();
+
+// Segmented buttons
+$('posSeg').addEventListener('click', e => {
+  const b = e.target.closest('[data-pos]'); if (!b) return;
+  state.pos = b.dataset.pos;
+  $('posSeg').querySelectorAll('.chip').forEach(c => c.classList.toggle('active', c === b));
+  render();
+});
+$('alignSeg').addEventListener('click', e => {
+  const b = e.target.closest('[data-align]'); if (!b) return;
+  state.align = b.dataset.align;
+  $('alignSeg').querySelectorAll('.chip').forEach(c => c.classList.toggle('active', c === b));
+  render();
+});
+
+// Live inputs
+['titleInput','fontSelect','titleSize','titleColor','strokeToggle','shadowToggle','subtitleInput','subtitleColor','subtitleBg','accentToggle','accentColor','safeToggle','bgColor','darkenRange','zoomRange'].forEach(id => {
+  $(id).addEventListener('input', render);
+  $(id).addEventListener('change', render);
+});
+
+// Background photo
+const dropZone = $('dropZone'), fileInput = $('fileInput');
+dropZone.addEventListener('click', () => fileInput.click());
+dropZone.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); } });
+['dragover','dragenter'].forEach(ev => dropZone.addEventListener(ev, e => { e.preventDefault(); dropZone.classList.add('over'); }));
+['dragleave','drop'].forEach(ev => dropZone.addEventListener(ev, e => { e.preventDefault(); dropZone.classList.remove('over'); }));
+dropZone.addEventListener('drop', e => { const f = e.dataTransfer.files[0]; if (f) readImage(f); });
+fileInput.addEventListener('change', () => { if (fileInput.files[0]) readImage(fileInput.files[0]); });
+
+function readImage(f) {
+  if (!/^image\//.test(f.type)) { setStatus('That is not an image file. Pick a JPG, PNG or WebP photo.', true); return; }
+  if (f.size > 10 * 1024 * 1024) { setStatus('Image is too large (max 10 MB).', true); return; }
+  const r = new FileReader();
+  r.onload = () => {
+    const img = new Image();
+    img.onload = () => {
+      bgImg = img; bgImgName = f.name; state.imgX = 0; state.imgY = 0;
+      $('imgControls').classList.remove('hidden');
+      $('btnRemoveBg').classList.remove('hidden');
+      setStatus('Photo loaded: ' + f.name + ' (' + img.naturalWidth + 'x' + img.naturalHeight + '). Drag it in the preview to move it.');
+      render();
+    };
+    img.onerror = () => setStatus('Could not load that image. Try a JPG or PNG.', true);
+    img.src = String(r.result);
+  };
+  r.onerror = () => setStatus('Could not read that file. Try again.', true);
+  r.readAsDataURL(f);
+}
+
+$('btnRemoveBg').addEventListener('click', () => {
+  bgImg = null; bgImgName = ''; state.imgX = 0; state.imgY = 0;
+  fileInput.value = '';
+  $('imgControls').classList.add('hidden');
+  $('btnRemoveBg').classList.add('hidden');
+  setStatus('Photo removed — gradient background is back.');
+  render();
+});
+
+// Drag to pan the photo
+let drag = null;
+function canvasPos(e) {
+  const r = canvas.getBoundingClientRect();
+  return {x: (e.clientX - r.left) * (W / r.width), y: (e.clientY - r.top) * (H / r.height)};
+}
+canvas.addEventListener('pointerdown', e => {
+  if (!bgImg) return;
+  drag = {p: canvasPos(e), x: state.imgX, y: state.imgY};
+  canvas.classList.add('dragging');
+  canvas.setPointerCapture(e.pointerId);
+});
+canvas.addEventListener('pointermove', e => {
+  if (!drag) return;
+  const p = canvasPos(e);
+  state.imgX = drag.x + (p.x - drag.p.x);
+  state.imgY = drag.y + (p.y - drag.p.y);
+  render();
+});
+['pointerup','pointercancel'].forEach(ev => canvas.addEventListener(ev, () => { drag = null; canvas.classList.remove('dragging'); }));
+
+// Sample
+$('btnSample').addEventListener('click', () => {
+  bgImg = null; fileInput.value = '';
+  $('imgControls').classList.add('hidden');
+  $('btnRemoveBg').classList.add('hidden');
+  state = Object.assign({}, DEFAULTS, {title: 'I TESTED 10 AI APPS SO YOU DON\'T HAVE TO', subtitle: 'Free Tools Only', grad: 0});
+  applySnapshot(state);
+  setStatus('Sample loaded — change the words and colours, then download.');
+});
+
+// Reset
+$('btnReset').addEventListener('click', () => {
+  bgImg = null; fileInput.value = '';
+  $('imgControls').classList.add('hidden');
+  $('btnRemoveBg').classList.add('hidden');
+  state = Object.assign({}, DEFAULTS);
+  applySnapshot(state);
+  setStatus('Reset to the default design.');
+});
+
+// Downloads
+$('btnDownloadPng').addEventListener('click', () => {
+  render();
+  canvas.toBlob(b => {
+    if (!b) { setStatus('Download failed in this browser. Try JPG instead.', true); return; }
+    download(b, 'dtz-thumbnail-' + slugifyTitle() + '.png');
+    setStatus('PNG downloaded — 1280 x 720, ready to upload to YouTube.');
+    saveRecent();
+  }, 'image/png');
+});
+$('btnDownloadJpg').addEventListener('click', () => {
+  render();
+  canvas.toBlob(b => {
+    if (!b) { setStatus('Download failed in this browser. Try PNG instead.', true); return; }
+    download(b, 'dtz-thumbnail-' + slugifyTitle() + '.jpg');
+    setStatus('JPG downloaded — 1280 x 720, ready to upload to YouTube.');
+    saveRecent();
+  }, 'image/jpeg', 0.92);
+});
+$('btnCopy').addEventListener('click', async () => {
+  render();
+  try {
+    const b = await new Promise(res => canvas.toBlob(res, 'image/png'));
+    if (!b) throw new Error('no blob');
+    await navigator.clipboard.write([new ClipboardItem({'image/png': b})]);
+    $('btnCopy').textContent = 'Copied!';
+    setTimeout(() => $('btnCopy').textContent = 'Copy Image', 2000);
+    setStatus('Thumbnail copied — paste it anywhere (chat, notes, editor).');
+  } catch (e) {
+    setStatus('Copy is not supported in this browser — use Download PNG instead.', true);
+  }
+});
+$('btnClearRecent').addEventListener('click', () => { try { localStorage.removeItem('dtz-thumbnail-recent'); } catch (e) {} loadRecent(); });
+
+render();
+loadRecent();
+</script>
+</body>
+</html>
