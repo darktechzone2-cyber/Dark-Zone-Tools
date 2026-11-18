@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTZ AI CV Maker — Dark Tech Zone</title>
+<meta name="description" content="Build a professional CV in minutes with Dark Tech Zone AI. Type your details, get a polished summary, experience bullets and skills — download as PDF. Free, no signup, no key.">
+<link rel="icon" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg">
+<style>
+:root{--bg:#f7f8fa;--card:#ffffff;--text:#1a1d21;--muted:#5b6470;--line:#e3e6ea;--green:#16a34a;--green-d:#15803d;--red:#dc2626;--blue:#2563eb;--radius:14px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+header{background:#fff;border-bottom:1px solid var(--line);padding:14px 20px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10}
+header img{width:42px;height:42px;border-radius:50%;object-fit:cover;border:2px solid #e8eaed}
+header .t h1{font-size:18px;line-height:1.2}
+header .t p{font-size:12px;color:var(--muted)}
+header .pill{margin-left:auto;font-size:12px;font-weight:600;padding:5px 10px;border-radius:999px;white-space:nowrap;border:1px solid var(--line);color:var(--muted);background:#f8fafc}
+header .pill.on{background:#f0fdf4;color:var(--green-d);border-color:#bbf7d0}
+header .pill.off{background:#fef2f2;color:var(--red);border-color:#fecaca}
+main{max-width:820px;margin:0 auto;padding:24px 16px 60px}
+.hero{text-align:center;margin:18px 0 22px}
+.hero h2{font-size:26px;margin-bottom:8px}
+.hero p{color:var(--muted);font-size:15px;line-height:1.5;max-width:600px;margin:0 auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-top:16px}
+.card h3{font-size:16px;margin-bottom:4px}
+.card .sub{font-size:13px;color:var(--muted);margin-bottom:14px}
+label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin:12px 0 6px}
+input[type=text],input[type=email],input[type=tel],textarea,select{width:100%;padding:12px 13px;border:1px solid var(--line);border-radius:10px;font-size:15px;outline:none;background:#fbfcfd;color:var(--text);font-family:inherit}
+input:focus,textarea:focus,select:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(22,163,74,.12)}
+textarea{resize:vertical;line-height:1.6;min-height:90px}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.row>div{flex:1;min-width:200px}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg button{padding:9px 14px;border:1px solid var(--line);background:#f8fafc;border-radius:999px;font-size:14px;font-weight:600;color:var(--text);cursor:pointer}
+.seg button.active{background:var(--green);color:#fff;border-color:var(--green)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.chips button{padding:8px 13px;border:1px solid var(--line);background:#fff;border-radius:999px;font-size:13px;cursor:pointer;color:var(--text)}
+.chips button:hover{border-color:var(--green);color:var(--green-d)}
+.btn{display:inline-flex;align-items:center;gap:8px;justify-content:center;padding:13px 22px;border-radius:10px;font-size:15px;font-weight:700;border:none;cursor:pointer}
+.btn-green{background:var(--green);color:#fff}
+.btn-green:hover{background:var(--green-d)}
+.btn-green:disabled{opacity:.55;cursor:not-allowed}
+.btn-ghost{background:#fff;color:var(--text);border:1px solid var(--line)}
+.btn-ghost:hover{background:#f1f3f5}
+.btn-red{background:#fff;color:var(--red);border:1px solid #fecaca}
+.btn-red:hover{background:#fef2f2}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.hint{font-size:13px;color:var(--muted);line-height:1.5;margin-top:12px}
+.error{display:none;background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;font-size:14px;padding:11px 13px;border-radius:10px;margin-top:14px;line-height:1.5}
+.error.show{display:block}
+.status{font-size:14px;color:var(--muted);margin-top:12px;min-height:20px}
+.status .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--green);margin-right:6px;animation:pulse 1.2s infinite}
+@keyframes pulse{0%{opacity:1}50%{opacity:.35}100%{opacity:1}}
+/* CV preview */
+.cv{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:16px;background:#fff}
+.cv.modern{border-top:6px solid var(--green)}
+.cv-head{padding:26px 28px 18px;border-bottom:1px solid var(--line)}
+.cv.modern .cv-head{background:#0f172a;color:#fff;border-bottom:none}
+.cv-head h2{font-size:26px;letter-spacing:.2px}
+.cv.modern .cv-head h2{color:#fff}
+.cv-head .role{font-size:16px;color:var(--green-d);font-weight:600;margin-top:4px}
+.cv.modern .cv-head .role{color:#86efac}
+.cv-head .contact{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.7}
+.cv.modern .cv-head .contact{color:#cbd5e1}
+.cv-body{padding:20px 28px 26px}
+.cv-body h4{font-size:13px;text-transform:uppercase;letter-spacing:1.2px;color:var(--green-d);border-bottom:2px solid #bbf7d0;padding-bottom:5px;margin:18px 0 10px}
+.cv-body h4:first-child{margin-top:0}
+.cv-body p{font-size:15px;line-height:1.65}
+.cv-body ul{margin:4px 0 4px 18px}
+.cv-body li{font-size:15px;line-height:1.6;margin-bottom:5px}
+.cv-body .edu{font-size:15px;line-height:1.7}
+.skills{display:flex;flex-wrap:wrap;gap:8px}
+.skills span{background:#f0fdf4;border:1px solid #bbf7d0;color:var(--green-d);font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.toolbar .btn{padding:11px 18px;font-size:14px}
+.recent{margin-top:16px}
+.recent h3{font-size:15px;margin-bottom:10px}
+.recent .item{display:flex;align-items:center;gap:10px;padding:11px 13px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;background:#fff;cursor:pointer;font-size:14px}
+.recent .item:hover{border-color:var(--green)}
+.recent .item .meta{color:var(--muted);font-size:12px;margin-left:auto;white-space:nowrap}
+.recent .item .x{color:var(--muted);font-weight:700;padding:2px 7px;border-radius:6px}
+.recent .item .x:hover{color:var(--red);background:#fef2f2}
+footer{text-align:center;color:var(--muted);font-size:13px;line-height:1.7;margin-top:34px}
+footer a{color:var(--green-d);text-decoration:none;font-weight:600}
+.hidden{display:none!important}
+@media print{
+  body{background:#fff}
+  header,main .hero,main .card.formcard,main .recent,footer,.toolbar,.no-print{display:none!important}
+  main{max-width:100%;padding:0}
+  .cv{border:none;border-radius:0;margin:0}
+}
+@media (max-width:560px){
+  .cv-head,.cv-body{padding-left:18px;padding-right:18px}
+  .cv-head h2{font-size:22px}
+}
+</style>
+</head>
+<body>
+<header>
+  <img src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone logo">
+  <div class="t"><h1>Dark Tech Zone</h1><p>Free AI Tools — No Signup, No Key</p></div>
+  <span class="pill" id="statusPill">Checking AI…</span>
+</header>
+<main>
+  <div class="hero">
+    <h2>DTZ AI CV Maker</h2>
+    <p>Apni details likho — Dark Tech Zone AI aap ke liye professional CV likhega: strong summary, polished experience bullets aur skills. Phir PDF download karo aur job ke liye bhej do.</p>
+  </div>
+
+  <div class="card formcard">
+    <h3>Your Details</h3>
+    <p class="sub">Sirf wahi likho jo CV par chahiye. AI sirf wording polish karega — aap ki information change nahi karega.</p>
+
+    <div class="row">
+      <div><label for="inName">Full Name *</label><input type="text" id="inName" placeholder="e.g. Ahmed Raza" maxlength="60"></div>
+      <div><label for="inTitle">Target Job Title *</label><input type="text" id="inTitle" placeholder="e.g. Graphic Designer" maxlength="60"></div>
+    </div>
+    <div class="row">
+      <div><label for="inPhone">Phone</label><input type="tel" id="inPhone" placeholder="e.g. 0300-1234567" maxlength="30"></div>
+      <div><label for="inEmail">Email</label><input type="email" id="inEmail" placeholder="e.g. ahmed@gmail.com" maxlength="80"></div>
+      <div><label for="inCity">City</label><input type="text" id="inCity" placeholder="e.g. Karachi" maxlength="40"></div>
+    </div>
+
+    <label for="inExp">Work Experience *</label>
+    <textarea id="inExp" placeholder="Har job aik line par likho — kya kiya, kahan, kab. Example:&#10;Salesman at Al-Noor Mobile, Karachi, 2022-2024 — phones beche, customers handle kiye&#10;Delivery Rider at Foodpanda, 2024 — daily 30+ orders deliver kiye"></textarea>
+
+    <label for="inEdu">Education</label>
+    <textarea id="inEdu" style="min-height:64px" placeholder="Har line par aik qualification. Example:&#10;Matric (Science) — Govt High School Karachi, 2020&#10;FSc Pre-Engineering — Govt College, 2022"></textarea>
+
+    <label for="inSkills">Skills</label>
+    <input type="text" id="inSkills" placeholder="Comma se likho — e.g. Photoshop, Canva, Logo Design, Video Editing" maxlength="300">
+
+    <label>CV Language</label>
+    <div class="seg" id="langSeg">
+      <button type="button" data-v="English" class="active">English</button>
+      <button type="button" data-v="Roman Urdu">Roman Urdu</button>
+      <button type="button" data-v="Urdu">Urdu</button>
+    </div>
+
+    <label>CV Style</label>
+    <div class="seg" id="styleSeg">
+      <button type="button" data-v="classic" class="active">Classic</button>
+      <button type="button" data-v="modern">Modern</button>
+    </div>
+
+    <div class="chips" id="exampleChips">
+      <button type="button" data-ex="designer">Graphic Designer — example</button>
+      <button type="button" data-ex="operator">Computer Operator — example</button>
+      <button type="button" data-ex="sales">Sales Executive — example</button>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-green" id="btnGenerate">Generate My CV</button>
+      <button class="btn btn-red hidden" id="btnStop">Stop</button>
+      <button class="btn btn-ghost" id="btnClear">Clear</button>
+    </div>
+    <div class="error" id="errorBox"></div>
+    <div class="status" id="statusLine"></div>
+    <p class="hint">AI aap ki details se CV content likhta hai — send karne se pehle naam, dates aur numbers aik dafa check kar lena. Aap ki details kahin upload nahi hoti, sirf AI ko bheji jati hain CV likhne ke liye.</p>
+  </div>
+
+  <div id="resultWrap" class="hidden">
+    <div class="cv" id="cvCard">
+      <div class="cv-head">
+        <h2 id="cvName"></h2>
+        <div class="role" id="cvRole"></div>
+        <div class="contact" id="cvContact"></div>
+      </div>
+      <div class="cv-body">
+        <h4 id="hSummary">Professional Summary</h4>
+        <p id="cvSummary"></p>
+        <h4 id="hExp">Work Experience</h4>
+        <ul id="cvBullets"></ul>
+        <h4 id="hSkills">Skills</h4>
+        <div class="skills" id="cvSkills"></div>
+        <div id="eduBlock">
+          <h4 id="hEdu">Education</h4>
+          <div class="edu" id="cvEdu"></div>
+        </div>
+      </div>
+    </div>
+    <div class="toolbar">
+      <button class="btn btn-green" id="btnPdf">Download PDF</button>
+      <button class="btn btn-ghost" id="btnTxt">Download .txt</button>
+      <button class="btn btn-ghost" id="btnCopy">Copy CV</button>
+      <button class="btn btn-ghost" id="btnRegen">Regenerate</button>
+    </div>
+  </div>
+
+  <div class="card recent hidden" id="recentCard">
+    <h3>Recent CVs</h3>
+    <div id="recentList"></div>
+    <button class="btn btn-ghost" id="btnClearRecent" style="margin-top:6px;padding:9px 16px;font-size:13px">Clear history</button>
+  </div>
+
+  <footer>
+    Made by <a href="https://www.darktechzon.site/" target="_blank" rel="noopener">Dark Tech Zone</a> — Free AI Tools<br>
+    Join our WhatsApp channel: <a href="https://whatsapp.com/channel/0029Vb9oK008V0txIkc3oj3z" target="_blank" rel="noopener">Dark Tech Zone</a>
+  </footer>
+</main>
+<script>
+(function(){
+"use strict";
+var API="https://dark-tech-zone-ai.vercel.app";
+var $=function(id){return document.getElementById(id)};
+var els={name:$("inName"),title:$("inTitle"),phone:$("inPhone"),email:$("inEmail"),city:$("inCity"),exp:$("inExp"),edu:$("inEdu"),skills:$("inSkills"),
+btnGenerate:$("btnGenerate"),btnStop:$("btnStop"),btnClear:$("btnClear"),errorBox:$("errorBox"),statusLine:$("statusLine"),
+resultWrap:$("resultWrap"),cvCard:$("cvCard"),cvName:$("cvName"),cvRole:$("cvRole"),cvContact:$("cvContact"),
+cvSummary:$("cvSummary"),cvBullets:$("cvBullets"),cvSkills:$("cvSkills"),cvEdu:$("cvEdu"),eduBlock:$("eduBlock"),
+btnPdf:$("btnPdf"),btnTxt:$("btnTxt"),btnCopy:$("btnCopy"),btnRegen:$("btnRegen"),
+recentCard:$("recentCard"),recentList:$("recentList"),btnClearRecent:$("btnClearRecent"),statusPill:$("statusPill")};
+var lang="English", style="classic";
+var abortCtrl=null, generating=false, lastCV=null;
+
+function showError(msg){els.errorBox.textContent=msg;els.errorBox.classList.add("show")}
+function hideError(){els.errorBox.classList.remove("show")}
+function setStatus(html){els.statusLine.innerHTML=html}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+
+function segWire(segId,cb){
+  var seg=$(segId);
+  seg.addEventListener("click",function(e){
+    var b=e.target.closest("button"); if(!b)return;
+    seg.querySelectorAll("button").forEach(function(x){x.classList.remove("active")});
+    b.classList.add("active"); cb(b.getAttribute("data-v"));
+  });
+}
+segWire("langSeg",function(v){lang=v});
+segWire("styleSeg",function(v){style=v;applyStyle()});
+function applyStyle(){els.cvCard.classList.toggle("modern",style==="modern")}
+
+var EXAMPLES={
+designer:{name:"Ahmed Raza",title:"Graphic Designer",phone:"0300-1234567",email:"ahmed.raza@gmail.com",city:"Karachi",
+exp:"Graphic Designer at Creative Studio, Karachi, 2022-2025 — logos, social media posts aur flyers design kiye\nFreelance Designer, 2021-2022 — 20+ clients ke liye branding kaam kiya",
+edu:"Matric (Science) — Govt High School Karachi, 2020\nDiploma in Graphic Design — Arena Multimedia, 2021",
+skills:"Photoshop, Illustrator, Canva, Logo Design, Social Media Design, Video Editing"},
+operator:{name:"Bilal Hussain",title:"Computer Operator",phone:"0321-7654321",email:"bilal.h@gmail.com",city:"Lahore",
+exp:"Computer Operator at City Accounts Office, Lahore, 2021-2025 — daily data entry, MS Excel reports aur record keeping\nData Entry Operator at Pak Traders, 2020-2021 — 500+ invoices enter ki",
+edu:"FSc Pre-Engineering — Govt College Lahore, 2019\nComputer Course (MS Office) — PITB, 2020",
+skills:"MS Word, MS Excel, Data Entry, Typing 40 WPM, Internet Research, Urdu InPage"},
+sales:{name:"Sara Khan",title:"Sales Executive",phone:"0333-9876543",email:"sara.khan@gmail.com",city:"Islamabad",
+exp:"Sales Executive at Home Appliances Store, Islamabad, 2022-2025 — monthly target achieve kiya, customers ko products samjhaye\nShop Assistant at Super Mart, 2021-2022 — billing aur stock manage kiya",
+edu:"BCom — Punjab University, 2021\nMatric — Islamabad Model School, 2018",
+skills:"Customer Handling, Communication, Billing, Stock Management, Urdu and English"}
+};
+$("exampleChips").addEventListener("click",function(e){
+  var b=e.target.closest("button"); if(!b)return;
+  var ex=EXAMPLES[b.getAttribute("data-ex")]; if(!ex)return;
+  els.name.value=ex.name;els.title.value=ex.title;els.phone.value=ex.phone;els.email.value=ex.email;
+  els.city.value=ex.city;els.exp.value=ex.exp;els.edu.value=ex.edu;els.skills.value=ex.skills;
+  hideError();els.name.focus();
+});
+
+function buildPrompt(){
+  var langLine = lang==="English" ? "Write the CV in English." : (lang==="Roman Urdu" ? "Write the CV in Roman Urdu (Urdu written in English letters)." : "Write the CV in Urdu script.");
+  return "You are writing CV content for a job application. "+langLine+" Use ONLY the facts below — do not invent jobs, degrees, dates or numbers. Polish the wording into professional language.\n"+
+  "Name: "+els.name.value.trim()+"\nTarget job: "+els.title.value.trim()+
+  "\nWork experience (raw notes):\n"+els.exp.value.trim()+
+  "\nEducation:\n"+(els.edu.value.trim()||"Not provided")+
+  "\nSkills (raw): "+(els.skills.value.trim()||"Not provided")+
+  "\n\nReply in this EXACT format and nothing else:\nSUMMARY:\n<2-3 line professional summary for this target job>\nBULLETS:\n- <polished achievement bullet from the experience notes>\n- <one bullet per responsibility, 4-6 bullets total, each starting with a strong action verb>\nSKILLS:\n<comma-separated polished skill list, 8-12 skills, based on the user's real skills>";
+}
+
+function cleanLine(s){return s.replace(/^\s*(?:[-*\u2022]|\d+[.)])\s*/,"").replace(/\*\*/g,"").replace(/__+/g,"").trim()}
+function parseAIResponse(text){
+  var t=String(text||"").replace(/```[a-z]*\n?/gi,"").replace(/```/g,"").trim();
+  var out={summary:"",bullets:[],skills:[]};
+  var m=t.match(/SUMMARY:\s*([\s\S]*?)(?=BULLETS:|$)/i);
+  if(m){out.summary=m[1].replace(/BULLETS:[\s\S]*$/i,"").split("\n").map(cleanLine).filter(Boolean).join(" ")}
+  m=t.match(/BULLETS:\s*([\s\S]*?)(?=SKILLS:|$)/i);
+  if(m){out.bullets=m[1].split("\n").map(cleanLine).filter(function(x){return x.length>2})}
+  m=t.match(/SKILLS:\s*([\s\S]*)$/i);
+  if(m){out.skills=m[1].split("\n").join(" ").split(",").map(cleanLine).filter(function(x){return x.length>1})}
+  return out;
+}
+
+function renderCV(parsed){
+  var name=els.name.value.trim(), title=els.title.value.trim();
+  var contact=[els.phone.value.trim(),els.email.value.trim(),els.city.value.trim()].filter(Boolean).join("  |  ");
+  els.cvName.textContent=name;
+  els.cvRole.textContent=title;
+  els.cvContact.textContent=contact;
+  els.cvSummary.textContent=parsed.summary;
+  els.cvBullets.innerHTML=parsed.bullets.map(function(b){return "<li>"+esc(b)+"</li>"}).join("");
+  els.cvSkills.innerHTML=parsed.skills.map(function(s){return "<span>"+esc(s)+"</span>"}).join("");
+  var eduLines=els.edu.value.split("\n").map(function(x){return x.trim()}).filter(Boolean);
+  if(eduLines.length){els.eduBlock.style.display="";els.cvEdu.innerHTML=eduLines.map(function(x){return esc(x)}).join("<br>")}
+  else{els.eduBlock.style.display="none"}
+  var h={English:["Professional Summary","Work Experience","Skills","Education"],
+         "Roman Urdu":["Professional Summary","Work Experience","Skills","Education"],
+         Urdu:["پروفیشنل خلاصہ","کام کا تجربہ","مہارتیں","تعلیم"]}[lang];
+  $("hSummary").textContent=h[0];$("hExp").textContent=h[1];$("hSkills").textContent=h[2];$("hEdu").textContent=h[3];
+  if(lang==="Urdu"){els.cvCard.dir="rtl";els.cvCard.style.textAlign="right"}else{els.cvCard.dir="ltr";els.cvCard.style.textAlign="left"}
+  applyStyle();
+  els.resultWrap.classList.remove("hidden");
+  lastCV={name:name,title:title,contact:contact,summary:parsed.summary,bullets:parsed.bullets,skills:parsed.skills,
+          edu:eduLines,lang:lang,style:style,at:new Date().toISOString()};
+  saveRecent(lastCV);
+  els.resultWrap.scrollIntoView({behavior:"smooth"});
+}
+
+function cvAsText(cv){
+  var lines=[cv.name,cv.title,cv.contact,"",
+  "PROFESSIONAL SUMMARY",cv.summary,"",
+  "WORK EXPERIENCE"].concat(cv.bullets.map(function(b){return "- "+b})).concat(["","SKILLS",cv.skills.join(", ")]);
+  if(cv.edu.length){lines=lines.concat(["","EDUCATION"].concat(cv.edu))}
+  return lines.join("\n");
+}
+
+async function generate(){
+  hideError();
+  if(generating)return;
+  var name=els.name.value.trim(), title=els.title.value.trim(), exp=els.exp.value.trim();
+  if(!name){showError("Please enter your full name.");els.name.focus();return}
+  if(!title){showError("Please enter your target job title.");els.title.focus();return}
+  if(!exp){showError("Please write at least one job in Work Experience.");els.exp.focus();return}
+  generating=true;
+  els.btnGenerate.disabled=true;els.btnStop.classList.remove("hidden");
+  setStatus('<span class="dot"></span>AI is writing your CV…');
+  abortCtrl=new AbortController();
+  var full="";
+  try{
+    var res=await fetch(API+"/api/chat",{method:"POST",headers:{"Content-Type":"application/json","X-API-Key":"DarkTech"},
+      body:JSON.stringify({q:buildPrompt()}),signal:abortCtrl.signal});
+    if(!res.ok)throw new Error("AI service returned "+res.status);
+    var reader=res.body.getReader(), dec=new TextDecoder(), buf="";
+    while(true){
+      var r=await reader.read(); if(r.done)break;
+      buf+=dec.decode(r.value,{stream:true});
+      var parts=buf.split("\n\n"); buf=parts.pop();
+      for(var i=0;i<parts.length;i++){
+        var line=parts[i].trim();
+        if(line.indexOf("data: ")!==0)continue;
+        var d=line.slice(6).trim();
+        if(d==="[DONE]")continue;
+        try{var j=JSON.parse(d); if(j.chunk)full+=j.chunk}catch(e){}
+      }
+      var p=parseAIResponse(full);
+      if(p.summary){els.cvSummary.textContent=p.summary;els.resultWrap.classList.remove("hidden")}
+    }
+    var parsed=parseAIResponse(full);
+    if(!parsed.summary||parsed.bullets.length<2){
+      throw new Error("AI reply was incomplete. Please try Regenerate.");
+    }
+    renderCV(parsed);
+    setStatus("CV ready — check it, then download as PDF.");
+  }catch(err){
+    if(err&&err.name==="AbortError"){setStatus("Stopped.")}
+    else{showError(err&&err.message?err.message:"Something went wrong. Check your connection and try again.");setStatus("")}
+  }finally{
+    generating=false;els.btnGenerate.disabled=false;els.btnStop.classList.add("hidden");abortCtrl=null;
+  }
+}
+
+els.btnGenerate.addEventListener("click",generate);
+els.btnRegen.addEventListener("click",generate);
+els.btnStop.addEventListener("click",function(){if(abortCtrl)abortCtrl.abort()});
+els.btnClear.addEventListener("click",function(){
+  [els.name,els.title,els.phone,els.email,els.city,els.exp,els.edu,els.skills].forEach(function(x){x.value=""});
+  els.resultWrap.classList.add("hidden");hideError();setStatus("");lastCV=null;els.name.focus();
+});
+els.btnPdf.addEventListener("click",function(){window.print()});
+els.btnTxt.addEventListener("click",function(){
+  if(!lastCV)return;
+  var blob=new Blob([cvAsText(lastCV)],{type:"text/plain"});
+  var a=document.createElement("a");a.href=URL.createObjectURL(blob);
+  a.download=lastCV.name.replace(/\s+/g,"-")+"-CV.txt";a.click();setTimeout(function(){URL.revokeObjectURL(a.href)},2000);
+});
+els.btnCopy.addEventListener("click",function(){
+  if(!lastCV)return;
+  var txt=cvAsText(lastCV);
+  function done(){setStatus("CV copied to clipboard.")}
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done,function(){fallback()})}
+  else fallback();
+  function fallback(){var ta=document.createElement("textarea");ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");done()}catch(e){showError("Copy failed — select the CV text manually.")}ta.remove()}
+});
+
+/* Recent */
+function loadRecent(){try{return JSON.parse(localStorage.getItem("dtz-cv-recent")||"[]")}catch(e){return[]}}
+function saveRecent(cv){
+  var list=loadRecent().filter(function(x){return !(x.name===cv.name&&x.title===cv.title)});
+  list.unshift({name:cv.name,title:cv.title,at:cv.at,summary:cv.summary,bullets:cv.bullets,skills:cv.skills,edu:cv.edu,contact:cv.contact,lang:cv.lang});
+  try{localStorage.setItem("dtz-cv-recent",JSON.stringify(list.slice(0,8)))}catch(e){}
+  renderRecent();
+}
+function renderRecent(){
+  var list=loadRecent();
+  els.recentCard.classList.toggle("hidden",list.length===0);
+  els.recentList.innerHTML=list.map(function(x,i){
+    return '<div class="item" data-i="'+i+'"><div><strong>'+esc(x.name)+'</strong> — '+esc(x.title)+'</div><span class="meta">'+esc(new Date(x.at).toLocaleDateString())+'</span><span class="x" data-x="'+i+'" title="Remove">×</span></div>';
+  }).join("");
+}
+els.recentList.addEventListener("click",function(e){
+  var x=e.target.closest("[data-x]");
+  if(x){var list=loadRecent();list.splice(+x.getAttribute("data-x"),1);try{localStorage.setItem("dtz-cv-recent",JSON.stringify(list))}catch(err){}renderRecent();return}
+  var it=e.target.closest(".item"); if(!it)return;
+  var cv=loadRecent()[+it.getAttribute("data-i")]; if(!cv)return;
+  lastCV=cv;
+  els.cvName.textContent=cv.name;els.cvRole.textContent=cv.title;els.cvContact.textContent=cv.contact||"";
+  els.cvSummary.textContent=cv.summary;
+  els.cvBullets.innerHTML=cv.bullets.map(function(b){return "<li>"+esc(b)+"</li>"}).join("");
+  els.cvSkills.innerHTML=cv.skills.map(function(s){return "<span>"+esc(s)+"</span>"}).join("");
+  if(cv.edu&&cv.edu.length){els.eduBlock.style.display="";els.cvEdu.innerHTML=cv.edu.map(function(v){return esc(v)}).join("<br>")}else{els.eduBlock.style.display="none"}
+  els.resultWrap.classList.remove("hidden");
+  els.resultWrap.scrollIntoView({behavior:"smooth"});
+});
+els.btnClearRecent.addEventListener("click",function(){try{localStorage.removeItem("dtz-cv-recent")}catch(e){}renderRecent()});
+
+/* Health pill */
+fetch(API+"/api/health").then(function(r){return r.json()}).then(function(j){
+  var on=j&&(j.status==="online");
+  els.statusPill.textContent=on?"AI Online":"AI Offline";
+  els.statusPill.classList.add(on?"on":"off");
+}).catch(function(){
+  els.statusPill.textContent="AI Offline";els.statusPill.classList.add("off");
+});
+renderRecent();
+})();
+</script>
+</body>
+</html>
