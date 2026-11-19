@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTZ AI Status Maker — Dark Tech Zone</title>
+<meta name="description" content="AI writes a quote in English, Roman Urdu or Urdu, and you get a ready-to-share 1080x1080 WhatsApp status image. Free, no signup.">
+<link rel="icon" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg">
+<style>
+  :root{
+    --bg:#f7f7f8; --surface:#ffffff; --surface2:#f0f0f2; --text:#1a1a1e; --muted:#6b6b72;
+    --border:#e4e4e7; --accent:#0f7b5f; --accent2:#0b5e49; --danger:#c0392b; --radius:14px;
+    --shadow:0 1px 3px rgba(0,0,0,.08),0 4px 14px rgba(0,0,0,.06);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.55}
+  a{color:var(--accent);text-decoration:none}
+  header{background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10}
+  .head{max-width:1060px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .head img.logo{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--accent)}
+  .head h1{font-size:19px;margin:0;line-height:1.2}
+  .head p{margin:0;font-size:12.5px;color:var(--muted)}
+  .pill{margin-left:auto;font-size:12.5px;font-weight:600;padding:5px 11px;border-radius:999px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);white-space:nowrap}
+  .pill.on{color:#0b6b4a;border-color:#bfe6d6;background:#e7f6ef}
+  .pill.off{color:#a33;border-color:#f0c6c0;background:#fdeceb}
+  main{max-width:1060px;margin:0 auto;padding:18px 16px 48px}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-bottom:16px}
+  h2{font-size:16px;margin:0 0 10px}
+  .label{font-size:13px;font-weight:600;color:var(--muted);margin:14px 0 7px}
+  .label:first-child{margin-top:0}
+  .seg{display:flex;flex-wrap:wrap;gap:8px}
+  .seg button{border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:999px;padding:8px 15px;font-size:14px;cursor:pointer}
+  .seg button.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+  input[type=text]{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:10px;font-size:15px;background:var(--surface);color:var(--text)}
+  input[type=text]:focus{outline:2px solid var(--accent);outline-offset:1px}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px}
+  .btn{border:none;border-radius:10px;padding:12px 22px;font-size:15px;font-weight:600;cursor:pointer}
+  .btn-primary{background:var(--accent);color:#fff}
+  .btn-primary:hover{background:var(--accent2)}
+  .btn-ghost{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+  .btn-danger{background:#fdeceb;color:var(--danger);border:1px solid #f0c6c0}
+  .btn:disabled{opacity:.55;cursor:not-allowed}
+  .hint{font-size:13px;color:var(--muted)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .chips button{border:1px dashed var(--border);background:var(--surface2);border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer;color:var(--text)}
+  #status{font-size:14px;min-height:22px;margin-top:12px;color:var(--muted)}
+  #status.err{color:var(--danger)}
+  .quotes{display:grid;gap:10px;margin-top:6px}
+  .quote{border:1.5px solid var(--border);border-radius:12px;padding:13px 15px;cursor:pointer;background:var(--surface);text-align:left;width:100%;font-size:15px;color:var(--text);line-height:1.5}
+  .quote:hover{border-color:var(--accent)}
+  .quote.sel{border-color:var(--accent);background:#eef7f3;box-shadow:0 0 0 1px var(--accent)}
+  .quote .meta{font-size:12px;color:var(--muted);margin-top:6px}
+  .layout{display:grid;grid-template-columns:1fr;gap:16px}
+  @media(min-width:860px){.layout{grid-template-columns:1.05fr .95fr}}
+  .preview-wrap{display:flex;flex-direction:column;align-items:center}
+  #canvas{width:100%;max-width:460px;aspect-ratio:1/1;border-radius:14px;border:1px solid var(--border);box-shadow:var(--shadow);background:#111}
+  .swatches{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:14px}
+  .sw{width:44px;height:44px;border-radius:50%;border:3px solid transparent;cursor:pointer;padding:0}
+  .sw.active{border-color:var(--text);box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--text)}
+  .sw-name{font-size:13px;color:var(--muted);text-align:center;margin-top:8px;min-height:18px}
+  .recent{display:grid;gap:8px}
+  .recent-item{display:flex;gap:10px;align-items:center;border:1px solid var(--border);border-radius:10px;padding:9px 12px;background:var(--surface);cursor:pointer;font-size:14px;text-align:left;width:100%;color:var(--text)}
+  .recent-item span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .recent-item small{color:var(--muted);white-space:nowrap}
+  .empty{color:var(--muted);font-size:14px}
+  footer{max-width:1060px;margin:0 auto;padding:0 16px 40px;color:var(--muted);font-size:13px}
+  .note{background:#fff8e6;border:1px solid #f0dfae;border-radius:10px;padding:12px 14px;font-size:13.5px;color:#6b5a1e;margin-top:14px}
+  .hidden{display:none!important}
+</style>
+</head>
+<body>
+<header>
+  <div class="head">
+    <img class="logo" src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone logo">
+    <div>
+      <h1>DTZ AI Status Maker</h1>
+      <p>AI quote + ready WhatsApp status image (1080&times;1080) — free, no signup</p>
+    </div>
+    <span class="pill" id="statusPill">Checking AI&hellip;</span>
+  </div>
+</header>
+
+<main>
+  <div class="card">
+    <div class="label">1. Mood — kis tarah ka status chahiye?</div>
+    <div class="seg" id="moodSeg">
+      <button data-mood="Motivational" class="active">Motivational</button>
+      <button data-mood="Love">Love</button>
+      <button data-mood="Sad">Sad</button>
+      <button data-mood="Friendship">Friendship</button>
+      <button data-mood="Islamic">Islamic</button>
+      <button data-mood="Success">Success</button>
+      <button data-mood="Attitude">Attitude</button>
+      <button data-mood="Funny">Funny</button>
+    </div>
+
+    <div class="label">2. Language</div>
+    <div class="seg" id="langSeg">
+      <button data-lang="Roman Urdu" class="active">Roman Urdu</button>
+      <button data-lang="English">English</button>
+      <button data-lang="Urdu script">Urdu script</button>
+    </div>
+
+    <div class="label">3. Topic (optional) — e.g. dosti, mehnat, zindagi</div>
+    <input type="text" id="topicInput" maxlength="60" placeholder="Leave empty for a general quote">
+    <div class="chips" id="exampleChips">
+      <button data-topic="dosti">Dosti</button>
+      <button data-topic="mehnat aur kamyabi">Mehnat aur kamyabi</button>
+      <button data-topic="zindagi">Zindagi</button>
+      <button data-topic="sabar">Sabar</button>
+      <button data-topic="pyar">Pyar</button>
+    </div>
+
+    <div class="row">
+      <button class="btn btn-primary" id="btnGenerate">Generate 3 Quotes</button>
+      <button class="btn btn-danger hidden" id="btnStop">Stop</button>
+      <span class="hint">AI writes 3 quotes — tap one to put it on the image.</span>
+    </div>
+    <div id="status" role="status"></div>
+  </div>
+
+  <div class="layout">
+    <div class="card">
+      <h2>Quotes</h2>
+      <div class="quotes" id="quoteList">
+        <p class="empty" id="quoteEmpty">No quotes yet — pick a mood and press Generate.</p>
+      </div>
+    </div>
+
+    <div class="card preview-wrap">
+      <h2 style="align-self:flex-start">Status Image — 1080 &times; 1080</h2>
+      <canvas id="canvas" width="1080" height="1080"></canvas>
+      <div class="swatches" id="swatches"></div>
+      <div class="sw-name" id="swName">Midnight</div>
+      <div class="row" style="justify-content:center">
+        <button class="btn btn-primary" id="btnDownload">Download PNG</button>
+        <button class="btn btn-ghost" id="btnCopy">Copy Image</button>
+        <button class="btn btn-ghost" id="btnRegen">Regenerate</button>
+      </div>
+      <div class="note">Tip: Download PNG saves a square 1080&times;1080 image — post it straight as a WhatsApp status. Copy Image works in Chrome/Edge on desktop and Android; if it fails, use Download PNG.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Recent statuses</h2>
+    <div class="recent" id="recentList"><p class="empty">Nothing yet — your last 8 generated quotes appear here.</p></div>
+    <div class="row"><button class="btn btn-ghost hidden" id="btnClearRecent">Clear history</button></div>
+  </div>
+</main>
+
+<footer>
+  <p>Powered by Dark Tech Zone AI — free for everyone. Join our WhatsApp channel:
+  <a href="https://whatsapp.com/channel/0029Vb9oK008V0txIkc3oj3z" target="_blank" rel="noopener">Dark Tech Zone</a></p>
+  <p>Quotes are AI-generated — check the wording before posting. Urdu script renders with your device fonts.</p>
+</footer>
+
+<script>
+"use strict";
+const API_URL = "https://dark-tech-zone-ai.vercel.app/api/chat";
+const HEALTH_URL = "https://dark-tech-zone-ai.vercel.app/api/health";
+const API_KEY = "DarkTech";
+const RECENT_KEY = "dtz_status_maker_recent_v1";
+
+const BACKGROUNDS = [
+  {name:"Midnight",   c1:"#0f2027", c2:"#2c5364", angle:135},
+  {name:"Sunset",     c1:"#ff512f", c2:"#dd2476", angle:135},
+  {name:"Forest",     c1:"#11998e", c2:"#38ef7d", angle:135},
+  {name:"Royal",      c1:"#7b2ff7", c2:"#f107a3", angle:135},
+  {name:"Ocean",      c1:"#2193b0", c2:"#6dd5ed", angle:135},
+  {name:"Ember",      c1:"#f83600", c2:"#f9d423", angle:135},
+  {name:"Charcoal",   c1:"#232526", c2:"#414345", angle:135},
+  {name:"Rose",       c1:"#e35d6a", c2:"#8e2de2", angle:135}
+];
+
+let mood = "Motivational";
+let lang = "Roman Urdu";
+let bgIndex = 0;
+let quotes = [];
+let selected = -1;
+let aborter = null;
+let generating = false;
+
+const $ = id => document.getElementById(id);
+const statusEl = $("status"), pill = $("statusPill");
+
+function buildPrompt(m, l, topic){
+  const about = topic ? (" about " + topic) : "";
+  const langNote = l === "Urdu script"
+    ? "Write them in Urdu script (Nastaliq, Urdu alphabet)."
+    : ("Write them in " + l + ".");
+  return "Write exactly 3 short " + m.toLowerCase() + " quotes" + about + ". " + langNote +
+    " Each quote on its own line, numbered 1. 2. 3. , no extra text, no headings, no quotation marks." +
+    " Keep each quote under 20 words.";
+}
+
+function parseQuotes(text){
+  return text.split(/\r?\n/).map(function(line){
+    return line.replace(/^\s*(?:\d+[.)]\s*|[-*•]\s*)/, "")
+      .replace(/^\s*["“”']+|["“”']+\s*$/g, "")
+      .replace(/\*\*/g, "").trim();
+  }).filter(function(q){ return q.length > 3; }).slice(0, 3);
+}
+
+function wrapText(ctx, text, maxWidth){
+  const words = text.split(/\s+/);
+  const lines = [];
+  let line = "";
+  words.forEach(function(w){
+    const test = line ? line + " " + w : w;
+    if (ctx.measureText(test).width > maxWidth && line) { lines.push(line); line = w; }
+    else { line = test; }
+  });
+  if (line) lines.push(line);
+  return lines;
+}
+
+function drawCanvas(){
+  const cv = $("canvas"), ctx = cv.getContext("2d");
+  const W = 1080, H = 1080, bg = BACKGROUNDS[bgIndex];
+  const g = ctx.createLinearGradient(0, 0, W * Math.cos(bg.angle * Math.PI / 180), H * Math.sin(bg.angle * Math.PI / 180));
+  g.addColorStop(0, bg.c1); g.addColorStop(1, bg.c2);
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  // soft decorative circles
+  ctx.globalAlpha = 0.10; ctx.fillStyle = "#ffffff";
+  ctx.beginPath(); ctx.arc(150, 140, 260, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.arc(950, 950, 300, 0, Math.PI * 2); ctx.fill();
+  ctx.globalAlpha = 0.06;
+  ctx.beginPath(); ctx.arc(900, 180, 180, 0, Math.PI * 2); ctx.fill();
+  ctx.globalAlpha = 1;
+  // big decorative quote mark
+  ctx.fillStyle = "rgba(255,255,255,0.16)";
+  ctx.font = "700 340px Georgia, serif";
+  ctx.textAlign = "left"; ctx.textBaseline = "top";
+  ctx.fillText("\u201C", 70, 60);
+  const text = selected >= 0 && quotes[selected] ? quotes[selected] : "Your quote will appear here.\nGenerate 3 quotes and tap one.";
+  const rtl = lang === "Urdu script";
+  ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  ctx.fillStyle = "#ffffff";
+  ctx.shadowColor = "rgba(0,0,0,0.35)"; ctx.shadowBlur = 18; ctx.shadowOffsetY = 4;
+  let size = 74;
+  const fontFor = s => (rtl ? "700 " + s + "px 'Noto Nastaliq Urdu','Noto Naskh Arabic',Tahoma,sans-serif"
+                            : "700 " + s + "px 'Segoe UI',Arial,sans-serif");
+  let lines = [];
+  while (size >= 34){
+    ctx.font = fontFor(size);
+    lines = wrapText(ctx, text, 860);
+    const totalH = lines.length * size * (rtl ? 2.1 : 1.35);
+    if (totalH <= 620) break;
+    size -= 4;
+  }
+  const lh = size * (rtl ? 2.1 : 1.35);
+  const startY = H / 2 - ((lines.length - 1) * lh) / 2 - 20;
+  lines.forEach(function(ln, i){ ctx.fillText(ln, W / 2, startY + i * lh); });
+  ctx.shadowColor = "transparent"; ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+  // divider + watermark
+  ctx.fillStyle = "rgba(255,255,255,0.55)";
+  ctx.fillRect(W / 2 - 60, H - 118, 120, 2);
+  ctx.font = "600 34px 'Segoe UI',Arial,sans-serif";
+  ctx.fillStyle = "rgba(255,255,255,0.85)";
+  ctx.fillText("Dark Tech Zone", W / 2, H - 62);
+}
+
+function renderQuotes(){
+  const list = $("quoteList");
+  list.innerHTML = "";
+  if (!quotes.length){
+    list.innerHTML = '<p class="empty">No quotes yet — pick a mood and press Generate.</p>';
+    return;
+  }
+  quotes.forEach(function(q, i){
+    const b = document.createElement("button");
+    b.className = "quote" + (i === selected ? " sel" : "");
+    b.type = "button";
+    const span = document.createElement("span"); span.textContent = q;
+    const meta = document.createElement("div"); meta.className = "meta";
+    meta.textContent = (i === selected ? "On the image — " : "Tap to put on the image — ") + mood + " · " + lang;
+    b.appendChild(span); b.appendChild(meta);
+    b.addEventListener("click", function(){ selected = i; renderQuotes(); drawCanvas(); saveRecent(q); });
+    list.appendChild(b);
+  });
+}
+
+function loadRecent(){
+  try { return JSON.parse(localStorage.getItem(RECENT_KEY) || "[]"); } catch (e) { return []; }
+}
+function saveRecent(text){
+  const items = loadRecent().filter(function(r){ return r.text !== text; });
+  items.unshift({text:text, mood:mood, lang:lang, bg:bgIndex, ts:Date.now()});
+  try { localStorage.setItem(RECENT_KEY, JSON.stringify(items.slice(0, 8))); } catch (e) {}
+  renderRecent();
+}
+function renderRecent(){
+  const items = loadRecent(), list = $("recentList");
+  $("btnClearRecent").classList.toggle("hidden", !items.length);
+  list.innerHTML = "";
+  if (!items.length){
+    list.innerHTML = '<p class="empty">Nothing yet — your last 8 generated quotes appear here.</p>';
+    return;
+  }
+  items.forEach(function(r){
+    const b = document.createElement("button");
+    b.className = "recent-item"; b.type = "button";
+    const span = document.createElement("span"); span.textContent = r.text;
+    const small = document.createElement("small"); small.textContent = r.mood + " · " + r.lang;
+    b.appendChild(span); b.appendChild(small);
+    b.addEventListener("click", function(){
+      mood = r.mood; lang = r.lang; bgIndex = r.bg;
+      syncSegs(); quotes = [r.text]; selected = 0;
+      renderQuotes(); drawCanvas(); $("swName").textContent = BACKGROUNDS[bgIndex].name;
+      window.scrollTo({top: $("canvas").offsetTop - 80, behavior: "smooth"});
+    });
+    list.appendChild(b);
+  });
+}
+
+function syncSegs(){
+  document.querySelectorAll("#moodSeg button").forEach(function(b){ b.classList.toggle("active", b.dataset.mood === mood); });
+  document.querySelectorAll("#langSeg button").forEach(function(b){ b.classList.toggle("active", b.dataset.lang === lang); });
+}
+
+async function generate(){
+  if (generating) return;
+  generating = true;
+  $("btnGenerate").disabled = true;
+  $("btnStop").classList.remove("hidden");
+  statusEl.classList.remove("err");
+  statusEl.textContent = "AI is writing your quotes…";
+  aborter = new AbortController();
+  try {
+    const topic = $("topicInput").value.trim();
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: {"Content-Type": "application/json", "X-API-Key": API_KEY},
+      body: JSON.stringify({q: buildPrompt(mood, lang, topic)}),
+      signal: aborter.signal
+    });
+    if (!res.ok) throw new Error("AI service returned " + res.status);
+    const reader = res.body.getReader();
+    const dec = new TextDecoder();
+    let buf = "", full = "";
+    while (true){
+      const r = await reader.read();
+      if (r.done) break;
+      buf += dec.decode(r.value, {stream: true});
+      let idx;
+      while ((idx = buf.indexOf("\n")) >= 0){
+        const line = buf.slice(0, idx).trim(); buf = buf.slice(idx + 1);
+        if (line.startsWith("data: ")){
+          const d = line.slice(6).trim();
+          if (d === "[DONE]") break;
+          try { const j = JSON.parse(d); if (j.chunk) full += j.chunk; } catch (e) {}
+        }
+      }
+    }
+    const parsed = parseQuotes(full);
+    if (!parsed.length) throw new Error("AI returned no usable quotes — please try again.");
+    quotes = parsed; selected = 0;
+    renderQuotes(); drawCanvas(); saveRecent(parsed[0]);
+    statusEl.textContent = "Done — tap any quote to put it on the image.";
+  } catch (e) {
+    if (e.name === "AbortError") { statusEl.textContent = "Stopped."; }
+    else {
+      statusEl.classList.add("err");
+      statusEl.textContent = (e instanceof TypeError || /failed to fetch|networkerror/i.test(e.message))
+        ? "Could not reach the AI — check your connection and try again."
+        : "Could not generate: " + e.message;
+    }
+  } finally {
+    generating = false;
+    $("btnGenerate").disabled = false;
+    $("btnStop").classList.add("hidden");
+    aborter = null;
+  }
+}
+
+async function checkHealth(){
+  try {
+    const res = await fetch(HEALTH_URL, {cache: "no-store"});
+    const ok = res.ok;
+    pill.textContent = ok ? "AI Online" : "AI Offline";
+    pill.classList.toggle("on", ok); pill.classList.toggle("off", !ok);
+  } catch (e) {
+    pill.textContent = "AI Offline"; pill.classList.add("off");
+  }
+}
+
+function downloadPNG(){
+  $("canvas").toBlob(function(blob){
+    if (!blob) { statusEl.classList.add("err"); statusEl.textContent = "Could not create the image — try again."; return; }
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "dtz-status-1080.png";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 4000);
+  }, "image/png");
+}
+
+async function copyImage(){
+  try {
+    const blob = await new Promise(function(res){ $("canvas").toBlob(res, "image/png"); });
+    await navigator.clipboard.write([new ClipboardItem({"image/png": blob})]);
+    statusEl.classList.remove("err");
+    statusEl.textContent = "Image copied — paste it in WhatsApp or anywhere.";
+  } catch (e) {
+    statusEl.classList.add("err");
+    statusEl.textContent = "Copy is blocked in this browser — use Download PNG instead.";
+  }
+}
+
+function buildSwatches(){
+  const wrap = $("swatches");
+  BACKGROUNDS.forEach(function(bg, i){
+    const b = document.createElement("button");
+    b.className = "sw" + (i === bgIndex ? " active" : "");
+    b.type = "button"; b.title = bg.name; b.setAttribute("aria-label", bg.name + " background");
+    b.style.background = "linear-gradient(135deg," + bg.c1 + "," + bg.c2 + ")";
+    b.addEventListener("click", function(){
+      bgIndex = i;
+      document.querySelectorAll(".sw").forEach(function(s, j){ s.classList.toggle("active", j === i); });
+      $("swName").textContent = bg.name;
+      drawCanvas();
+    });
+    wrap.appendChild(b);
+  });
+}
+
+document.querySelectorAll("#moodSeg button").forEach(function(b){
+  b.addEventListener("click", function(){ mood = b.dataset.mood; syncSegs(); });
+});
+document.querySelectorAll("#langSeg button").forEach(function(b){
+  b.addEventListener("click", function(){ lang = b.dataset.lang; syncSegs(); });
+});
+document.querySelectorAll("#exampleChips button").forEach(function(b){
+  b.addEventListener("click", function(){ $("topicInput").value = b.dataset.topic; });
+});
+$("btnGenerate").addEventListener("click", generate);
+$("btnRegen").addEventListener("click", generate);
+$("btnStop").addEventListener("click", function(){ if (aborter) aborter.abort(); });
+$("btnDownload").addEventListener("click", downloadPNG);
+$("btnCopy").addEventListener("click", copyImage);
+$("btnClearRecent").addEventListener("click", function(){
+  try { localStorage.removeItem(RECENT_KEY); } catch (e) {}
+  renderRecent();
+});
+
+buildSwatches();
+renderQuotes();
+renderRecent();
+drawCanvas();
+checkHealth();
+setInterval(checkHealth, 60000);
+</script>
+</body>
+</html>
