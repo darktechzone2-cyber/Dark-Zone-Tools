@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTZ Image Compressor — Dark Tech Zone</title>
+<meta name="description" content="Shrink your photos for WhatsApp, Telegram and websites. Upload up to 20 images, pick quality and size, and download real compressed JPG, WebP or PNG files — 100% in your browser, nothing uploaded, no signup, no key.">
+<link rel="icon" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg">
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<style>
+:root{--bg:#f7f8fa;--card:#ffffff;--text:#1a1d21;--muted:#5b6470;--line:#e3e6ea;--green:#16a34a;--green-d:#15803d;--red:#dc2626;--blue:#2563eb;--radius:14px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+header{background:#fff;border-bottom:1px solid var(--line);padding:14px 20px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:10}
+header img{width:42px;height:42px;border-radius:50%;object-fit:cover;border:2px solid #e8eaed}
+header .t h1{font-size:18px;line-height:1.2}
+header .t p{font-size:12px;color:var(--muted)}
+header .pill{margin-left:auto;font-size:12px;font-weight:600;padding:5px 10px;border-radius:999px;white-space:nowrap;border:1px solid var(--line);color:var(--muted);background:#f8fafc}
+main{max-width:860px;margin:0 auto;padding:24px 16px 60px}
+.hero{text-align:center;margin:18px 0 22px}
+.hero h2{font-size:26px;margin-bottom:8px}
+.hero p{color:var(--muted);font-size:15px;line-height:1.5;max-width:640px;margin:0 auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-top:16px}
+.card h3{font-size:16px;margin-bottom:4px}
+.card .sub{font-size:13px;color:var(--muted);margin-bottom:14px}
+label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin:12px 0 6px}
+input[type=file]{display:none}
+input[type=range]{width:100%;accent-color:var(--green)}
+.drop{border:2px dashed var(--line);border-radius:12px;padding:26px 16px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s}
+.drop:hover,.drop.over{border-color:var(--green);background:#f0fdf4}
+.drop .big{font-size:15px;font-weight:700}
+.drop .small{font-size:13px;color:var(--muted);margin-top:6px;line-height:1.5}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.row>div{flex:1;min-width:200px}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg button{padding:9px 14px;border:1px solid var(--line);background:#f8fafc;border-radius:999px;font-size:14px;font-weight:600;color:var(--text);cursor:pointer}
+.seg button.active{background:var(--green);color:#fff;border-color:var(--green)}
+.btn{display:inline-flex;align-items:center;gap:8px;justify-content:center;padding:13px 22px;border-radius:10px;font-size:15px;font-weight:700;border:none;cursor:pointer}
+.btn-green{background:var(--green);color:#fff}
+.btn-green:hover{background:var(--green-d)}
+.btn-green:disabled{opacity:.55;cursor:not-allowed}
+.btn-ghost{background:#fff;color:var(--text);border:1px solid var(--line)}
+.btn-ghost:hover{background:#f1f3f5}
+.btn-red{background:#fff;color:var(--red);border:1px solid #fecaca}
+.btn-red:hover{background:#fef2f2}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.hint{font-size:13px;color:var(--muted);line-height:1.5;margin-top:12px}
+.error{display:none;background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;font-size:14px;padding:11px 13px;border-radius:10px;margin-top:14px;line-height:1.5}
+.error.show{display:block}
+.status{font-size:14px;color:var(--muted);margin-top:12px;min-height:20px}
+.progress{height:10px;background:#eef0f2;border-radius:999px;overflow:hidden;margin-top:12px}
+.progress i{display:block;height:100%;width:0%;background:var(--green);border-radius:999px;transition:width .2s}
+.qval{font-size:13px;color:var(--muted);font-weight:600}
+.qval b{color:var(--text)}
+.qlist{margin-top:8px}
+.qitem{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;background:#fff;font-size:14px}
+.qitem img{width:48px;height:48px;object-fit:cover;border-radius:8px;border:1px solid var(--line);flex-shrink:0}
+.qitem .nm{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:280px}
+.qitem .sz{color:var(--muted);font-size:12px}
+.qitem .x{margin-left:auto;color:var(--red);background:none;border:none;font-size:18px;cursor:pointer;font-weight:700;line-height:1;padding:4px 8px}
+.ritem{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:10px;margin-bottom:10px;background:#fff}
+.ritem img{width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--line);flex-shrink:0}
+.ritem .info{flex:1;min-width:0}
+.ritem .nm{font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ritem .sizes{font-size:13px;color:var(--muted);margin-top:3px;line-height:1.5}
+.ritem .sizes b{color:var(--text)}
+.ritem .saved{font-weight:700;color:var(--green-d)}
+.ritem .saved.zero{color:var(--muted)}
+.ritem .btns{display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+.ritem .btns .btn{padding:8px 14px;font-size:13px}
+.total{font-size:15px;text-align:center;margin-top:14px;line-height:1.6}
+.total b{color:var(--green-d)}
+.session{margin-top:16px}
+.session h3{font-size:15px;margin-bottom:10px}
+.session .item{display:flex;align-items:center;gap:10px;padding:11px 13px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;background:#fff;font-size:14px}
+.session .item:hover{border-color:var(--green)}
+.session .item .meta2{color:var(--muted);font-size:12px;margin-left:auto;white-space:nowrap}
+.session .item a{color:var(--green-d);font-weight:700;text-decoration:none}
+footer{text-align:center;color:var(--muted);font-size:13px;line-height:1.7;margin-top:34px}
+footer a{color:var(--green-d);text-decoration:none;font-weight:600}
+.hidden{display:none!important}
+@media (max-width:560px){.hero h2{font-size:22px}.qitem .nm{max-width:150px}.ritem{flex-wrap:wrap}.ritem .btns{flex-direction:row;width:100%}.ritem .btns .btn{flex:1}}
+</style>
+</head>
+<body>
+<header>
+  <img src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone logo">
+  <div class="t"><h1>Dark Tech Zone</h1><p>Free Tools — No Signup, No Key</p></div>
+  <span class="pill" id="statusPill">100% in-browser</span>
+</header>
+<main>
+  <div class="hero">
+    <h2>DTZ Image Compressor</h2>
+    <p>Shrink your photos for WhatsApp, Telegram and websites. Upload up to 20 images, pick the quality and size, and download real compressed files — everything happens in your browser, nothing is uploaded.</p>
+  </div>
+
+  <div class="card">
+    <h3>1. Add your images</h3>
+    <p class="sub">JPG, PNG or WebP — up to 20 files, 20 MB each. You can also paste an image from your clipboard.</p>
+    <div class="drop" id="dropZone" role="button" tabindex="0" aria-label="Choose images">
+      <div class="big">Tap to choose images, or drag them here</div>
+      <div class="small">JPG / PNG / WebP &nbsp;•&nbsp; Max 20 files &nbsp;•&nbsp; Max 20 MB each &nbsp;•&nbsp; Paste (Ctrl+V) works too</div>
+    </div>
+    <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" multiple>
+    <div class="actions">
+      <button class="btn btn-ghost" id="btnSample" type="button">Try a sample photo</button>
+      <button class="btn btn-red hidden" id="btnClearQueue" type="button">Clear all</button>
+    </div>
+    <div class="qlist" id="queueList"></div>
+    <div class="error" id="errorBox"></div>
+  </div>
+
+  <div class="card">
+    <h3>2. Compression settings</h3>
+    <p class="sub">Smaller quality = smaller file. Quality 80 is the sweet spot for photos — sharp on a phone screen, much lighter to send.</p>
+    <label for="qualityRange">Quality — <span class="qval"><b id="qualityVal">80</b> / 100</span></label>
+    <input type="range" id="qualityRange" min="10" max="95" value="80" step="5">
+    <div class="row">
+      <div>
+        <label>Max width</label>
+        <div class="seg" id="segWidth">
+          <button type="button" data-w="0" class="active">Original</button>
+          <button type="button" data-w="1920">1920 px</button>
+          <button type="button" data-w="1280">1280 px</button>
+          <button type="button" data-w="800">800 px</button>
+        </div>
+      </div>
+      <div>
+        <label>Output format</label>
+        <div class="seg" id="segFormat">
+          <button type="button" data-f="auto" class="active">Auto (best)</button>
+          <button type="button" data-f="jpeg">JPEG</button>
+          <button type="button" data-f="webp">WebP</button>
+          <button type="button" data-f="png">PNG</button>
+        </div>
+      </div>
+    </div>
+    <p class="hint" id="notePng">Auto keeps it smart: photos become JPEG, transparent PNGs become WebP (transparency kept, much smaller), WebP stays WebP. JPEG has no transparency — a transparent PNG converted to JPEG gets a white background.</p>
+    <div class="actions">
+      <button class="btn btn-green" id="btnCompress" type="button" disabled>Compress images</button>
+    </div>
+    <div class="progress hidden" id="progressWrap"><i id="progressBar"></i></div>
+    <div class="status" id="progressText"></div>
+  </div>
+
+  <div class="card hidden" id="resultsCard">
+    <h3>3. Your compressed images</h3>
+    <p class="sub">Tap Download on any image, or grab them all as one ZIP. If a file was already tiny, we keep the original instead of making it bigger.</p>
+    <div id="resultsList"></div>
+    <div class="total" id="totalLine"></div>
+    <div class="actions">
+      <button class="btn btn-green" id="btnDownloadAll" type="button">Download all (.zip)</button>
+      <button class="btn btn-ghost" id="btnCopyAll" type="button">Copy first image</button>
+      <button class="btn btn-red" id="btnStartOver" type="button">Start over</button>
+    </div>
+  </div>
+
+  <div class="card session hidden" id="recentCard">
+    <h3>Recent compressions</h3>
+    <div id="recentList"></div>
+    <div class="actions"><button class="btn btn-ghost" id="btnClearRecent" type="button">Clear history</button></div>
+  </div>
+
+  <footer>
+    Made by <a href="https://www.darktechzon.site/" target="_blank" rel="noopener">Dark Tech Zone</a> — free tools, no signup, no key.<br>
+    Follow us on <a href="https://whatsapp.com/channel/0029Vb9oK008V0txIkc3oj3z" target="_blank" rel="noopener">WhatsApp</a> for new tools every day.<br>
+    Your photos never leave your device — compression runs 100% in your browser.
+  </footer>
+</main>
+
+<script id="helpers">
+// Pure helpers — no DOM access. Extracted and unit-tested by test.js.
+function clampQuality(q){ q = Math.round(Number(q)); if(!isFinite(q)) return 80; return Math.max(10, Math.min(95, q)); }
+function formatBytes(n){
+  n = Math.max(0, Math.round(Number(n) || 0));
+  if(n < 1024) return n + ' B';
+  if(n < 1024*1024) return (n/1024).toFixed(1) + ' KB';
+  return (n/(1024*1024)).toFixed(2) + ' MB';
+}
+function savedPercent(orig, comp){
+  orig = Number(orig) || 0; comp = Number(comp) || 0;
+  if(orig <= 0) return 0;
+  return Math.round((1 - comp/orig) * 100);
+}
+function computeTargetSize(w, h, maxW){
+  w = Math.max(1, Math.round(Number(w) || 0));
+  h = Math.max(1, Math.round(Number(h) || 0));
+  maxW = Math.round(Number(maxW) || 0);
+  if(maxW <= 0 || w <= maxW) return [w, h];
+  var nh = Math.max(1, Math.round(h * maxW / w));
+  return [maxW, nh];
+}
+function mimeToExt(mime){
+  if(mime === 'image/jpeg') return 'jpg';
+  if(mime === 'image/webp') return 'webp';
+  if(mime === 'image/png') return 'png';
+  return 'bin';
+}
+function outFileName(name, mime){
+  var base = String(name || 'image').replace(/\.[a-zA-Z0-9]+$/, '');
+  if(!base) base = 'image';
+  return base + '.' + mimeToExt(mime);
+}
+function decideMime(inputType, formatChoice, hasAlpha){
+  if(formatChoice === 'jpeg') return 'image/jpeg';
+  if(formatChoice === 'webp') return 'image/webp';
+  if(formatChoice === 'png') return 'image/png';
+  // auto
+  if(inputType === 'image/png') return hasAlpha ? 'image/webp' : 'image/jpeg';
+  if(inputType === 'image/webp') return 'image/webp';
+  return 'image/jpeg';
+}
+function isSupportedType(t){ return t === 'image/jpeg' || t === 'image/png' || t === 'image/webp'; }
+function isAnimatedGifType(t){ return t === 'image/gif'; }
+</script>
+<script>
+(function(){
+'use strict';
+var MAX_FILES = 20, MAX_MB = 20, MAX_BYTES = MAX_MB * 1024 * 1024;
+var queue = [];   // {id, file, url, name, size, type}
+var results = []; // {id, name, origSize, outSize, outBlob, outName, mime, usedOriginal, thumbUrl}
+var nextId = 1, busy = false;
+var RECENT_KEY = 'dtz-image-compressor-recent-v1';
+
+function $(id){ return document.getElementById(id); }
+function el(id){ return $(id); }
+function showError(msg){ var b = el('errorBox'); b.textContent = msg; b.classList.add('show'); }
+function clearError(){ var b = el('errorBox'); b.textContent = ''; b.classList.remove('show'); }
+function setPill(t){ el('statusPill').textContent = t; }
+
+function loadImage(file){
+  return new Promise(function(resolve, reject){
+    var url = URL.createObjectURL(file);
+    var img = new Image();
+    img.onload = function(){ resolve({img: img, url: url}); };
+    img.onerror = function(){ URL.revokeObjectURL(url); reject(new Error('Could not read this image.')); };
+    img.src = url;
+  });
+}
+function hasAlpha(img, w, h){
+  try{
+    var s = Math.min(64, w, h);
+    var c = document.createElement('canvas');
+    c.width = s; c.height = Math.max(1, Math.round(s * h / w));
+    var ctx = c.getContext('2d', {willReadFrequently:true});
+    ctx.drawImage(img, 0, 0, c.width, c.height);
+    var d = ctx.getImageData(0, 0, c.width, c.height).data;
+    for(var i = 3; i < d.length; i += 4){ if(d[i] < 255) return true; }
+    return false;
+  }catch(e){ return false; }
+}
+function canvasToBlob(canvas, mime, quality){
+  return new Promise(function(resolve, reject){
+    canvas.toBlob(function(b){ b ? resolve(b) : reject(new Error('Your browser could not encode this image.')); }, mime, quality);
+  });
+}
+
+function renderQueue(){
+  var list = el('queueList'); list.innerHTML = '';
+  queue.forEach(function(item){
+    var row = document.createElement('div'); row.className = 'qitem';
+    var im = document.createElement('img'); im.src = item.url; im.alt = '';
+    var nm = document.createElement('div');
+    var t = document.createElement('div'); t.className = 'nm'; t.textContent = item.name;
+    var s = document.createElement('div'); s.className = 'sz'; s.textContent = formatBytes(item.size) + '  •  ' + item.type.replace('image/', '').toUpperCase();
+    nm.appendChild(t); nm.appendChild(s);
+    var x = document.createElement('button'); x.className = 'x'; x.type = 'button'; x.textContent = '×'; x.setAttribute('aria-label', 'Remove ' + item.name);
+    x.onclick = function(){ removeFromQueue(item.id); };
+    row.appendChild(im); row.appendChild(nm); row.appendChild(x);
+    list.appendChild(row);
+  });
+  el('btnClearQueue').classList.toggle('hidden', queue.length === 0);
+  el('btnCompress').disabled = queue.length === 0 || busy;
+  el('btnCompress').textContent = queue.length ? ('Compress ' + queue.length + (queue.length === 1 ? ' image' : ' images')) : 'Compress images';
+}
+function removeFromQueue(id){
+  var i = queue.findIndex(function(q){ return q.id === id; });
+  if(i >= 0){ URL.revokeObjectURL(queue[i].url); queue.splice(i, 1); }
+  renderQueue();
+}
+function clearQueue(){
+  queue.forEach(function(q){ URL.revokeObjectURL(q.url); });
+  queue = []; renderQueue();
+}
+
+function addFiles(fileList){
+  clearError();
+  var files = Array.prototype.slice.call(fileList || []);
+  if(!files.length) return;
+  var added = 0, skipped = [];
+  files.forEach(function(f){
+    if(queue.length >= MAX_FILES){ skipped.push(f.name + ' — only 20 at a time'); return; }
+    if(isAnimatedGifType(f.type)){ skipped.push(f.name + ' — GIFs are not supported (animated GIFs would lose all but the first frame)'); return; }
+    if(!isSupportedType(f.type)){ skipped.push(f.name + ' — only JPG, PNG and WebP'); return; }
+    if(f.size > MAX_BYTES){ skipped.push(f.name + ' — over 20 MB'); return; }
+    if(f.size <= 0){ skipped.push(f.name + ' — empty file'); return; }
+    queue.push({id: nextId++, file: f, url: URL.createObjectURL(f), name: f.name, size: f.size, type: f.type || 'image/jpeg'});
+    added++;
+  });
+  if(skipped.length) showError(skipped.slice(0, 4).join('\n') + (skipped.length > 4 ? ('\n…and ' + (skipped.length - 4) + ' more skipped.') : ''));
+  if(added) renderQueue();
+}
+
+function makeSamplePhoto(){
+  // Draw a photo-like scene on canvas so the tool can be tried with no download.
+  var c = document.createElement('canvas'); c.width = 1200; c.height = 800;
+  var x = c.getContext('2d');
+  var sky = x.createLinearGradient(0, 0, 0, 520);
+  sky.addColorStop(0, '#7ec8f7'); sky.addColorStop(0.6, '#cfeefb'); sky.addColorStop(1, '#fff3d6');
+  x.fillStyle = sky; x.fillRect(0, 0, 1200, 520);
+  x.fillStyle = '#ffd94d'; x.beginPath(); x.arc(980, 130, 62, 0, Math.PI * 2); x.fill();
+  x.fillStyle = 'rgba(255,217,77,0.35)'; x.beginPath(); x.arc(980, 130, 95, 0, Math.PI * 2); x.fill();
+  x.fillStyle = '#8fa8bf';
+  x.beginPath(); x.moveTo(0, 520); x.lineTo(300, 220); x.lineTo(560, 520); x.closePath(); x.fill();
+  x.fillStyle = '#6b8aa5';
+  x.beginPath(); x.moveTo(380, 520); x.lineTo(700, 180); x.lineTo(1020, 520); x.closePath(); x.fill();
+  x.fillStyle = '#ffffff';
+  x.beginPath(); x.moveTo(300, 220); x.lineTo(255, 285); x.lineTo(345, 285); x.closePath(); x.fill();
+  x.beginPath(); x.moveTo(700, 180); x.lineTo(650, 250); x.lineTo(750, 250); x.closePath(); x.fill();
+  x.fillStyle = '#3f7d4e'; x.fillRect(0, 520, 1200, 280);
+  x.fillStyle = '#2f6b3e';
+  for(var i = 0; i < 26; i++){ var tx = (i * 47) % 1200, th = 60 + ((i * 37) % 90);
+    x.beginPath(); x.moveTo(tx, 620); x.lineTo(tx + 22, 620 - th); x.lineTo(tx + 44, 620); x.closePath(); x.fill(); }
+  x.fillStyle = '#4a90d9'; x.beginPath(); x.ellipse(600, 720, 420, 60, 0, 0, Math.PI * 2); x.fill();
+  x.fillStyle = 'rgba(255,255,255,0.85)'; x.font = 'bold 54px Arial, sans-serif'; x.textAlign = 'center';
+  x.fillText('DTZ SAMPLE PHOTO', 600, 90);
+  x.font = '28px Arial, sans-serif'; x.fillText('1200 x 800  •  PNG', 600, 135);
+  return new Promise(function(resolve, reject){
+    c.toBlob(function(b){
+      if(!b) return reject(new Error('Sample photo could not be created in this browser.'));
+      resolve(new File([b], 'dtz-sample-photo.png', {type: 'image/png'}));
+    }, 'image/png');
+  });
+}
+
+async function compressOne(item, quality, maxW, formatChoice){
+  var loaded = await loadImage(item.file);
+  var img = loaded.img;
+  var w = img.naturalWidth, h = img.naturalHeight;
+  var target = computeTargetSize(w, h, maxW);
+  var tw = target[0], th = target[1];
+  var alpha = item.type === 'image/png' ? hasAlpha(img, w, h) : false;
+  var mime = decideMime(item.type, formatChoice, alpha);
+  var canvas = document.createElement('canvas');
+  canvas.width = tw; canvas.height = th;
+  var ctx = canvas.getContext('2d');
+  if(mime === 'image/jpeg'){ ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, tw, th); }
+  ctx.drawImage(img, 0, 0, tw, th);
+  URL.revokeObjectURL(loaded.url);
+  var q = (mime === 'image/png') ? undefined : quality / 100;
+  var blob = await canvasToBlob(canvas, mime, q);
+  var usedOriginal = blob.size >= item.size;
+  return {
+    id: item.id, name: item.name, origSize: item.size,
+    outSize: usedOriginal ? item.size : blob.size,
+    outBlob: usedOriginal ? item.file : blob,
+    outName: usedOriginal ? item.name : outFileName(item.name, mime),
+    mime: usedOriginal ? item.type : mime,
+    usedOriginal: usedOriginal,
+    thumbUrl: item.url
+  };
+}
+
+function renderResults(){
+  var list = el('resultsList'); list.innerHTML = '';
+  var totalOrig = 0, totalOut = 0;
+  results.forEach(function(r){
+    totalOrig += r.origSize; totalOut += r.outSize;
+    var pct = savedPercent(r.origSize, r.outSize);
+    var row = document.createElement('div'); row.className = 'ritem';
+    var im = document.createElement('img'); im.src = r.thumbUrl; im.alt = '';
+    var info = document.createElement('div'); info.className = 'info';
+    var nm = document.createElement('div'); nm.className = 'nm'; nm.textContent = r.outName;
+    var sz = document.createElement('div'); sz.className = 'sizes';
+    var b1 = document.createElement('b'); b1.textContent = formatBytes(r.origSize);
+    var b2 = document.createElement('b'); b2.textContent = formatBytes(r.outSize);
+    var sp = document.createElement('span'); sp.className = 'saved' + (pct <= 0 ? ' zero' : '');
+    sp.textContent = r.usedOriginal ? 'kept original — already optimal' : ('saved ' + pct + '%');
+    sz.appendChild(document.createTextNode('Original ')); sz.appendChild(b1);
+    sz.appendChild(document.createTextNode('  →  Compressed ')); sz.appendChild(b2);
+    sz.appendChild(document.createTextNode('  •  ')); sz.appendChild(sp);
+    info.appendChild(nm); info.appendChild(sz);
+    var btns = document.createElement('div'); btns.className = 'btns';
+    var dl = document.createElement('button'); dl.className = 'btn btn-green'; dl.type = 'button'; dl.textContent = 'Download';
+    dl.onclick = function(){ downloadBlob(r.outBlob, r.outName); };
+    var cp = document.createElement('button'); cp.className = 'btn btn-ghost'; cp.type = 'button'; cp.textContent = 'Copy image';
+    cp.onclick = function(){ copyImage(r, cp); };
+    btns.appendChild(dl); btns.appendChild(cp);
+    row.appendChild(im); row.appendChild(info); row.appendChild(btns);
+    list.appendChild(row);
+  });
+  var tpct = savedPercent(totalOrig, totalOut);
+  el('totalLine').innerHTML = '';
+  var t = document.createElement('span');
+  t.innerHTML = 'Total: <b>' + formatBytes(totalOrig) + '</b> → <b>' + formatBytes(totalOut) + '</b> — saved <b>' + tpct + '%</b> (' + formatBytes(totalOrig - totalOut) + ')';
+  el('totalLine').appendChild(t);
+  el('resultsCard').classList.remove('hidden');
+}
+
+function downloadBlob(blob, name){
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 4000);
+}
+async function copyImage(r, btn){
+  try{
+    if(!navigator.clipboard || !window.ClipboardItem) throw new Error('copy-unsupported');
+    var item = new ClipboardItem({[r.mime]: r.outBlob});
+    await navigator.clipboard.write([item]);
+    var old = btn.textContent; btn.textContent = 'Copied';
+    setTimeout(function(){ btn.textContent = old; }, 1500);
+  }catch(e){
+    showError('Copy is not supported in this browser — use Download instead.');
+  }
+}
+
+function saveRecent(){
+  try{
+    var rec = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]');
+    var now = new Date();
+    var entry = {
+      at: now.toLocaleString('en-GB', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'}),
+      files: results.length,
+      orig: formatBytes(results.reduce(function(a, r){ return a + r.origSize; }, 0)),
+      out: formatBytes(results.reduce(function(a, r){ return a + r.outSize; }, 0)),
+      pct: savedPercent(results.reduce(function(a, r){ return a + r.origSize; }, 0), results.reduce(function(a, r){ return a + r.outSize; }, 0))
+    };
+    rec.unshift(entry); rec = rec.slice(0, 8);
+    localStorage.setItem(RECENT_KEY, JSON.stringify(rec));
+    renderRecent();
+  }catch(e){ /* storage unavailable — tool still works */ }
+}
+function renderRecent(){
+  var card = el('recentCard'), list = el('recentList');
+  var rec = [];
+  try{ rec = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]'); }catch(e){ rec = []; }
+  if(!rec.length){ card.classList.add('hidden'); return; }
+  card.classList.remove('hidden');
+  list.innerHTML = '';
+  rec.forEach(function(r){
+    var row = document.createElement('div'); row.className = 'item';
+    var a = document.createElement('span'); a.textContent = r.files + (r.files === 1 ? ' image' : ' images') + ' compressed';
+    var b = document.createElement('span'); b.className = 'meta2'; b.textContent = r.orig + ' → ' + r.out + ' (' + r.pct + '%) • ' + r.at;
+    row.appendChild(a); row.appendChild(b); list.appendChild(row);
+  });
+}
+
+async function onCompress(){
+  if(busy || !queue.length) return;
+  busy = true; clearError();
+  el('btnCompress').disabled = true;
+  el('resultsCard').classList.add('hidden');
+  results = [];
+  var quality = clampQuality(el('qualityRange').value);
+  var maxW = Number((document.querySelector('#segWidth button.active') || {}).dataset ? document.querySelector('#segWidth button.active').dataset.w : 0) || 0;
+  var formatChoice = (document.querySelector('#segFormat button.active') || {}).dataset ? document.querySelector('#segFormat button.active').dataset.f : 'auto';
+  var wrap = el('progressWrap'); wrap.classList.remove('hidden');
+  var bar = el('progressBar'), txt = el('progressText');
+  setPill('Compressing…');
+  var done = 0, failed = [];
+  var total = queue.length;
+  for(var i = 0; i < queue.length; i++){
+    var item = queue[i];
+    txt.textContent = 'Compressing ' + (i + 1) + ' of ' + total + ': ' + item.name;
+    try{
+      var r = await compressOne(item, quality, maxW, formatChoice);
+      results.push(r);
+    }catch(e){
+      failed.push(item.name + ' — ' + (e && e.message ? e.message : 'failed'));
+    }
+    done++;
+    bar.style.width = Math.round(done / total * 100) + '%';
+    await new Promise(function(res){ setTimeout(res, 30); });
+  }
+  bar.style.width = '100%';
+  txt.textContent = failed.length
+    ? ('Done — ' + results.length + ' compressed, ' + failed.length + ' failed.')
+    : ('Done — ' + results.length + (results.length === 1 ? ' image' : ' images') + ' compressed.');
+  setPill('Done');
+  if(results.length){ renderResults(); saveRecent(); }
+  if(failed.length) showError(failed.slice(0, 4).join('\n') + (failed.length > 4 ? ('\n…and ' + (failed.length - 4) + ' more.') : ''));
+  busy = false;
+  el('btnCompress').disabled = queue.length === 0;
+}
+
+async function onDownloadAll(){
+  if(!results.length) return;
+  if(typeof JSZip === 'undefined'){ showError('The ZIP library did not load — check your connection and reload the page, or download images one by one.'); return; }
+  var btn = el('btnDownloadAll'); btn.disabled = true; btn.textContent = 'Making ZIP…';
+  try{
+    var zip = new JSZip();
+    results.forEach(function(r, i){
+      var name = r.outName;
+      if(zip.file(name)) name = (i + 1) + '-' + name;
+      zip.file(name, r.outBlob);
+    });
+    var blob = await zip.generateAsync({type: 'blob'}, function(meta){
+      btn.textContent = 'Making ZIP… ' + Math.round(meta.percent) + '%';
+    });
+    downloadBlob(blob, 'dtz-compressed-images.zip');
+    btn.textContent = 'Download all (.zip)';
+  }catch(e){
+    showError('Could not make the ZIP — download the images one by one instead.');
+    btn.textContent = 'Download all (.zip)';
+  }
+  btn.disabled = false;
+}
+
+function segWire(segId, onChange){
+  var seg = el(segId);
+  seg.addEventListener('click', function(ev){
+    var b = ev.target.closest('button');
+    if(!b) return;
+    seg.querySelectorAll('button').forEach(function(x){ x.classList.remove('active'); });
+    b.classList.add('active');
+    if(onChange) onChange(b);
+  });
+}
+
+function init(){
+  var dz = el('dropZone'), fi = el('fileInput');
+  dz.addEventListener('click', function(){ fi.click(); });
+  dz.addEventListener('keydown', function(ev){ if(ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); fi.click(); } });
+  fi.addEventListener('change', function(){ addFiles(fi.files); fi.value = ''; });
+  ['dragover', 'dragenter'].forEach(function(evt){ dz.addEventListener(evt, function(ev){ ev.preventDefault(); dz.classList.add('over'); }); });
+  ['dragleave', 'drop'].forEach(function(evt){ dz.addEventListener(evt, function(ev){ ev.preventDefault(); dz.classList.remove('over'); }); });
+  dz.addEventListener('drop', function(ev){ addFiles(ev.dataTransfer.files); });
+  document.addEventListener('paste', function(ev){
+    var items = (ev.clipboardData || window.clipboardData || {}).items || [];
+    var files = [];
+    for(var i = 0; i < items.length; i++){ if(items[i].kind === 'file') files.push(items[i].getAsFile()); }
+    if(files.length){ ev.preventDefault(); addFiles(files); }
+  });
+  el('btnSample').addEventListener('click', async function(){
+    var btn = el('btnSample'); btn.disabled = true; btn.textContent = 'Making sample…';
+    try{
+      var f = await makeSamplePhoto();
+      addFiles([f]);
+    }catch(e){ showError(e.message || 'Sample photo failed.'); }
+    btn.disabled = false; btn.textContent = 'Try a sample photo';
+  });
+  el('btnClearQueue').addEventListener('click', function(){ clearQueue(); clearError(); });
+  el('qualityRange').addEventListener('input', function(ev){ el('qualityVal').textContent = clampQuality(ev.target.value); });
+  segWire('segWidth');
+  segWire('segFormat', function(b){
+    el('notePng').textContent = b.dataset.f === 'jpeg'
+      ? 'JPEG gives the smallest files for photos, but it has no transparency — a transparent PNG will get a white background.'
+      : b.dataset.f === 'png'
+      ? 'PNG keeps every pixel exactly, including transparency — but the file stays big. Use it only when you need a lossless image.'
+      : b.dataset.f === 'webp'
+      ? 'WebP keeps transparency and is usually smaller than both JPEG and PNG. Older apps may not open WebP files.'
+      : 'Auto keeps it smart: photos become JPEG, transparent PNGs become WebP (transparency kept, much smaller), WebP stays WebP. JPEG has no transparency — a transparent PNG converted to JPEG gets a white background.';
+  });
+  el('btnCompress').addEventListener('click', onCompress);
+  el('btnDownloadAll').addEventListener('click', onDownloadAll);
+  el('btnCopyAll').addEventListener('click', function(){
+    if(results.length) copyImage(results[0], el('btnCopyAll'));
+  });
+  el('btnStartOver').addEventListener('click', function(){
+    results.forEach(function(r){ /* thumb URLs belong to queue items; revoked on clear */ });
+    results = [];
+    el('resultsCard').classList.add('hidden');
+    el('progressWrap').classList.add('hidden');
+    el('progressBar').style.width = '0%';
+    el('progressText').textContent = '';
+    setPill('100% in-browser');
+    clearQueue(); clearError();
+  });
+  el('btnClearRecent').addEventListener('click', function(){
+    try{ localStorage.removeItem(RECENT_KEY); }catch(e){}
+    renderRecent();
+  });
+  renderRecent();
+  renderQueue();
+}
+if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+else init();
+})();
+</script>
+</body>
+</html>
