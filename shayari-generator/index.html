@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTZ AI Shayari Generator — Dark Tech Zone</title>
+<meta name="description" content="AI writes an original ghazal for you — Romantic, Sad, Friendship, Motivational, Islamic, Attitude or Funny — in Roman Urdu, English or Urdu script. Copy it or download as text. Free, no signup.">
+<link rel="icon" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg">
+<style>
+  :root{
+    --bg:#f7f7f8; --surface:#ffffff; --surface2:#f0f0f2; --text:#1a1a1e; --muted:#6b6b72;
+    --border:#e4e4e7; --accent:#0f7b5f; --accent2:#0b5e49; --danger:#c0392b; --radius:14px;
+    --shadow:0 1px 3px rgba(0,0,0,.08),0 4px 14px rgba(0,0,0,.06);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.55}
+  a{color:var(--accent);text-decoration:none}
+  header{background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10}
+  .head{max-width:1060px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .head img.logo{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--accent)}
+  .head h1{font-size:19px;margin:0;line-height:1.2}
+  .head p{margin:0;font-size:12.5px;color:var(--muted)}
+  .pill{margin-left:auto;font-size:12.5px;font-weight:600;padding:5px 11px;border-radius:999px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);white-space:nowrap}
+  .pill.on{color:#0b6b4a;border-color:#bfe6d6;background:#e7f6ef}
+  .pill.off{color:#a33;border-color:#f0c6c0;background:#fdeceb}
+  main{max-width:1060px;margin:0 auto;padding:18px 16px 48px}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-bottom:16px}
+  h2{font-size:16px;margin:0 0 10px}
+  .label{font-size:13px;font-weight:600;color:var(--muted);margin:14px 0 7px}
+  .label:first-child{margin-top:0}
+  .seg{display:flex;flex-wrap:wrap;gap:8px}
+  .seg button{border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:999px;padding:8px 15px;font-size:14px;cursor:pointer}
+  .seg button.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+  input[type=text]{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:10px;font-size:15px;background:var(--surface);color:var(--text)}
+  input[type=text]:focus{outline:2px solid var(--accent);outline-offset:1px}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px}
+  .btn{border:none;border-radius:10px;padding:12px 22px;font-size:15px;font-weight:600;cursor:pointer}
+  .btn-primary{background:var(--accent);color:#fff}
+  .btn-primary:hover{background:var(--accent2)}
+  .btn-ghost{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+  .btn-danger{background:#fdeceb;color:var(--danger);border:1px solid #f0c6c0}
+  .btn:disabled{opacity:.55;cursor:not-allowed}
+  .btn-sm{padding:7px 13px;font-size:13px}
+  .hint{font-size:13px;color:var(--muted)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .chips button{border:1px dashed var(--border);background:var(--surface2);border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer;color:var(--text)}
+  #status{font-size:14px;min-height:22px;margin-top:12px;color:var(--muted)}
+  #status.err{color:var(--danger)}
+  .ghazal{display:grid;gap:10px;margin-top:6px}
+  .couplet{border:1.5px solid var(--border);border-radius:12px;padding:14px 15px;background:var(--surface)}
+  .couplet .line{font-size:16.5px;line-height:1.75;margin:0}
+  .couplet .line + .line{margin-top:2px}
+  .couplet.rtl{direction:rtl;text-align:right}
+  .couplet.rtl .line{font-family:'Noto Nastaliq Urdu','Noto Naskh Arabic',Tahoma,sans-serif;font-size:18px;line-height:2.2}
+  .couplet .foot{display:flex;justify-content:space-between;align-items:center;margin-top:9px}
+  .couplet .num{font-size:12px;color:var(--muted)}
+  .recent{display:grid;gap:8px}
+  .recent-item{display:flex;gap:10px;align-items:center;border:1px solid var(--border);border-radius:10px;padding:9px 12px;background:var(--surface);cursor:pointer;font-size:14px;text-align:left;width:100%;color:var(--text)}
+  .recent-item span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .recent-item small{color:var(--muted);white-space:nowrap}
+  .empty{color:var(--muted);font-size:14px}
+  footer{max-width:1060px;margin:0 auto;padding:0 16px 40px;color:var(--muted);font-size:13px}
+  .note{background:#fff8e6;border:1px solid #f0dfae;border-radius:10px;padding:12px 14px;font-size:13.5px;color:#6b5a1e;margin-top:14px}
+  .hidden{display:none!important}
+  @media(max-width:640px){
+    .head h1{font-size:16px}
+    .head p{display:none}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="head">
+    <img class="logo" src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone logo">
+    <div>
+      <h1>DTZ AI Shayari Generator</h1>
+      <p>Original ghazal, written by AI — free, no signup</p>
+    </div>
+    <span class="pill" id="statusPill">Checking AI&hellip;</span>
+  </div>
+</header>
+
+<main>
+  <div class="card">
+    <div class="label">1. Mood — kis tarah ki shayari chahiye?</div>
+    <div class="seg" id="moodSeg">
+      <button data-mood="Romantic" class="active">Romantic</button>
+      <button data-mood="Sad">Sad</button>
+      <button data-mood="Friendship">Friendship</button>
+      <button data-mood="Motivational">Motivational</button>
+      <button data-mood="Islamic">Islamic</button>
+      <button data-mood="Attitude">Attitude</button>
+      <button data-mood="Funny">Funny</button>
+    </div>
+
+    <div class="label">2. Language</div>
+    <div class="seg" id="langSeg">
+      <button data-lang="roman" class="active">Roman Urdu</button>
+      <button data-lang="english">English</button>
+      <button data-lang="urdu">Urdu script</button>
+    </div>
+
+    <div class="label">3. Length</div>
+    <div class="seg" id="lenSeg">
+      <button data-len="4" class="active">4 couplets</button>
+      <button data-len="6">6 couplets</button>
+      <button data-len="8">8 couplets</button>
+    </div>
+
+    <div class="label">4. Topic (optional) — e.g. dosti, mohabbat, zindagi, tanhai</div>
+    <input type="text" id="topicInput" maxlength="60" placeholder="Leave empty for a general ghazal">
+    <div class="chips" id="exampleChips">
+      <button data-topic="dosti">Dosti</button>
+      <button data-topic="mohabbat">Mohabbat</button>
+      <button data-topic="zindagi">Zindagi</button>
+      <button data-topic="tanhai">Tanhai</button>
+      <button data-topic="mehnat aur kamyabi">Mehnat aur kamyabi</button>
+      <button data-topic="sabar">Sabar</button>
+    </div>
+
+    <div class="row">
+      <button class="btn btn-primary" id="btnGenerate">Write My Ghazal</button>
+      <button class="btn btn-danger hidden" id="btnStop">Stop</button>
+      <span class="hint">AI writes a fresh, original ghazal every time.</span>
+    </div>
+    <div id="status" role="status"></div>
+  </div>
+
+  <div class="card">
+    <h2>Your ghazal</h2>
+    <div class="ghazal" id="ghazalList">
+      <p class="empty" id="ghazalEmpty">No ghazal yet — pick a mood and press Write My Ghazal.</p>
+    </div>
+    <div class="row hidden" id="ghazalActions">
+      <button class="btn btn-primary btn-sm" id="btnCopyAll">Copy Full Ghazal</button>
+      <button class="btn btn-ghost btn-sm" id="btnDownload">Download .txt</button>
+      <button class="btn btn-ghost btn-sm" id="btnRegen">Write Another</button>
+    </div>
+    <div class="note">Tip: paste the ghazal straight into a WhatsApp status, a post, or a birthday message. Every ghazal is AI-written and original — wording may vary each time.</div>
+  </div>
+
+  <div class="card">
+    <h2>Recent ghazals</h2>
+    <div class="recent" id="recentList"><p class="empty">Nothing yet — your last 8 ghazals appear here.</p></div>
+    <div class="row"><button class="btn btn-ghost hidden" id="btnClearRecent">Clear history</button></div>
+  </div>
+</main>
+
+<footer>
+  <p>Powered by Dark Tech Zone AI — free for everyone. Join our WhatsApp channel:
+  <a href="https://whatsapp.com/channel/0029Vb9oK008V0txIkc3oj3z" target="_blank" rel="noopener">Dark Tech Zone</a></p>
+  <p>Shayari is AI-generated — check the wording before posting. Urdu script renders with your device fonts.</p>
+</footer>
+
+<script>
+"use strict";
+const API_URL = "https://dark-tech-zone-ai.vercel.app/api/chat";
+const HEALTH_URL = "https://dark-tech-zone-ai.vercel.app/api/health";
+const API_KEY = "DarkTech";
+const RECENT_KEY = "dtz_shayari_recent_v1";
+
+let mood = "Romantic";
+let lang = "roman";
+let coupletsWanted = 4;
+let couplets = [];
+let aborter = null;
+let generating = false;
+
+const $ = id => document.getElementById(id);
+const statusEl = $("status"), pill = $("statusPill");
+
+function buildPrompt(m, l, topic, n){
+  const langName = l === "roman" ? "Roman Urdu (Urdu written in Latin/Roman letters)"
+    : l === "urdu" ? "Urdu script (Nastaliq/Urdu alphabet)" : "English";
+  const langWord = l === "english" ? "English" : "Urdu";
+  return "Write an original " + langWord + " ghazal in " + langName +
+    " on the topic \"" + topic + "\", mood: " + m + ". " +
+    "Write exactly " + n + " couplets (sher). Each couplet is 2 lines. " +
+    "Put each couplet as its own block: the 2 lines of one couplet together, then a blank line, then the next couplet. " +
+    "Do not add any title, heading, introduction, explanation or numbering — only the " + n + " couplets, nothing else.";
+}
+
+function parseShayari(text){
+  let t = text.replace(/\r\n?/g, "\n");
+  t = t.replace(/^\s*(?:#+\s+)?(ghazal|shayari|title|nazm)\s*:?.*$/gim, "");
+  const blocks = t.split(/\n\s*\n/).map(function(b){ return b.trim(); }).filter(Boolean);
+  const out = [];
+  let pending = null; // a lone line waiting for its partner (couplet split across blank lines)
+  blocks.forEach(function(b){
+    const lines = b.split("\n").map(function(l){
+      return l.replace(/\*\*/g, "").replace(/^\s*(?:\d+[.)]\s+|[-*\u2022]\s+)/, "").trim();
+    }).filter(Boolean);
+    if (lines.length >= 2){
+      pending = null; // a stray lone line before a full couplet is dropped, not glued on
+      out.push(lines.slice(0, 2));
+      for (let i = 2; i + 1 < lines.length; i += 2) out.push([lines[i], lines[i + 1]]);
+    } else if (lines.length === 1){
+      if (pending) { out.push([pending, lines[0]]); pending = null; }
+      else pending = lines[0];
+    }
+  });
+  return out;
+}
+
+function ghazalText(){
+  return couplets.map(function(c){ return c.join("\n"); }).join("\n\n");
+}
+
+function renderGhazal(){
+  const list = $("ghazalList");
+  list.innerHTML = "";
+  $("ghazalActions").classList.toggle("hidden", !couplets.length);
+  if (!couplets.length){
+    list.innerHTML = '<p class="empty">No ghazal yet — pick a mood and press Write My Ghazal.</p>';
+    return;
+  }
+  const rtl = lang === "urdu";
+  couplets.forEach(function(c, i){
+    const div = document.createElement("div");
+    div.className = "couplet" + (rtl ? " rtl" : "");
+    c.forEach(function(line){
+      const p = document.createElement("p");
+      p.className = "line";
+      p.textContent = line;
+      div.appendChild(p);
+    });
+    const foot = document.createElement("div");
+    foot.className = "foot";
+    const num = document.createElement("span");
+    num.className = "num";
+    num.textContent = "Couplet " + (i + 1) + " of " + couplets.length;
+    const copyBtn = document.createElement("button");
+    copyBtn.className = "btn btn-ghost btn-sm";
+    copyBtn.type = "button";
+    copyBtn.textContent = "Copy couplet";
+    copyBtn.addEventListener("click", function(){ copyText(c.join("\n"), "Couplet copied."); });
+    foot.appendChild(num); foot.appendChild(copyBtn);
+    div.appendChild(foot);
+    list.appendChild(div);
+  });
+}
+
+function loadRecent(){
+  try { return JSON.parse(localStorage.getItem(RECENT_KEY) || "[]"); } catch (e) { return []; }
+}
+function saveRecent(){
+  const items = loadRecent().filter(function(r){ return r.text !== ghazalText(); });
+  items.unshift({text: ghazalText(), mood: mood, lang: lang, couplets: coupletsWanted, topic: $("topicInput").value.trim(), ts: Date.now()});
+  try { localStorage.setItem(RECENT_KEY, JSON.stringify(items.slice(0, 8))); } catch (e) {}
+  renderRecent();
+}
+function renderRecent(){
+  const items = loadRecent(), list = $("recentList");
+  $("btnClearRecent").classList.toggle("hidden", !items.length);
+  list.innerHTML = "";
+  if (!items.length){
+    list.innerHTML = '<p class="empty">Nothing yet — your last 8 ghazals appear here.</p>';
+    return;
+  }
+  items.forEach(function(r){
+    const b = document.createElement("button");
+    b.className = "recent-item"; b.type = "button";
+    const span = document.createElement("span"); span.textContent = r.text.split("\n")[0];
+    const small = document.createElement("small"); small.textContent = r.mood + " · " + (r.lang === "roman" ? "Roman Urdu" : r.lang === "urdu" ? "Urdu" : "English") + " · " + r.couplets + " couplets";
+    b.appendChild(span); b.appendChild(small);
+    b.addEventListener("click", function(){
+      mood = r.mood; lang = r.lang; coupletsWanted = r.couplets;
+      $("topicInput").value = r.topic || "";
+      syncSegs();
+      couplets = parseShayari(r.text);
+      renderGhazal();
+      statusEl.classList.remove("err");
+      statusEl.textContent = "Loaded from your recent ghazals.";
+      window.scrollTo({top: $("ghazalList").offsetTop - 80, behavior: "smooth"});
+    });
+    list.appendChild(b);
+  });
+}
+
+function syncSegs(){
+  document.querySelectorAll("#moodSeg button").forEach(function(b){ b.classList.toggle("active", b.dataset.mood === mood); });
+  document.querySelectorAll("#langSeg button").forEach(function(b){ b.classList.toggle("active", b.dataset.lang === lang); });
+  document.querySelectorAll("#lenSeg button").forEach(function(b){ b.classList.toggle("active", parseInt(b.dataset.len, 10) === coupletsWanted); });
+}
+
+async function copyText(text, okMsg){
+  try {
+    await navigator.clipboard.writeText(text);
+    statusEl.classList.remove("err");
+    statusEl.textContent = okMsg;
+  } catch (e) {
+    const ta = document.createElement("textarea");
+    ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); statusEl.classList.remove("err"); statusEl.textContent = okMsg; }
+    catch (e2) { statusEl.classList.add("err"); statusEl.textContent = "Copy was blocked by the browser — select the text manually."; }
+    ta.remove();
+  }
+}
+
+function downloadTxt(){
+  const blob = new Blob([ghazalText() + "\n"], {type: "text/plain;charset=utf-8"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "dtz-ghazal-" + mood.toLowerCase() + ".txt";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); }, 4000);
+  statusEl.classList.remove("err");
+  statusEl.textContent = "Ghazal downloaded as a text file.";
+}
+
+async function generate(){
+  if (generating) return;
+  generating = true;
+  $("btnGenerate").disabled = true;
+  $("btnStop").classList.remove("hidden");
+  statusEl.classList.remove("err");
+  statusEl.textContent = "AI is writing your ghazal…";
+  aborter = new AbortController();
+  try {
+    const topic = $("topicInput").value.trim() || "life";
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: {"Content-Type": "application/json", "X-API-Key": API_KEY},
+      body: JSON.stringify({q: buildPrompt(mood, lang, topic, coupletsWanted)}),
+      signal: aborter.signal
+    });
+    if (!res.ok) throw new Error("AI service returned " + res.status);
+    const reader = res.body.getReader();
+    const dec = new TextDecoder();
+    let buf = "", full = "";
+    while (true){
+      const r = await reader.read();
+      if (r.done) break;
+      buf += dec.decode(r.value, {stream: true});
+      let idx;
+      while ((idx = buf.indexOf("\n")) >= 0){
+        const line = buf.slice(0, idx).trim(); buf = buf.slice(idx + 1);
+        if (line.startsWith("data: ")){
+          const d = line.slice(6).trim();
+          if (d === "[DONE]") break;
+          try { const j = JSON.parse(d); if (j.chunk) full += j.chunk; } catch (e) {}
+        }
+      }
+    }
+    const parsed = parseShayari(full);
+    if (!parsed.length) throw new Error("AI returned no usable shayari — please try again.");
+    couplets = parsed;
+    renderGhazal();
+    saveRecent();
+    statusEl.textContent = parsed.length < coupletsWanted
+      ? "Done — the AI wrote " + parsed.length + " of " + coupletsWanted + " couplets. Press Write Another for a fresh try."
+      : "Done — your ghazal is ready. Copy any couplet, or download the full ghazal.";
+  } catch (e) {
+    if (e.name === "AbortError") { statusEl.textContent = "Stopped."; }
+    else {
+      statusEl.classList.add("err");
+      statusEl.textContent = (e instanceof TypeError || /failed to fetch|networkerror/i.test(e.message))
+        ? "Could not reach the AI — check your connection and try again."
+        : "Could not generate: " + e.message;
+    }
+  } finally {
+    generating = false;
+    $("btnGenerate").disabled = false;
+    $("btnStop").classList.add("hidden");
+    aborter = null;
+  }
+}
+
+async function checkHealth(){
+  try {
+    const res = await fetch(HEALTH_URL, {cache: "no-store"});
+    const ok = res.ok;
+    pill.textContent = ok ? "AI Online" : "AI Offline";
+    pill.classList.toggle("on", ok); pill.classList.toggle("off", !ok);
+  } catch (e) {
+    pill.textContent = "AI Offline"; pill.classList.add("off");
+  }
+}
+
+document.querySelectorAll("#moodSeg button").forEach(function(b){
+  b.addEventListener("click", function(){ mood = b.dataset.mood; syncSegs(); });
+});
+document.querySelectorAll("#langSeg button").forEach(function(b){
+  b.addEventListener("click", function(){ lang = b.dataset.lang; syncSegs(); });
+});
+document.querySelectorAll("#lenSeg button").forEach(function(b){
+  b.addEventListener("click", function(){ coupletsWanted = parseInt(b.dataset.len, 10); syncSegs(); });
+});
+document.querySelectorAll("#exampleChips button").forEach(function(b){
+  b.addEventListener("click", function(){ $("topicInput").value = b.dataset.topic; });
+});
+$("btnGenerate").addEventListener("click", generate);
+$("btnRegen").addEventListener("click", generate);
+$("btnStop").addEventListener("click", function(){ if (aborter) aborter.abort(); });
+$("btnCopyAll").addEventListener("click", function(){ copyText(ghazalText(), "Full ghazal copied."); });
+$("btnDownload").addEventListener("click", downloadTxt);
+$("btnClearRecent").addEventListener("click", function(){
+  try { localStorage.removeItem(RECENT_KEY); } catch (e) {}
+  renderRecent();
+});
+
+renderGhazal();
+renderRecent();
+checkHealth();
+setInterval(checkHealth, 60000);
+</script>
+</body>
+</html>
