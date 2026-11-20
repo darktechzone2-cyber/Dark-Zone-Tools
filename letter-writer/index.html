@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTZ AI Letter Writer — Dark Tech Zone</title>
+<meta name="description" content="AI writes a complete, ready-to-send formal letter for you — job application, leave application, complaint, resignation, request or fee concession — in English, Roman Urdu or Urdu script. Copy, download or print. Free, no signup.">
+<link rel="icon" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg">
+<style>
+  :root{
+    --bg:#f7f7f8; --surface:#ffffff; --surface2:#f0f0f2; --text:#1a1a1e; --muted:#6b6b72;
+    --border:#e4e4e7; --accent:#0f7b5f; --accent2:#0b5e49; --danger:#c0392b; --radius:14px;
+    --shadow:0 1px 3px rgba(0,0,0,.08),0 4px 14px rgba(0,0,0,.06);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.55}
+  a{color:var(--accent);text-decoration:none}
+  header{background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10}
+  .head{max-width:1060px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .head img.logo{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--accent)}
+  .head h1{font-size:19px;margin:0;line-height:1.2}
+  .head p{margin:0;font-size:12.5px;color:var(--muted)}
+  .pill{margin-left:auto;font-size:12.5px;font-weight:600;padding:5px 11px;border-radius:999px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);white-space:nowrap}
+  .pill.on{color:#0b6b4a;border-color:#bfe6d6;background:#e7f6ef}
+  .pill.off{color:#a33;border-color:#f0c6c0;background:#fdeceb}
+  main{max-width:1060px;margin:0 auto;padding:18px 16px 48px}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-bottom:16px}
+  h2{font-size:16px;margin:0 0 10px}
+  .label{font-size:13px;font-weight:600;color:var(--muted);margin:14px 0 7px}
+  .label:first-child{margin-top:0}
+  .seg{display:flex;flex-wrap:wrap;gap:8px}
+  .seg button{border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:999px;padding:8px 15px;font-size:14px;cursor:pointer}
+  .seg button.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  input[type=text],textarea{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:10px;font-size:15px;background:var(--surface);color:var(--text);font-family:inherit}
+  input[type=text]:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:1px}
+  textarea{resize:vertical;min-height:74px}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px}
+  .btn{border:none;border-radius:10px;padding:12px 22px;font-size:15px;font-weight:600;cursor:pointer}
+  .btn-primary{background:var(--accent);color:#fff}
+  .btn-primary:hover{background:var(--accent2)}
+  .btn-ghost{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+  .btn-danger{background:#fdeceb;color:var(--danger);border:1px solid #f0c6c0}
+  .btn:disabled{opacity:.55;cursor:not-allowed}
+  .btn-sm{padding:7px 13px;font-size:13px}
+  .hint{font-size:13px;color:var(--muted)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .chips button{border:1px dashed var(--border);background:var(--surface2);border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer;color:var(--text)}
+  #status{font-size:14px;min-height:22px;margin-top:12px;color:var(--muted)}
+  #status.err{color:var(--danger)}
+  .letter{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:26px 28px;max-width:720px;margin:6px auto 0}
+  .letter .l-date{text-align:right;color:var(--muted);font-size:14.5px}
+  .letter .l-subject{font-weight:700;margin-top:14px;font-size:15.5px}
+  .letter .l-greet{margin-top:14px;font-size:15.5px}
+  .letter .l-body{margin-top:12px;font-size:15.5px;text-align:justify}
+  .letter .l-close{margin-top:18px;font-size:15.5px}
+  .letter .l-sign{margin-top:4px;font-size:15.5px;font-weight:600}
+  .letter.rtl{direction:rtl;text-align:right}
+  .letter.rtl .l-date{text-align:left}
+  .letter.rtl .l-body{text-align:justify}
+  .letter.rtl .l-body,.letter.rtl .l-greet,.letter.rtl .l-subject,.letter.rtl .l-close,.letter.rtl .l-sign{font-family:'Noto Nastaliq Urdu','Noto Naskh Arabic',Tahoma,sans-serif;font-size:17px;line-height:2.1}
+  .letter[contenteditable="true"]{outline:2px dashed var(--accent);outline-offset:4px}
+  .letter-meta{font-size:13px;color:var(--muted);text-align:center;margin-top:10px}
+  .recent{display:grid;gap:8px}
+  .recent-item{display:flex;gap:10px;align-items:center;border:1px solid var(--border);border-radius:10px;padding:9px 12px;background:var(--surface);cursor:pointer;font-size:14px;text-align:left;width:100%;color:var(--text)}
+  .recent-item span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .recent-item small{color:var(--muted);white-space:nowrap}
+  .empty{color:var(--muted);font-size:14px}
+  footer{max-width:1060px;margin:0 auto;padding:0 16px 40px;color:var(--muted);font-size:13px}
+  .note{background:#fff8e6;border:1px solid #f0dfae;border-radius:10px;padding:12px 14px;font-size:13.5px;color:#6b5a1e;margin-top:14px}
+  .hidden{display:none!important}
+  @media(max-width:640px){
+    .head h1{font-size:16px}
+    .head p{display:none}
+    .grid2{grid-template-columns:1fr}
+    .letter{padding:20px 18px}
+  }
+  @media print{
+    body{background:#fff}
+    header,footer,.card:first-child,.card:last-child,#letterActions,.note,.letter-meta{display:none!important}
+    main{max-width:100%;padding:0}
+    .card{border:none;box-shadow:none;padding:0}
+    .letter{border:none;max-width:100%;margin:0}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="head">
+    <img class="logo" src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone logo">
+    <div>
+      <h1>DTZ AI Letter Writer</h1>
+      <p>Complete formal letter, written by AI — free, no signup</p>
+    </div>
+    <span class="pill" id="statusPill">Checking AI&hellip;</span>
+  </div>
+</header>
+
+<main>
+  <div class="card">
+    <div class="label">1. Letter type</div>
+    <div class="seg" id="typeSeg">
+      <button data-type="Job Application" class="active">Job Application</button>
+      <button data-type="Leave Application">Leave Application</button>
+      <button data-type="Complaint Letter">Complaint Letter</button>
+      <button data-type="Resignation Letter">Resignation Letter</button>
+      <button data-type="Request Letter">Request Letter</button>
+      <button data-type="Fee Concession">Fee Concession</button>
+      <button data-type="Cover Letter">Cover Letter</button>
+      <button data-type="Bank Complaint">Bank Complaint</button>
+    </div>
+
+    <div class="label">2. Language</div>
+    <div class="seg" id="langSeg">
+      <button data-lang="english" class="active">English</button>
+      <button data-lang="roman">Roman Urdu</button>
+      <button data-lang="urdu">Urdu script</button>
+    </div>
+
+    <div class="label">3. Tone &amp; length</div>
+    <div class="seg" id="toneSeg">
+      <button data-tone="Formal" class="active">Formal</button>
+      <button data-tone="Polite">Polite</button>
+      <button data-tone="Firm">Firm</button>
+    </div>
+    <div class="seg" id="lenSeg" style="margin-top:8px">
+      <button data-len="short">Short</button>
+      <button data-len="medium" class="active">Medium</button>
+      <button data-len="detailed">Detailed</button>
+    </div>
+
+    <div class="label">4. Your details</div>
+    <div class="grid2">
+      <input type="text" id="senderInput" maxlength="60" placeholder="Your name — e.g. Ali Raza">
+      <input type="text" id="recipientInput" maxlength="80" placeholder="To — e.g. The HR Manager, ABC Company">
+    </div>
+    <div style="margin-top:12px">
+      <input type="text" id="purposeInput" maxlength="120" placeholder="Purpose — e.g. Applying for the post of Computer Operator">
+    </div>
+    <div style="margin-top:12px">
+      <textarea id="detailsInput" maxlength="400" placeholder="Key details to include — e.g. 3 years of experience in computer operations, diploma in IT, good typing speed"></textarea>
+    </div>
+    <div class="chips" id="exampleChips">
+      <button data-ex="job">Job application example</button>
+      <button data-ex="leave">Leave application example</button>
+      <button data-ex="fee">Fee concession example</button>
+      <button data-ex="complaint">Bank complaint example</button>
+    </div>
+
+    <div class="row">
+      <button class="btn btn-primary" id="btnGenerate">Write My Letter</button>
+      <button class="btn btn-danger hidden" id="btnStop">Stop</button>
+      <span class="hint">AI writes the full letter — date, subject, body and signature.</span>
+    </div>
+    <div id="status" role="status"></div>
+  </div>
+
+  <div class="card">
+    <h2>Your letter</h2>
+    <div id="letterWrap">
+      <p class="empty" id="letterEmpty">No letter yet — fill in your details and press Write My Letter.</p>
+      <div class="letter hidden" id="letterCard"></div>
+      <p class="letter-meta hidden" id="letterMeta"></p>
+    </div>
+    <div class="row hidden" id="letterActions">
+      <button class="btn btn-primary btn-sm" id="btnCopy">Copy Letter</button>
+      <button class="btn btn-ghost btn-sm" id="btnDownload">Download .txt</button>
+      <button class="btn btn-ghost btn-sm" id="btnPrint">Print</button>
+      <button class="btn btn-ghost btn-sm" id="btnEdit">Edit Letter</button>
+      <button class="btn btn-ghost btn-sm" id="btnRegen">Write Another</button>
+    </div>
+    <div class="note">Tip: check the names, dates and amounts before sending — the AI writes from the details you give it. Use Edit Letter to fix anything, then Copy or Print.</div>
+  </div>
+
+  <div class="card">
+    <h2>Recent letters</h2>
+    <div class="recent" id="recentList"><p class="empty">Nothing yet — your last 8 letters appear here.</p></div>
+    <div class="row"><button class="btn btn-ghost hidden" id="btnClearRecent">Clear history</button></div>
+  </div>
+</main>
+
+<footer>
+  <p>Powered by Dark Tech Zone AI — free for everyone. Join our WhatsApp channel:
+  <a href="https://whatsapp.com/channel/0029Vb9oK008V0txIkc3oj3z" target="_blank" rel="noopener">Dark Tech Zone</a></p>
+  <p>Letters are AI-generated — check names, dates and facts before sending. Urdu script renders with your device fonts.</p>
+</footer>
+
+<script>
+"use strict";
+const API_URL = "https://dark-tech-zone-ai.vercel.app/api/chat";
+const HEALTH_URL = "https://dark-tech-zone-ai.vercel.app/api/health";
+const API_KEY = "DarkTech";
+const RECENT_KEY = "dtz_letter_recent_v1";
+
+let letterType = "Job Application";
+let lang = "english";
+let tone = "Formal";
+let length = "medium";
+let letter = null; // parsed letter object
+let edited = false;
+let aborter = null;
+let generating = false;
+
+const $ = id => document.getElementById(id);
+const statusEl = $("status"), pill = $("statusPill");
+
+const EXAMPLES = {
+  job: { type: "Job Application", sender: "Ali Raza", recipient: "The HR Manager, ABC Company",
+    purpose: "Applying for the post of Computer Operator",
+    details: "3 years of experience in computer operations, diploma in IT, good typing speed" },
+  leave: { type: "Leave Application", sender: "Ahmed Khan", recipient: "The Principal, The Knowledge School",
+    purpose: "2 days leave for a family wedding",
+    details: "Leave needed on 25 and 26 November 2026, class work will be covered on return" },
+  fee: { type: "Fee Concession", sender: "Bilal Ahmed", recipient: "The Principal, City Public School",
+    purpose: "Request for fee concession for my son",
+    details: "Monthly income is low, two children studying in the same school, requesting 50 percent concession" },
+  complaint: { type: "Bank Complaint", sender: "Sara Malik", recipient: "The Branch Manager, National Bank",
+    purpose: "Complaint about a wrong deduction of Rs. 5,000 from my account",
+    details: "Amount deducted on 18 November 2026 without any transaction, account number ends in 4521, need a refund" }
+};
+
+function buildPrompt(o) {
+  const langName = o.lang === "roman" ? "Roman Urdu (Urdu written in Latin/Roman letters)"
+    : o.lang === "urdu" ? "Urdu script (Nastaliq/Urdu alphabet)" : "English";
+  const langWord = o.lang === "english" ? "English" : "Urdu";
+  const paras = o.length === "short" ? "2-3 body paragraphs"
+    : o.length === "detailed" ? "5-6 body paragraphs" : "3-4 body paragraphs";
+  return "Write a complete, ready-to-send formal letter in " + langWord + " (" + langName + ").\n" +
+    "Letter type: " + o.type + ".\n" +
+    "From: " + o.sender + ".\n" +
+    "To: " + o.recipient + ".\n" +
+    "Purpose: " + o.purpose + ".\n" +
+    "Key details to include: " + o.details + ".\n" +
+    "Tone: " + o.tone + ". Length: " + paras + ".\n\n" +
+    "Format the letter EXACTLY like this, and nothing else:\n" +
+    "20 November 2026\n" +
+    "Subject: <one short subject line>\n" +
+    "Dear <recipient>,\n" +
+    "<body paragraph>\n\n" +
+    "<body paragraph>\n\n" +
+    "Sincerely,\n" +
+    o.sender + "\n\n" +
+    "Rules: use today's date (20 November 2026) on the first line. No title, no heading, no introduction, no explanation, no notes — only the letter itself. " +
+    "Keep the sender's name exactly as given. " +
+    (o.lang === "urdu" ? "Write the whole letter in Urdu script." :
+     o.lang === "roman" ? "Write the whole letter in Roman Urdu." : "Write the whole letter in English.");
+}
+
+function parseLetter(text) {
+  let t = text.replace(/\r\n?/g, "\n").replace(/\*\*/g, "");
+  t = t.replace(/^\s*(?:#{1,6}\s+)?(letter|application)\s*:?\s*$/gim, "");
+  const lines = t.split("\n").map(function (l) { return l.trim(); });
+  const out = { date: "", subject: "", greeting: "", body: [], closing: "", signature: "" };
+  const dateRe = /^(?:date\s*:?\s*)?(\d{1,2}\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{4})\s*$/i;
+  const closeRe = /^(sincerely|regards|best regards|warm regards|yours (?:faithfully|sincerely|truly)|thank(?:ing)? you|respectfully|kind regards)[,.]?\s*$/i;
+  const closeLeadRe = /^(sincerely|regards|best regards|warm regards|yours (?:faithfully|sincerely|truly)|thank(?:ing)? you|respectfully|kind regards)[,.]\s+(.+)$/i;
+  let cur = "";
+  const flush = function () { if (cur.trim()) out.body.push(cur.trim()); cur = ""; };
+  let seenBody = false, afterClosing = false;
+  for (const line of lines) {
+    if (!line) { flush(); continue; }
+    if (afterClosing) {
+      out.signature = (out.signature ? out.signature + " " : "") + line;
+      continue;
+    }
+    if (!seenBody) {
+      const dm = line.match(dateRe);
+      if (!out.date && dm) { out.date = dm[1]; continue; }
+      if (!out.subject && /^subject\s*:/i.test(line)) { out.subject = line.replace(/^subject\s*:\s*/i, ""); continue; }
+      if (!out.greeting && /^dear\b/i.test(line)) { out.greeting = line; continue; }
+    }
+    const cl = line.match(closeLeadRe);
+    if (cl && seenBody) { flush(); out.closing = cl[1] + ","; out.signature = cl[2]; afterClosing = true; continue; }
+    if (closeRe.test(line) && seenBody) { flush(); out.closing = line.replace(/,$/, "") + ","; afterClosing = true; continue; }
+    seenBody = true;
+    cur = cur ? cur + " " + line : line;
+  }
+  flush();
+  return out;
+}
+
+function letterText(L) {
+  const parts = [];
+  if (L.date) parts.push(L.date);
+  if (L.subject) parts.push("Subject: " + L.subject);
+  if (L.greeting) parts.push(L.greeting);
+  parts.push.apply(parts, L.body);
+  if (L.closing) parts.push(L.closing);
+  if (L.signature) parts.push(L.signature);
+  return parts.join("\n\n");
+}
+
+function currentText() {
+  if (edited) return $("letterCard").innerText.trim();
+  return letter ? letterText(letter) : "";
+}
+
+function renderLetter() {
+  const card = $("letterCard");
+  $("letterEmpty").classList.add("hidden");
+  $("letterActions").classList.remove("hidden");
+  $("letterMeta").classList.remove("hidden");
+  card.classList.remove("hidden");
+  card.classList.toggle("rtl", lang === "urdu");
+  card.innerHTML = "";
+  const add = function (cls, text) {
+    if (!text) return;
+    const p = document.createElement("p");
+    p.className = cls;
+    p.textContent = text;
+    card.appendChild(p);
+  };
+  add("l-date", letter.date);
+  add("l-subject", letter.subject ? "Subject: " + letter.subject : "");
+  add("l-greet", letter.greeting);
+  letter.body.forEach(function (b) { add("l-body", b); });
+  add("l-close", letter.closing);
+  add("l-sign", letter.signature);
+  const words = currentText().split(/\s+/).filter(Boolean).length;
+  $("letterMeta").textContent = letterType + " · " + (lang === "roman" ? "Roman Urdu" : lang === "urdu" ? "Urdu script" : "English") + " · " + words + " words";
+}
+
+function loadRecent() {
+  try { return JSON.parse(localStorage.getItem(RECENT_KEY) || "[]"); } catch (e) { return []; }
+}
+function saveRecent() {
+  const items = loadRecent().filter(function (r) { return r.text !== currentText(); });
+  items.unshift({ text: currentText(), type: letterType, lang: lang, sender: $("senderInput").value.trim(),
+    recipient: $("recipientInput").value.trim(), purpose: $("purposeInput").value.trim(),
+    details: $("detailsInput").value.trim(), tone: tone, length: length, ts: Date.now() });
+  try { localStorage.setItem(RECENT_KEY, JSON.stringify(items.slice(0, 8))); } catch (e) {}
+  renderRecent();
+}
+function renderRecent() {
+  const items = loadRecent(), list = $("recentList");
+  $("btnClearRecent").classList.toggle("hidden", !items.length);
+  list.innerHTML = "";
+  if (!items.length) {
+    list.innerHTML = '<p class="empty">Nothing yet — your last 8 letters appear here.</p>';
+    return;
+  }
+  items.forEach(function (r) {
+    const b = document.createElement("button");
+    b.className = "recent-item"; b.type = "button";
+    const span = document.createElement("span"); span.textContent = (r.type || "Letter") + " — " + (r.purpose || r.text.split("\n")[0] || "");
+    const small = document.createElement("small"); small.textContent = (r.lang === "roman" ? "Roman Urdu" : r.lang === "urdu" ? "Urdu" : "English");
+    b.appendChild(span); b.appendChild(small);
+    b.addEventListener("click", function () {
+      letterType = r.type || "Job Application"; lang = r.lang || "english";
+      tone = r.tone || "Formal"; length = r.length || "medium";
+      $("senderInput").value = r.sender || ""; $("recipientInput").value = r.recipient || "";
+      $("purposeInput").value = r.purpose || ""; $("detailsInput").value = r.details || "";
+      syncSegs();
+      letter = parseLetter(r.text);
+      if (!letter.body.length) letter = { date: "", subject: "", greeting: "", body: [r.text], closing: "", signature: "" };
+      edited = false; $("letterCard").contentEditable = "false"; $("btnEdit").textContent = "Edit Letter";
+      renderLetter();
+      statusEl.classList.remove("err");
+      statusEl.textContent = "Loaded from your recent letters.";
+      window.scrollTo({ top: $("letterCard").offsetTop - 80, behavior: "smooth" });
+    });
+    list.appendChild(b);
+  });
+}
+
+function syncSegs() {
+  document.querySelectorAll("#typeSeg button").forEach(function (b) { b.classList.toggle("active", b.dataset.type === letterType); });
+  document.querySelectorAll("#langSeg button").forEach(function (b) { b.classList.toggle("active", b.dataset.lang === lang); });
+  document.querySelectorAll("#toneSeg button").forEach(function (b) { b.classList.toggle("active", b.dataset.tone === tone); });
+  document.querySelectorAll("#lenSeg button").forEach(function (b) { b.classList.toggle("active", b.dataset.len === length); });
+}
+
+async function copyText(text, okMsg) {
+  try {
+    await navigator.clipboard.writeText(text);
+    statusEl.classList.remove("err");
+    statusEl.textContent = okMsg;
+  } catch (e) {
+    const ta = document.createElement("textarea");
+    ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); statusEl.classList.remove("err"); statusEl.textContent = okMsg; }
+    catch (e2) { statusEl.classList.add("err"); statusEl.textContent = "Copy was blocked by the browser — select the text manually."; }
+    ta.remove();
+  }
+}
+
+function downloadTxt() {
+  const blob = new Blob([currentText() + "\n"], { type: "text/plain;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "dtz-letter-" + letterType.toLowerCase().replace(/[^a-z0-9]+/g, "-") + ".txt";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+  statusEl.classList.remove("err");
+  statusEl.textContent = "Letter downloaded as a text file.";
+}
+
+async function generate() {
+  if (generating) return;
+  const sender = $("senderInput").value.trim();
+  const recipient = $("recipientInput").value.trim();
+  const purpose = $("purposeInput").value.trim();
+  const details = $("detailsInput").value.trim();
+  if (!sender || !recipient || !purpose) {
+    statusEl.classList.add("err");
+    statusEl.textContent = "Please fill in your name, the recipient and the purpose first.";
+    return;
+  }
+  generating = true;
+  $("btnGenerate").disabled = true;
+  $("btnStop").classList.remove("hidden");
+  statusEl.classList.remove("err");
+  statusEl.textContent = "AI is writing your letter…";
+  aborter = new AbortController();
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-API-Key": API_KEY },
+      body: JSON.stringify({ q: buildPrompt({ type: letterType, lang: lang, tone: tone, length: length,
+        sender: sender, recipient: recipient, purpose: purpose, details: details || purpose }) }),
+      signal: aborter.signal
+    });
+    if (!res.ok) throw new Error("AI service returned " + res.status);
+    const reader = res.body.getReader();
+    const dec = new TextDecoder();
+    let buf = "", full = "";
+    while (true) {
+      const r = await reader.read();
+      if (r.done) break;
+      buf += dec.decode(r.value, { stream: true });
+      let idx;
+      while ((idx = buf.indexOf("\n")) >= 0) {
+        const line = buf.slice(0, idx).trim(); buf = buf.slice(idx + 1);
+        if (line.startsWith("data: ")) {
+          const d = line.slice(6).trim();
+          if (d === "[DONE]") break;
+          try { const j = JSON.parse(d); if (j.chunk) full += j.chunk; } catch (e) {}
+        }
+      }
+    }
+    const parsed = parseLetter(full);
+    if (!parsed.body.length) throw new Error("AI returned no usable letter — please try again.");
+    letter = parsed;
+    edited = false; $("letterCard").contentEditable = "false"; $("btnEdit").textContent = "Edit Letter";
+    renderLetter();
+    saveRecent();
+    statusEl.textContent = "Done — your letter is ready. Copy it, download it, or print it.";
+  } catch (e) {
+    if (e.name === "AbortError") { statusEl.textContent = "Stopped."; }
+    else {
+      statusEl.classList.add("err");
+      statusEl.textContent = (e instanceof TypeError || /failed to fetch|networkerror/i.test(e.message))
+        ? "Could not reach the AI — check your connection and try again."
+        : "Could not generate: " + e.message;
+    }
+  } finally {
+    generating = false;
+    $("btnGenerate").disabled = false;
+    $("btnStop").classList.add("hidden");
+    aborter = null;
+  }
+}
+
+async function checkHealth() {
+  try {
+    const res = await fetch(HEALTH_URL, { cache: "no-store" });
+    const ok = res.ok;
+    pill.textContent = ok ? "AI Online" : "AI Offline";
+    pill.classList.toggle("on", ok); pill.classList.toggle("off", !ok);
+  } catch (e) {
+    pill.textContent = "AI Offline"; pill.classList.add("off");
+  }
+}
+
+document.querySelectorAll("#typeSeg button").forEach(function (b) {
+  b.addEventListener("click", function () { letterType = b.dataset.type; syncSegs(); });
+});
+document.querySelectorAll("#langSeg button").forEach(function (b) {
+  b.addEventListener("click", function () { lang = b.dataset.lang; syncSegs(); });
+});
+document.querySelectorAll("#toneSeg button").forEach(function (b) {
+  b.addEventListener("click", function () { tone = b.dataset.tone; syncSegs(); });
+});
+document.querySelectorAll("#lenSeg button").forEach(function (b) {
+  b.addEventListener("click", function () { length = b.dataset.len; syncSegs(); });
+});
+document.querySelectorAll("#exampleChips button").forEach(function (b) {
+  b.addEventListener("click", function () {
+    const ex = EXAMPLES[b.dataset.ex];
+    if (!ex) return;
+    letterType = ex.type;
+    $("senderInput").value = ex.sender; $("recipientInput").value = ex.recipient;
+    $("purposeInput").value = ex.purpose; $("detailsInput").value = ex.details;
+    syncSegs();
+    statusEl.classList.remove("err");
+    statusEl.textContent = "Example loaded — press Write My Letter.";
+  });
+});
+$("btnGenerate").addEventListener("click", generate);
+$("btnRegen").addEventListener("click", generate);
+$("btnStop").addEventListener("click", function () { if (aborter) aborter.abort(); });
+$("btnCopy").addEventListener("click", function () { copyText(currentText(), "Letter copied."); });
+$("btnDownload").addEventListener("click", downloadTxt);
+$("btnPrint").addEventListener("click", function () { window.print(); });
+$("btnEdit").addEventListener("click", function () {
+  const card = $("letterCard");
+  const on = card.contentEditable !== "true";
+  card.contentEditable = on ? "true" : "false";
+  if (on) { edited = true; $("btnEdit").textContent = "Done Editing"; statusEl.textContent = "Editing — tap any line to change it, then Done Editing."; }
+  else { $("btnEdit").textContent = "Edit Letter"; statusEl.textContent = "Edits saved in this letter."; }
+});
+$("btnClearRecent").addEventListener("click", function () {
+  try { localStorage.removeItem(RECENT_KEY); } catch (e) {}
+  renderRecent();
+});
+
+renderRecent();
+checkHealth();
+setInterval(checkHealth, 60000);
+</script>
+</body>
+</html>
