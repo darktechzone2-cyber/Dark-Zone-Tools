@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTZ All-in-One Downloader — Dark Tech Zone</title>
+<meta name="description" content="Paste any public TikTok, X, Instagram, Twitch, Kick or Pinterest link and download the video, audio or photo. Free, no login, no install. By Dark Tech Zone.">
+<link rel="icon" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f8fb; --card:#ffffff; --text:#0f172a; --dim:#64748b; --line:#e2e8f0;
+  --accent:#0d9488; --accent-dark:#0b7d74; --accent-soft:#e6f7f5;
+  --ok:#15803d; --ok-bg:#f0fdf4; --err:#b91c1c; --err-bg:#fef2f2; --info-bg:#eff6ff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);line-height:1.5;-webkit-text-size-adjust:100%}
+.wrap{max-width:760px;margin:0 auto;padding:20px 16px 48px}
+header{display:flex;gap:14px;align-items:center;margin-bottom:6px}
+header img.logo{width:52px;height:52px;border-radius:12px;object-fit:cover;flex:none;box-shadow:0 2px 10px rgba(13,148,136,.25)}
+header h1{font-size:22px;line-height:1.2;font-weight:800}
+header p{font-size:13px;color:var(--dim);margin-top:2px}
+.platforms{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 4px}
+.plat{display:flex;align-items:center;gap:7px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 13px;font-size:13px;font-weight:600;color:var(--text);cursor:pointer}
+.plat .dot{width:9px;height:9px;border-radius:50%;flex:none}
+.plat.tiktok .dot{background:#000}
+.plat.x .dot{background:#111}
+.plat.ig .dot{background:#d62976}
+.plat.twitch .dot{background:#9146ff}
+.plat.kick .dot{background:#53fc18}
+.plat.pin .dot{background:#e60023}
+.plat:hover{border-color:var(--accent)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:16px;box-shadow:0 1px 3px rgba(15,23,42,.05)}
+.input-row{display:flex;gap:10px}
+input[type=url]{flex:1;min-width:0;border:1.5px solid var(--line);border-radius:10px;padding:13px 14px;font-size:15px;font-family:inherit;outline:none;color:var(--text);background:#fff}
+input[type=url]:focus{border-color:var(--accent)}
+button{font-family:inherit;cursor:pointer;border:none;border-radius:10px;font-weight:700;font-size:15px}
+.btn-primary{background:var(--accent);color:#fff;padding:13px 22px;white-space:nowrap}
+.btn-primary:hover{background:var(--accent-dark)}
+.btn-primary:disabled{opacity:.6;cursor:default}
+.btn-ghost{background:#fff;border:1px solid var(--line);color:var(--text);padding:9px 14px;font-size:13px}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent-dark)}
+.btn-ghost:disabled{opacity:.55;cursor:default}
+.btn-small{background:var(--accent);color:#fff;padding:8px 14px;font-size:13px;border-radius:8px}
+.btn-small:hover{background:var(--accent-dark)}
+.btn-small:disabled{opacity:.6;cursor:default}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip{background:var(--accent-soft);color:var(--accent-dark);border:1px solid #c9ece8;border-radius:999px;padding:6px 12px;font-size:12.5px;font-weight:600;cursor:pointer}
+.chip:hover{background:#d3f0ed}
+.hint{font-size:12.5px;color:var(--dim);margin-top:10px}
+.status{display:none;margin-top:16px;border-radius:10px;padding:13px 15px;font-size:14px}
+.status.show{display:block}
+.status.info{background:var(--info-bg);color:#1e40af}
+.status.ok{background:var(--ok-bg);color:var(--ok)}
+.status.err{background:var(--err-bg);color:var(--err)}
+.spinner{display:inline-block;width:15px;height:15px;border:2px solid #93c5fd;border-top-color:#1e40af;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-3px;margin-right:7px}
+@keyframes spin{to{transform:rotate(360deg)}}
+#result{display:none}
+#result.show{display:block}
+.res-head{display:flex;gap:14px;align-items:flex-start}
+.res-head img.thumb{width:96px;height:96px;object-fit:cover;border-radius:10px;flex:none;background:#e2e8f0}
+.res-head .t{flex:1;min-width:0}
+.badge{display:inline-block;font-size:11.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:var(--accent-dark);background:var(--accent-soft);border-radius:6px;padding:3px 8px;margin-bottom:6px}
+.res-head h2{font-size:17px;line-height:1.35;word-break:break-word}
+.res-head .sub{font-size:13px;color:var(--dim);margin-top:4px}
+.stats{font-size:13px;color:var(--dim);margin-top:8px;display:flex;flex-wrap:wrap;gap:4px 14px}
+.stats b{color:var(--text)}
+.preview{margin-top:14px}
+.preview video,.preview img{width:100%;max-height:420px;border-radius:10px;background:#0f172a;display:block}
+.preview img{object-fit:contain;background:#f1f5f9}
+.media-row{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px;padding:11px 13px;margin-top:10px;flex-wrap:wrap}
+.media-row .lbl{flex:1;min-width:140px}
+.media-row .lbl b{font-size:14px;display:block}
+.media-row .lbl span{font-size:12.5px;color:var(--dim)}
+.dlstatus{display:none;margin-top:12px;border-radius:10px;padding:12px 14px;font-size:13.5px;background:var(--info-bg);color:#1e40af}
+.dlstatus.show{display:block}
+.progress{height:8px;background:#e2e8f0;border-radius:99px;overflow:hidden;margin-top:12px;display:none}
+.progress.show{display:block}
+.progress i{display:block;height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .2s}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.note{font-size:13px;color:var(--dim);background:#f8fafc;border:1px dashed var(--line);border-radius:10px;padding:12px 14px;margin-top:16px}
+.note b{color:var(--text)}
+.recent-item{display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid #f1f5f9;cursor:pointer}
+.recent-item:last-child{border-bottom:none}
+.recent-item img{width:52px;height:36px;object-fit:cover;border-radius:6px;background:#e2e8f0;flex:none}
+.recent-item .t{flex:1;min-width:0;font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.recent-item .s{font-size:12px;color:var(--dim)}
+.recent-item .x{border:none;background:none;font-size:18px;color:var(--dim);cursor:pointer;padding:2px 6px}
+h3.sec{font-size:15px;margin-bottom:4px}
+footer{margin-top:28px;text-align:center;font-size:13px;color:var(--dim)}
+footer a{color:var(--accent-dark);text-decoration:none;font-weight:600}
+@media (max-width:560px){
+  header h1{font-size:19px}
+  .input-row{flex-direction:column}
+  .btn-primary{width:100%}
+  .res-head img.thumb{width:72px;height:72px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img class="logo" src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone logo">
+    <div>
+      <h1>DTZ All-in-One Downloader</h1>
+      <p>Dark Tech Zone &middot; Free &middot; No signup &middot; No key</p>
+    </div>
+  </header>
+
+  <div class="platforms" id="platforms">
+    <div class="plat tiktok" data-ex="https://www.tiktok.com/@cookingvibe01/video/7691907160216734994"><span class="dot"></span>TikTok</div>
+    <div class="plat x" data-ex="https://x.com/SpaceX/status/2104601695711904180"><span class="dot"></span>X / Twitter</div>
+    <div class="plat ig" data-ex="https://www.instagram.com/reel/C2mwxDYvQju/"><span class="dot"></span>Instagram</div>
+    <div class="plat twitch" data-ex="https://clips.twitch.tv/FaintLightGullWholeWheat"><span class="dot"></span>Twitch</div>
+    <div class="plat kick" data-ex="https://kick.com/trainwreckstv/clips/clip_01H6V5QHN7VMYHKNYVY7B6FRWW"><span class="dot"></span>Kick</div>
+    <div class="plat pin" data-ex="https://www.pinterest.com/pin/653233120954325160/"><span class="dot"></span>Pinterest</div>
+  </div>
+
+  <div class="card">
+    <div class="input-row">
+      <input type="url" id="inpUrl" placeholder="Paste a public link — TikTok, X, Instagram, Twitch, Kick or Pinterest…" autocomplete="off" spellcheck="false">
+      <button class="btn-primary" id="btnGo">Download</button>
+    </div>
+    <div class="chips" id="chips"></div>
+    <p class="hint">Tap a platform above to load a real example, or paste your own public link. The tool detects the platform automatically.</p>
+    <div class="status" id="statusBox"></div>
+
+    <div id="result">
+      <div class="res-head">
+        <img class="thumb" id="resThumb" alt="" style="display:none">
+        <div class="t">
+          <span class="badge" id="resBadge"></span>
+          <h2 id="resTitle"></h2>
+          <div class="sub" id="resSub"></div>
+          <div class="stats" id="resStats"></div>
+        </div>
+      </div>
+      <div class="preview" id="previewWrap" style="display:none"></div>
+      <div id="mediaRows"></div>
+      <div class="progress" id="progressWrap"><i id="progressBar"></i></div>
+      <div class="dlstatus" id="dlStatus"></div>
+      <div class="actions">
+        <button class="btn-ghost" id="btnCopyLink">Copy Link</button>
+        <button class="btn-ghost" id="btnOpenOrig">Open Original</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="recentCard" style="display:none">
+    <h3 class="sec">Recent downloads</h3>
+    <div id="recentList"></div>
+    <div style="margin-top:10px"><button class="btn-ghost" id="btnClearRecent">Clear history</button></div>
+  </div>
+
+  <div class="note">
+    <b>Honest limits:</b> public posts only — private, deleted or login-only content cannot be downloaded.
+    Instagram files save with a generic name (rename after download). On some phones a download opens in the video player — use its download / save option there.
+    Kick clips are re-wrapped in your browser (no re-encode, original quality). Pinterest images are offered up to 564px wide.
+  </div>
+
+  <footer>
+    Built by <a href="https://www.darktechzon.site/" target="_blank" rel="noopener">Dark Tech Zone</a> — free tools for everyone.<br>
+    Join our WhatsApp channel: <a href="https://whatsapp.com/channel/0029Vb9oK008V0txIkc3oj3z" target="_blank" rel="noopener">Dark Tech Zone</a>
+  </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.13/dist/hls.min.js"></script>
+<script>
+(function(){
+"use strict";
+var $ = function(id){ return document.getElementById(id); };
+var RECENT_KEY = "dtz_allinone_recent_v1";
+var MUX_CDN = "https://cdn.jsdelivr.net/npm/mux.js@6.3.0/dist/mux.min.js";
+var current = null;      // normalized result {platform,title,author,meta,thumb,preview,previewKind,media[],origUrl,kickClip,playlistInfo}
+var kickDownloading = false;
+
+var EXAMPLES = [
+  { label: "TikTok — Cooking Vibe", url: "https://www.tiktok.com/@cookingvibe01/video/7691907160216734994" },
+  { label: "X — SpaceX splashdown", url: "https://x.com/SpaceX/status/2104601695711904180" },
+  { label: "Instagram — reel", url: "https://www.instagram.com/reel/C2mwxDYvQju/" },
+  { label: "Twitch — EA Play clip", url: "https://clips.twitch.tv/FaintLightGullWholeWheat" },
+  { label: "Kick — 63k X Razor", url: "https://kick.com/trainwreckstv/clips/clip_01H6V5QHN7VMYHKNYVY7B6FRWW" },
+  { label: "Pinterest — DIY video pin", url: "https://www.pinterest.com/pin/653233120954325160/" }
+];
+
+/* ---------- small helpers ---------- */
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+function fmtNum(n){ if(n==null) return "—"; n=Number(n); if(n>=1000000) return (n/1000000).toFixed(1).replace(/\.0$/,"")+"M"; if(n>=1000) return (n/1000).toFixed(1).replace(/\.0$/,"")+"K"; return String(n); }
+function fmtBytes(n){ if(!n||n<=0) return "—"; if(n<1024*1024) return (n/1024).toFixed(0)+" KB"; return (n/(1024*1024)).toFixed(1)+" MB"; }
+function fmtDur(s){ if(s==null||isNaN(s)) return "—"; s=Math.round(s); var m=Math.floor(s/60), r=s%60; return m>0 ? m+":"+String(r).padStart(2,"0") : r+"s"; }
+function fmtDate(iso){ if(!iso) return "—"; var d=new Date(iso); if(isNaN(d)) return "—"; return d.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}); }
+function safeName(s){ var n=String(s||"dtz-download").replace(/[^a-zA-Z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,60); return n||"dtz-download"; }
+function setStatus(html, kind){ var b=$("statusBox"); b.className="status show "+(kind||"info"); b.innerHTML=html; }
+function clearStatus(){ var b=$("statusBox"); b.className="status"; b.innerHTML=""; }
+function setDlStatus(html){ var el=$("dlStatus"); el.className="dlstatus show"; el.innerHTML=html; }
+function clearDlStatus(){ $("dlStatus").className="dlstatus"; $("dlStatus").innerHTML=""; $("progressWrap").classList.remove("show"); $("progressBar").style.width="0%"; }
+function loadScript(src){ return new Promise(function(resolve,reject){ if(document.querySelector('script[src="'+src+'"]')) return resolve(); var s=document.createElement("script"); s.src=src; s.onload=resolve; s.onerror=function(){ reject(new Error("Could not load the converter library.")); }; document.head.appendChild(s); }); }
+function copyText(text, okMsg){
+  function done(){ setStatus(okMsg, "ok"); }
+  if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(done, function(){ fallbackCopy(text); done(); }); }
+  else { fallbackCopy(text); done(); }
+}
+function fallbackCopy(text){ var ta=document.createElement("textarea"); ta.value=text; ta.style.position="fixed"; ta.style.opacity="0"; document.body.appendChild(ta); ta.select(); try{ document.execCommand("copy"); }catch(e){} document.body.removeChild(ta); }
+function triggerSave(blob, filename){ var url=URL.createObjectURL(blob); var a=document.createElement("a"); a.href=url; a.download=filename; document.body.appendChild(a); a.click(); setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 4000); }
+
+/* ---------- generic download: blob first, direct-open fallback ---------- */
+function downloadUrl(url, filename, btn){
+  var orig = btn ? btn.textContent : "";
+  if(btn){ btn.disabled=true; btn.textContent="Saving…"; }
+  fetch(url).then(function(r){ if(!r.ok) throw new Error("fetch"); return r.blob(); })
+    .then(function(blob){ triggerSave(blob, filename); if(btn){ btn.disabled=false; btn.textContent=orig; } })
+    .catch(function(){
+      var a=document.createElement("a"); a.href=url; a.target="_blank"; a.rel="noopener"; document.body.appendChild(a); a.click(); a.remove();
+      setStatus("Direct download was blocked by the browser — the file opened in a new tab instead. Long-press / right-click it to save.", "info");
+      if(btn){ btn.disabled=false; btn.textContent=orig; }
+    });
+}
+
+/* ---------- platform detection ---------- */
+function detect(input){
+  var raw = (input||"").trim();
+  if(!raw) return null;
+  // Bare IDs (no URL pasted)
+  if(/^clip_[A-Za-z0-9]+$/.test(raw)) return { platform:"kick", id:raw, rawUrl:"https://kick.com/clips/" + raw };
+  if(/^\d{8,}$/.test(raw)) return { platform:"pinterest", id:raw, rawUrl:"https://www.pinterest.com/pin/" + raw + "/" };
+  var urlStr = raw;
+  if(!/^https?:\/\//i.test(urlStr)) urlStr = "https://" + urlStr;
+  var u = null; try{ u = new URL(urlStr); }catch(e){ return null; }
+  var host = u.hostname.replace(/^www\./,"").toLowerCase();
+  var path = u.pathname;
+  var m;
+  if(host.indexOf("tiktok.com")!==-1 || host==="vm.tiktok.com" || host==="vt.tiktok.com"){
+    var vid = path.match(/\/video\/(\d+)/);
+    return { platform:"tiktok", id: vid ? vid[1] : raw, rawUrl: raw };
+  }
+  if(host==="x.com" || host==="twitter.com" || host==="mobile.twitter.com"){
+    m = path.match(/\/status\/(\d+)/);
+    if(m) return { platform:"x", id: m[1], rawUrl: raw };
+    return { platform:"x", id: null, rawUrl: raw };
+  }
+  if(host.indexOf("instagram.com")!==-1){
+    m = path.match(/\/(?:reel|p|tv)\/([A-Za-z0-9_\-]+)/);
+    if(m) return { platform:"instagram", id: m[1], rawUrl: raw };
+    return { platform:"instagram", id: null, rawUrl: raw };
+  }
+  if(host==="clips.twitch.tv" || host.indexOf("twitch.tv")!==-1){
+    var q = u.searchParams.get("clip");
+    if(q) return { platform:"twitch", id: q, rawUrl: raw };
+    m = path.match(/\/clip\/([A-Za-z0-9\-_]+)/);
+    if(m) return { platform:"twitch", id: m[1], rawUrl: raw };
+    var parts = path.split("/").filter(Boolean);
+    if(host==="clips.twitch.tv" && parts.length) return { platform:"twitch", id: parts[0], rawUrl: raw };
+    return { platform:"twitch", id: null, rawUrl: raw };
+  }
+  if(host==="kick.com"){
+    m = raw.match(/clip_[A-Za-z0-9]+/);
+    if(m) return { platform:"kick", id: m[0], rawUrl: raw };
+    return { platform:"kick", id: null, rawUrl: raw };
+  }
+  if(host.indexOf("pinterest.")!==-1 || host==="pin.it"){
+    m = path.match(/\/pin\/(\d+)/);
+    if(m) return { platform:"pinterest", id: m[1], rawUrl: raw };
+    if(host==="pin.it") return { platform:"pinterest", id: "PIN_IT", rawUrl: raw };
+    return { platform:"pinterest", id: null, rawUrl: raw };
+  }
+  return { platform:"unknown", id: null, rawUrl: raw };
+}
+
+/* ---------- fetchers: each returns a normalized result ---------- */
+function fetchTikTok(rawUrl){
+  return fetch("https://www.tikwm.com/api/?url=" + encodeURIComponent(rawUrl))
+    .then(function(r){ return r.json(); })
+    .then(function(j){
+      if(!j || j.code !== 0 || !j.data) throw new Error("TikTok did not return this video — check the link. Only public videos work.");
+      var d = j.data;
+      if(!d.play && !(d.images && d.images.length)) throw new Error("Video not found — check the link. Only public TikTok videos work.");
+      var author = d.author || {};
+      var media = [];
+      if(d.play) media.push({ label:"Video — No Watermark", sub:"MP4" + (d.size ? " · ~" + fmtBytes(d.size) : ""), url:d.play, kind:"video", file:"dtz-tiktok-" + (d.id||"video") + "-nowm.mp4" });
+      if(d.wmplay) media.push({ label:"Video — With Watermark", sub:"MP4" + (d.wm_size ? " · ~" + fmtBytes(d.wm_size) : ""), url:d.wmplay, kind:"video", file:"dtz-tiktok-" + (d.id||"video") + "-wm.mp4" });
+      if(d.music) media.push({ label:"Audio", sub:"MP3" + (d.music_info && d.music_info.title ? " · " + d.music_info.title : ""), url:d.music, kind:"audio", file:"dtz-tiktok-" + (d.id||"video") + ".mp3" });
+      if(d.origin_cover || d.cover) media.push({ label:"Cover Image", sub:"JPG", url:d.origin_cover || d.cover, kind:"image", file:"dtz-tiktok-" + (d.id||"video") + "-cover.jpg" });
+      (d.images||[]).forEach(function(src, i){
+        media.push({ label:"Photo " + (i+1) + " of " + d.images.length, sub:"JPG", url:src, kind:"image", file:"dtz-tiktok-" + (d.id||"video") + "-photo" + (i+1) + ".jpg" });
+      });
+      var stats = [];
+      if(d.play_count!=null) stats.push("<span><b>"+fmtNum(d.play_count)+"</b> views</span>");
+      if(d.digg_count!=null) stats.push("<span><b>"+fmtNum(d.digg_count)+"</b> likes</span>");
+      if(d.comment_count!=null) stats.push("<span><b>"+fmtNum(d.comment_count)+"</b> comments</span>");
+      if(d.share_count!=null) stats.push("<span><b>"+fmtNum(d.share_count)+"</b> shares</span>");
+      return {
+        platform:"tiktok", badge:"TikTok", title:d.title || "TikTok video",
+        author:"@" + (author.unique_id || "tiktok user") + (author.nickname ? " · " + author.nickname : ""),
+        meta: stats.join(""),
+        thumb: d.origin_cover || d.cover || null,
+        preview: d.play || null, previewKind:"video",
+        media: media,
+        origUrl: "https://www.tiktok.com/@" + (author.unique_id || "user") + "/video/" + (d.id || "")
+      };
+    });
+}
+
+function normalizeTweet(j){
+  if(!j) return null;
+  if(j.tweet){
+    var t = j.tweet, media = t.media || {};
+    return { id:String(t.id||""), text:t.text||"", created_at:t.created_at||"", likes:t.likes, retweets:t.retweets, replies:t.replies, views:t.views,
+      author:{ name:(t.author&&t.author.name)||"", screen_name:(t.author&&t.author.screen_name)||"", avatar_url:(t.author&&t.author.avatar_url)||"" },
+      videos: media.videos || [], photos: media.photos || [] };
+  }
+  if(j.text != null || j.media_extended || j.user_screen_name){
+    var videos = [], photos = [];
+    (j.media_extended||[]).forEach(function(m){
+      if(m.type==="video" || m.type==="gif"){
+        var variants = [];
+        if(m.url) variants.push({ content_type:"video/mp4", bitrate:0, url:m.url });
+        videos.push({ thumbnail_url:m.thumbnail_url||"", duration:m.duration_millis?m.duration_millis/1000:null, type:m.type==="gif"?"animated_gif":"video", variants:variants });
+      } else if(m.type==="image" || m.type==="photo"){
+        photos.push({ url:m.url, width:m.size&&m.size.width, height:m.size&&m.size.height });
+      }
+    });
+    if(!videos.length && !photos.length && Array.isArray(j.media_urls)){
+      j.media_urls.forEach(function(u){ photos.push({ url:u }); });
+    }
+    return { id:String(j.tweetID||j.id||""), text:j.text||"", created_at:j.date||"", likes:j.likes, retweets:j.retweets, replies:j.replies, views:j.views,
+      author:{ name:j.user_name||"", screen_name:j.user_screen_name||"", avatar_url:j.user_profile_image_url||"" }, videos:videos, photos:photos };
+  }
+  return null;
+}
+function fetchX(id){
+  var urls = ["https://api.fxtwitter.com/status/" + id, "https://api.vxtwitter.com/status/" + id];
+  function tryNext(i){
+    if(i >= urls.length) return Promise.reject(new Error("Post not found — check the link. Only public posts work."));
+    return fetch(urls[i], { headers:{ "Accept":"application/json" } })
+      .then(function(r){ if(!r.ok) throw new Error("bad"); return r.json(); })
+      .then(function(j){
+        var t = normalizeTweet(j);
+        if(!t || (!t.text && !t.videos.length && !t.photos.length && !t.author.screen_name)) throw new Error("empty");
+        if(!t.id) t.id = id;
+        return t;
+      })
+      .catch(function(){ return tryNext(i+1); });
+  }
+  return tryNext(0).then(function(t){
+    var media = [];
+    t.videos.forEach(function(v, vi){
+      var variants = (v.variants||[]).filter(function(x){ return x.content_type==="video/mp4" && x.url; });
+      variants.sort(function(a,b){ return (b.bitrate||0)-(a.bitrate||0); });
+      var seen = {};
+      variants.forEach(function(x){
+        var rm = x.url.match(/\/(\d+)x(\d+)\//);
+        var label = rm ? (rm[1]+"p") : (x.bitrate ? Math.round(x.bitrate/1000)+" kbps" : "MP4");
+        var key = label + "|" + x.url;
+        if(seen[key]) return; seen[key]=1;
+        media.push({ label:(v.type==="animated_gif"?"GIF":"Video")+(t.videos.length>1?" "+(vi+1):"")+" — "+label, sub:"MP4", url:x.url, kind:"video", file:"dtz-x-"+t.id+"-"+label+".mp4" });
+      });
+      if(!variants.length && v.url) media.push({ label:"Video", sub:"MP4", url:v.url, kind:"video", file:"dtz-x-"+t.id+".mp4" });
+    });
+    t.photos.forEach(function(p, i){
+      media.push({ label:"Photo "+(i+1)+" of "+t.photos.length, sub:"JPG"+(p.width?" · "+p.width+" × "+p.height:""), url:p.url, kind:"image", file:"dtz-x-"+t.id+"-photo"+(i+1)+".jpg" });
+    });
+    var stats = [];
+    if(t.views!=null) stats.push("<span><b>"+fmtNum(t.views)+"</b> views</span>");
+    if(t.likes!=null) stats.push("<span><b>"+fmtNum(t.likes)+"</b> likes</span>");
+    if(t.retweets!=null) stats.push("<span><b>"+fmtNum(t.retweets)+"</b> reposts</span>");
+    if(t.replies!=null) stats.push("<span><b>"+fmtNum(t.replies)+"</b> replies</span>");
+    var bestVideo = null;
+    t.videos.forEach(function(v){ (v.variants||[]).forEach(function(x){ if(x.content_type==="video/mp4" && x.url && (!bestVideo || (x.bitrate||0)>(bestVideo.bitrate||0))) bestVideo=x; }); });
+    return {
+      platform:"x", badge:"X / Twitter", title:(t.text||"X post").slice(0,200),
+      author:"@" + (t.author.screen_name||"x user") + (t.author.name ? " · " + t.author.name : ""),
+      meta: stats.join("") + (t.created_at ? "<span>"+esc(fmtDate(t.created_at))+"</span>" : ""),
+      thumb: (t.videos[0] && t.videos[0].thumbnail_url) || (t.photos[0] && t.photos[0].url) || null,
+      preview: bestVideo ? bestVideo.url : null, previewKind:"video",
+      media: media,
+      origUrl: "https://x.com/" + (t.author.screen_name||"i") + "/status/" + t.id
+    };
+  });
+}
+
+function fetchInstagram(code){
+  var url = "https://www.curl-x.com/instagram/" + code;
+  return Promise.resolve({
+    platform:"instagram", badge:"Instagram", title:"Instagram reel / video post",
+    author:"@" + code, meta:"<span>Public reel or video post</span>",
+    thumb:null, preview:null, previewKind:null,
+    media:[{ label:"Video", sub:"MP4 — served by the free public curl-x.com resolver", url:url, kind:"video", direct:true, file:"dtz-instagram-" + code + ".mp4" }],
+    origUrl:"https://www.instagram.com/reel/" + code + "/",
+    note:"This tool cannot check the post inside your browser — if the post is private or deleted, the Download will land on an error page instead of a video."
+  });
+}
+
+var TWITCH_GQL = "https://gql.twitch.tv/gql";
+var TWITCH_CLIENT_ID = "kimne78kx3ncx6brgo4mv6wki5h1ko";
+var TWITCH_QUERY = "query($slug:ID!){clip(slug:$slug){id title viewCount durationSeconds createdAt broadcaster{displayName} game{name} playbackAccessToken(params:{platform:\"web\",playerType:\"site\",playerBackend:\"mediaplayer\"}){signature value} videoQualities{quality frameRate sourceURL}}}";
+function tokenizedUrl(sourceUrl, sig, token){
+  var sep = sourceUrl.indexOf("?")>=0 ? "&" : "?";
+  return sourceUrl + sep + "sig=" + encodeURIComponent(sig) + "&token=" + encodeURIComponent(token);
+}
+function fetchTwitch(slug){
+  return fetch(TWITCH_GQL, {
+    method:"POST",
+    headers:{ "Client-Id":TWITCH_CLIENT_ID, "Content-Type":"application/json" },
+    body: JSON.stringify({ query:TWITCH_QUERY, variables:{ slug:slug } })
+  }).then(function(r){ if(!r.ok) throw new Error("Twitch answered HTTP "+r.status); return r.json(); })
+  .then(function(j){
+    var clip = j && j.data && j.data.clip;
+    if(!clip) throw new Error("Clip not found — check the link. Only public clips work.");
+    var tok = clip.playbackAccessToken || {};
+    if(!tok.signature || !tok.value) throw new Error("Twitch refused a playback token for this clip. Try another clip.");
+    if(!clip.videoQualities || !clip.videoQualities.length) throw new Error("Twitch returned no video for this clip.");
+    var quals = clip.videoQualities.slice().sort(function(a,b){ return parseInt(b.quality,10)-parseInt(a.quality,10); });
+    var media = quals.map(function(q){
+      return { label:"Video — "+q.quality+"p"+(q.frameRate?" · "+q.frameRate+"fps":""), sub:"MP4", url:tokenizedUrl(q.sourceURL, tok.signature, tok.value), kind:"video", file:"dtz-twitch-"+clip.id+"-"+q.quality+"p.mp4" };
+    });
+    var stats = [];
+    if(clip.viewCount!=null) stats.push("<span><b>"+fmtNum(clip.viewCount)+"</b> views</span>");
+    if(clip.durationSeconds!=null) stats.push("<span>"+fmtDur(clip.durationSeconds)+"</span>");
+    if(clip.createdAt) stats.push("<span>"+esc(fmtDate(clip.createdAt))+"</span>");
+    return {
+      platform:"twitch", badge:"Twitch", title:clip.title || "Twitch clip",
+      author:(clip.broadcaster && clip.broadcaster.displayName) || "Twitch" + (clip.game && clip.game.name ? " · " + clip.game.name : ""),
+      meta: stats.join(""),
+      thumb:null, preview:tokenizedUrl(quals[0].sourceURL, tok.signature, tok.value), previewKind:"video",
+      media: media,
+      origUrl:"https://clips.twitch.tv/" + clip.id,
+      note:"Twitch's video host blocks direct in-browser saving, so if a Download opens the video in a player instead, use the player's download / save option."
+    };
+  });
+}
+
+function fetchKick(id){
+  return fetch("https://kick.com/api/v2/clips/" + encodeURIComponent(id), { headers:{ "Accept":"application/json" } })
+    .then(function(res){
+      if(res.status===404) throw new Error("Clip not found — it may be deleted, private, or the link is wrong.");
+      if(!res.ok) throw new Error("Kick answered with HTTP "+res.status+". Please try again in a moment.");
+      return res.json();
+    })
+    .then(function(data){
+      var clip = data.clip || data;
+      if(!clip || !clip.clip_url) throw new Error("Kick did not return a playable clip for this link.");
+      var ch = clip.channel || {};
+      var stats = [];
+      if(clip.view_count!=null) stats.push("<span><b>"+fmtNum(clip.view_count)+"</b> views</span>");
+      if(clip.duration!=null) stats.push("<span>"+fmtDur(clip.duration)+"</span>");
+      if(clip.created_at) stats.push("<span>"+esc(fmtDate(clip.created_at))+"</span>");
+      return {
+        platform:"kick", badge:"Kick", title:clip.title || "Kick clip",
+        author:ch.username || "Kick" + (clip.creator && clip.creator.username ? " · clipped by " + clip.creator.username : "") + (clip.category && clip.category.name ? " · " + clip.category.name : ""),
+        meta: stats.join(""),
+        thumb: clip.thumbnail_url || null,
+        preview: clip.clip_url, previewKind:"hls",
+        media:[{ label:"Video — original quality", sub:"MP4 · built in your browser from the clip stream (no re-encode)", url:null, kind:"kick", file:safeName(clip.title)+".mp4" }],
+        origUrl:"https://kick.com/" + (ch.slug||"") + "/clips/" + clip.id,
+        kickClip: clip
+      };
+    });
+}
+
+function fetchPinterest(pinId){
+  if(pinId === "PIN_IT"){
+    return Promise.reject(new Error("That is a pin.it short link — it cannot be opened from this page. Open the pin in your browser (or the Pinterest app's Share &gt; Copy link gives pin.it — open it once in a browser) and paste the full pinterest.com/pin/&lt;number&gt;/ link."));
+  }
+  var API = "https://widgets.pinterest.com/v3/pidgets/pins/info/?fields=images,videos,description,link,pinner,board,aggregated_pin_data&pin_ids=";
+  return fetch(API + encodeURIComponent(pinId))
+    .then(function(res){ if(!res.ok) throw new Error("Pinterest answered HTTP "+res.status); return res.json(); })
+    .then(function(data){
+      var pin = data && data.data && data.data[0];
+      if(!pin || pin.error) throw new Error("Pin not found — check the link. Only public pins work.");
+      var media = [];
+      var vl = pin.videos && pin.videos.video_list;
+      var vids = [];
+      if(vl) Object.keys(vl).forEach(function(key){
+        var v = vl[key];
+        if(!v || !v.url) return;
+        var isHls = /\.m3u8(\?|$)/i.test(v.url) || key.toUpperCase().indexOf("HLS")!==-1;
+        vids.push({ key:key, url:v.url, width:v.width||null, height:v.height||null, duration:v.duration||null, hls:isHls, thumb:v.thumbnail||null });
+      });
+      vids.sort(function(a,b){ if(a.hls!==b.hls) return a.hls?1:-1; return (b.width||0)-(a.width||0); });
+      vids.forEach(function(v){
+        if(v.hls) return;
+        media.push({ label:"Video — "+(v.width?v.width+"p":"MP4"), sub:"MP4"+(v.duration?" · "+fmtDur(v.duration):""), url:v.url, kind:"video", direct:true, file:"dtz-pinterest-"+pinId+".mp4" });
+      });
+      var imgs = [];
+      if(pin.images) Object.keys(pin.images).forEach(function(key){
+        var im = pin.images[key];
+        if(!im || !im.url) return;
+        imgs.push({ key:key, label:key==="orig"?"Original":key.replace("x"," × "), url:im.url, width:im.width||null, height:im.height||null });
+      });
+      imgs.sort(function(a,b){ return (b.width||0)-(a.width||0); });
+      imgs.forEach(function(im){
+        media.push({ label:"Image — "+im.label, sub:"JPG"+(im.width?" · "+im.width+" × "+im.height:""), url:im.url, kind:"image", direct:true, file:"dtz-pinterest-"+pinId+".jpg" });
+      });
+      if(!media.length) throw new Error("This pin has no video or image to download.");
+      var pinner = pin.pinner || {};
+      var stats = [];
+      if(pin.aggregated_pin_data && pin.aggregated_pin_data.saves!=null) stats.push("<span><b>"+fmtNum(pin.aggregated_pin_data.saves)+"</b> saves</span>");
+      if(pin.board && pin.board.name) stats.push("<span>Board: "+esc(pin.board.name)+"</span>");
+      var bestVideo = vids.filter(function(v){ return !v.hls; })[0];
+      var bestImg = imgs[0];
+      return {
+        platform:"pinterest", badge:"Pinterest", title:pin.description || "Pinterest pin",
+        author:(pinner.full_name||"Pinterest") + (pin.link ? " · " + pin.link : ""),
+        meta: stats.join(""),
+        thumb: bestVideo ? (bestVideo.thumb||null) : (bestImg ? bestImg.url : null),
+        preview: bestVideo ? bestVideo.url : (bestImg ? bestImg.url : null),
+        previewKind: bestVideo ? "video" : "image",
+        media: media,
+        origUrl:"https://www.pinterest.com/pin/" + pinId + "/"
+      };
+    });
+}
+
+/* ---------- Kick playlist parsing + transmux (ported from the proven Kick tool) ---------- */
+function parsePlaylist(text, baseUrl){
+  var lines = text.split("\n").map(function(l){ return l.trim(); }).filter(function(l){ return l.length>0; });
+  var i, variants = [];
+  for(i=0;i<lines.length;i++){
+    if(lines[i].indexOf("#EXT-X-STREAM-INF")===0){
+      var bw = 0, m = lines[i].match(/BANDWIDTH=(\d+)/);
+      if(m) bw = parseInt(m[1],10);
+      var uri = lines[i+1] || "";
+      if(uri && uri.indexOf("#")!==0) variants.push({ bw:bw, uri:uri });
+    }
+  }
+  if(variants.length){
+    variants.sort(function(a,b){ return b.bw-a.bw; });
+    return { variant: new URL(variants[0].uri, baseUrl).href };
+  }
+  var segments = [], totalBytes = 0, duration = 0, pending = null, lastEnd = 0;
+  for(i=0;i<lines.length;i++){
+    var l = lines[i];
+    if(l.indexOf("#EXT-X-BYTERANGE:")===0){
+      var mm = l.match(/#EXT-X-BYTERANGE:(\d+)(?:@(\d+))?/);
+      if(mm){
+        var len = parseInt(mm[1],10);
+        var off = mm[2] != null ? parseInt(mm[2],10) : lastEnd;
+        pending = { len:len, off:off };
+        lastEnd = off + len;
+      }
+    } else if(l.indexOf("#EXTINF:")===0){
+      var dm = l.match(/#EXTINF:([\d.]+)/);
+      if(dm) duration += parseFloat(dm[1]);
+    } else if(l.indexOf("#")!==0){
+      var seg = { url:new URL(l, baseUrl).href, len:pending?pending.len:null, off:pending?pending.off:0 };
+      segments.push(seg);
+      if(pending) totalBytes += pending.len;
+      pending = null;
+    }
+  }
+  return { segments:segments, totalBytes:totalBytes, duration:duration };
+}
+function fetchSegments(parsed){
+  var total = parsed.totalBytes || 0;
+  var received = 0;
+  var parts = new Array(parsed.segments.length);
+  var chain = Promise.resolve();
+  parsed.segments.forEach(function(seg, idx){
+    chain = chain.then(function(){
+      var headers = {};
+      if(seg.len != null) headers["Range"] = "bytes=" + seg.off + "-" + (seg.off + seg.len - 1);
+      return fetch(seg.url, { headers:headers }).then(function(res){
+        if(!res.ok) throw new Error("A video part failed to load (HTTP " + res.status + ").");
+        return res.arrayBuffer();
+      }).then(function(buf){
+        var arr = new Uint8Array(buf);
+        if(seg.len != null && arr.length > seg.len) arr = arr.slice(seg.off, seg.off + seg.len);
+        if(seg.len != null && arr.length !== seg.len) throw new Error("A video part came back incomplete (" + arr.length + " of " + seg.len + " bytes).");
+        parts[idx] = arr;
+        received += arr.length;
+        if(total) $("progressBar").style.width = Math.min(100, Math.round(received/total*100)) + "%";
+        setDlStatus("Step 2 of 3 — downloading " + (idx+1) + " of " + parsed.segments.length + " parts (" + fmtBytes(received) + (total ? " of " + fmtBytes(total) : "") + ")…");
+      });
+    });
+  });
+  return chain.then(function(){
+    var totalLen = parts.reduce(function(a,p){ return a + p.length; }, 0);
+    var out = new Uint8Array(totalLen);
+    var pos = 0;
+    parts.forEach(function(p){ out.set(p, pos); pos += p.length; });
+    return out;
+  });
+}
+function transmuxToMp4(tsBuffer){
+  return new Promise(function(resolve, reject){
+    try {
+      var transmuxer = new muxjs.mp4.Transmuxer();
+      var chunks = [];
+      transmuxer.on("data", function(segment){
+        if(segment.initSegment) chunks.push(new Uint8Array(segment.initSegment));
+        if(segment.data) chunks.push(new Uint8Array(segment.data));
+      });
+      transmuxer.on("done", function(){
+        if(!chunks.length) return reject(new Error("The converter produced no output."));
+        resolve(new Blob(chunks, { type:"video/mp4" }));
+      });
+      transmuxer.on("error", function(){ reject(new Error("Converter error.")); });
+      var SLICE = 8 * 1024 * 1024;
+      for(var i=0; i<tsBuffer.length; i+=SLICE){
+        transmuxer.push(tsBuffer.subarray(i, Math.min(i+SLICE, tsBuffer.length)));
+      }
+      transmuxer.flush();
+    } catch(e){ reject(new Error("Converter failed to start.")); }
+  });
+}
+function downloadKickMp4(btn){
+  if(!current || !current.kickClip || kickDownloading) return;
+  kickDownloading = true;
+  btn.disabled = true;
+  btn.textContent = "Preparing…";
+  $("progressWrap").classList.add("show");
+  $("progressBar").style.width = "0%";
+  setDlStatus("Step 1 of 3 — reading the clip playlist…");
+  var clip = current.kickClip;
+  loadScript(MUX_CDN).then(function(){
+    return fetch(clip.clip_url, { headers:{ "Accept":"*/*" } });
+  }).then(function(res){
+    if(!res.ok) throw new Error("Could not read the clip playlist (HTTP " + res.status + ").");
+    return res.text();
+  }).then(function(text){
+    var parsed = parsePlaylist(text, clip.clip_url);
+    if(parsed.variant){
+      setDlStatus("Clip offers several qualities — picking the best one…");
+      return fetch(parsed.variant).then(function(r){
+        if(!r.ok) throw new Error("Could not read the best-quality playlist (HTTP " + r.status + ").");
+        return r.text();
+      }).then(function(t2){ return parsePlaylist(t2, parsed.variant); });
+    }
+    return parsed;
+  }).then(function(parsed){
+    if(!parsed.segments || !parsed.segments.length) throw new Error("No video segments found in this clip's playlist.");
+    current.playlistInfo = parsed;
+    setDlStatus("Step 2 of 3 — downloading " + parsed.segments.length + " parts (" + fmtBytes(parsed.totalBytes) + ")…");
+    return fetchSegments(parsed);
+  }).then(function(tsBuffer){
+    setDlStatus("Step 3 of 3 — building your MP4 (no re-encode, original quality)…");
+    return transmuxToMp4(tsBuffer);
+  }).then(function(mp4Blob){
+    triggerSave(mp4Blob, safeName(clip.title) + ".mp4");
+    setDlStatus("Done — your MP4 (" + fmtBytes(mp4Blob.size) + ") should now be downloading. If your browser asks, choose Save.");
+    btn.textContent = "Download MP4";
+  }).catch(function(err){
+    var msg = err && err.message ? err.message : "Download failed.";
+    setDlStatus("MP4 build failed: " + esc(msg) + " — you can still copy the clip link and open it on Kick.");
+    btn.textContent = "Download MP4";
+  }).finally(function(){
+    kickDownloading = false;
+    btn.disabled = false;
+  });
+}
+
+/* ---------- render ---------- */
+function renderResult(res){
+  current = res;
+  $("resBadge").textContent = res.badge;
+  $("resTitle").textContent = res.title || "Download";
+  $("resSub").textContent = res.author || "";
+  $("resStats").innerHTML = res.meta || "";
+  var thumb = $("resThumb");
+  if(res.thumb){ thumb.src = res.thumb; thumb.style.display = "block"; thumb.onerror = function(){ thumb.style.display = "none"; }; }
+  else { thumb.style.display = "none"; }
+  var pv = $("previewWrap");
+  pv.innerHTML = "";
+  if(res.preview){
+    pv.style.display = "block";
+    if(res.previewKind === "image"){
+      var img = document.createElement("img");
+      img.src = res.preview; img.alt = "Preview";
+      pv.appendChild(img);
+    } else if(res.previewKind === "hls"){
+      var video = document.createElement("video");
+      video.controls = true; video.playsInline = true; video.preload = "metadata";
+      if(res.thumb) video.poster = res.thumb;
+      pv.appendChild(video);
+      if(window.Hls && Hls.isSupported()){
+        try {
+          var hls = new Hls({ maxBufferLength: 30 });
+          hls.loadSource(res.preview);
+          hls.attachMedia(video);
+          hls.on(Hls.Events.ERROR, function(ev, data){ if(data && data.fatal){ video.style.display = "none"; } });
+          video._hls = hls;
+        } catch(e){ video.style.display = "none"; }
+      } else if(video.canPlayType("application/vnd.apple.mpegurl")){
+        video.src = res.preview;
+      } else { video.style.display = "none"; }
+    } else {
+      var v2 = document.createElement("video");
+      v2.controls = true; v2.playsInline = true; v2.preload = "metadata";
+      v2.src = res.preview;
+      if(res.thumb) v2.poster = res.thumb;
+      v2.onerror = function(){ v2.style.display = "none"; };
+      pv.appendChild(v2);
+    }
+  } else {
+    pv.style.display = "none";
+  }
+  var rows = $("mediaRows");
+  rows.innerHTML = "";
+  res.media.forEach(function(m){
+    var row = document.createElement("div");
+    row.className = "media-row";
+    var lbl = document.createElement("div");
+    lbl.className = "lbl";
+    lbl.innerHTML = "<b>" + esc(m.label) + "</b><span>" + esc(m.sub || "") + "</span>";
+    row.appendChild(lbl);
+    var dl = document.createElement("button");
+    dl.className = "btn-small";
+    dl.textContent = m.kind === "kick" ? "Download MP4" : "Download";
+    dl.addEventListener("click", function(){
+      if(m.kind === "kick"){ downloadKickMp4(dl); return; }
+      if(m.direct){
+        var a = document.createElement("a");
+        a.href = m.url; a.target = "_blank"; a.rel = "noopener";
+        document.body.appendChild(a); a.click(); a.remove();
+        setStatus("The file opened in a new tab — use your browser's download / save option there.", "info");
+        return;
+      }
+      downloadUrl(m.url, m.file, dl);
+    });
+    row.appendChild(dl);
+    if(m.url){
+      var cp = document.createElement("button");
+      cp.className = "btn-ghost";
+      cp.textContent = "Copy Link";
+      cp.addEventListener("click", function(){ copyText(m.url, "Download link copied."); });
+      row.appendChild(cp);
+    }
+    rows.appendChild(row);
+  });
+  if(res.note){
+    var n = document.createElement("div");
+    n.className = "note";
+    n.innerHTML = esc(res.note);
+    rows.appendChild(n);
+  }
+  $("result").classList.add("show");
+  saveRecent(res);
+  renderRecent();
+}
+
+/* ---------- recent ---------- */
+function getRecent(){ try{ return JSON.parse(localStorage.getItem(RECENT_KEY) || "[]"); }catch(e){ return []; } }
+function saveRecent(res){
+  try {
+    var list = getRecent().filter(function(x){ return x.url !== res.origUrl; });
+    list.unshift({ platform:res.badge, title:res.title, url:res.origUrl, thumb:res.thumb || "" });
+    localStorage.setItem(RECENT_KEY, JSON.stringify(list.slice(0,8)));
+  } catch(e){}
+}
+function renderRecent(){
+  var list = getRecent();
+  var card = $("recentCard"), box = $("recentList");
+  if(!list.length){ card.style.display = "none"; box.innerHTML = ""; return; }
+  card.style.display = "block";
+  box.innerHTML = "";
+  list.forEach(function(c){
+    var el = document.createElement("div");
+    el.className = "recent-item";
+    el.innerHTML = '<img src="' + esc(c.thumb||"") + '" alt="" onerror="this.style.visibility=\'hidden\'">' +
+      '<div style="flex:1;min-width:0"><div class="t">' + esc(c.title||c.url) + '</div><div class="s">' + esc(c.platform||"") + '</div></div>';
+    var x = document.createElement("button");
+    x.className = "x"; x.textContent = "×"; x.title = "Remove";
+    x.addEventListener("click", function(ev){
+      ev.stopPropagation();
+      try{ localStorage.setItem(RECENT_KEY, JSON.stringify(getRecent().filter(function(y){ return y.url !== c.url; }))); }catch(e){}
+      renderRecent();
+    });
+    el.appendChild(x);
+    el.addEventListener("click", function(){
+      $("inpUrl").value = c.url;
+      fetchAll();
+      window.scrollTo({ top:0, behavior:"smooth" });
+    });
+    box.appendChild(el);
+  });
+}
+
+/* ---------- main flow ---------- */
+function fetchAll(){
+  var det = detect($("inpUrl").value);
+  if(!det){
+    setStatus("Please paste a link first.", "err");
+    return;
+  }
+  if(det.platform === "unknown"){
+    setStatus("That link is not from TikTok, X, Instagram, Twitch, Kick or Pinterest. Paste a public link from one of those platforms.", "err");
+    return;
+  }
+  if(!det.id){
+    var hint = {
+      tiktok:"Paste a TikTok link like tiktok.com/@user/video/…",
+      x:"Paste an X post link like x.com/username/status/123…",
+      instagram:"Paste an Instagram link like instagram.com/reel/… or /p/…",
+      twitch:"Paste a Twitch clip link like clips.twitch.tv/… or twitch.tv/channel/clip/…",
+      kick:"Paste a Kick clip link like kick.com/channel/clips/clip_…",
+      pinterest:"Paste a Pinterest link like pinterest.com/pin/123…"
+    }[det.platform];
+    setStatus(hint, "err");
+    return;
+  }
+  $("btnGo").disabled = true;
+  $("result").classList.remove("show");
+  clearDlStatus();
+  current = null;
+  var names = { tiktok:"TikTok", x:"X", instagram:"Instagram", twitch:"Twitch", kick:"Kick", pinterest:"Pinterest" };
+  setStatus('<span class="spinner"></span>Fetching from ' + names[det.platform] + '…', "info");
+  var p;
+  if(det.platform === "tiktok") p = fetchTikTok(det.rawUrl);
+  else if(det.platform === "x") p = fetchX(det.id);
+  else if(det.platform === "instagram") p = fetchInstagram(det.id);
+  else if(det.platform === "twitch") p = fetchTwitch(det.id);
+  else if(det.platform === "kick") p = fetchKick(det.id);
+  else p = fetchPinterest(det.id);
+  p.then(function(res){
+    if(!res.media || !res.media.length){ setStatus("This post has no video, audio or photo to download.", "err"); return; }
+    renderResult(res);
+    setStatus("Found it. Pick a file below to download.", "ok");
+  }).catch(function(err){
+    setStatus(esc(err && err.message ? err.message : "Could not reach that platform. Check your connection and try again."), "err");
+  }).finally(function(){
+    $("btnGo").disabled = false;
+  });
+}
+
+/* ---------- wire up ---------- */
+var chipsBox = $("chips");
+EXAMPLES.forEach(function(ex){
+  var c = document.createElement("button");
+  c.className = "chip";
+  c.textContent = ex.label;
+  c.addEventListener("click", function(){ $("inpUrl").value = ex.url; fetchAll(); });
+  chipsBox.appendChild(c);
+});
+Array.prototype.forEach.call(document.querySelectorAll(".plat"), function(el){
+  el.addEventListener("click", function(){ $("inpUrl").value = el.getAttribute("data-ex"); fetchAll(); });
+});
+$("btnGo").addEventListener("click", fetchAll);
+$("inpUrl").addEventListener("keydown", function(e){ if(e.key === "Enter") fetchAll(); });
+$("btnCopyLink").addEventListener("click", function(){
+  if(!current) return;
+  copyText(current.origUrl, "Original link copied.");
+});
+$("btnOpenOrig").addEventListener("click", function(){
+  if(!current) return;
+  window.open(current.origUrl, "_blank", "noopener");
+});
+$("btnClearRecent").addEventListener("click", function(){
+  try{ localStorage.removeItem(RECENT_KEY); }catch(e){}
+  renderRecent();
+});
+renderRecent();
+})();
+</script>
+</body>
+</html>
