@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTZ Kick Clip Downloader — Dark Tech Zone</title>
+<meta name="description" content="Paste any public Kick clip link and download it as a real MP4. Free, no signup, nothing uploaded.">
+<link rel="icon" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg">
+<style>
+  :root{
+    --bg:#f4f6fb; --card:#ffffff; --ink:#0f172a; --muted:#64748b; --line:#e2e8f0;
+    --green:#16a34a; --green-d:#15803d; --blue:#2563eb; --red:#dc2626; --amber:#b45309;
+    --soft:#eef2ff; --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Arial,sans-serif;background:var(--bg);color:var(--ink);}
+  a{color:var(--blue);text-decoration:none}
+  .wrap{max-width:760px;margin:0 auto;padding:18px 14px 48px}
+  header{display:flex;align-items:center;gap:12px;margin:6px 0 4px}
+  header img.logo{width:46px;height:46px;border-radius:50%;object-fit:cover;border:2px solid #0f172a22}
+  header .mark{width:46px;height:46px;border-radius:12px;background:#0f172a;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+  header h1{font-size:21px;margin:0;line-height:1.2}
+  header p{margin:2px 0 0;color:var(--muted);font-size:13px}
+  .pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--green-d);background:#dcfce7;border:1px solid #bbf7d0;border-radius:999px;padding:4px 10px;margin-left:auto;white-space:nowrap}
+  .pill .dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-top:14px;box-shadow:0 1px 3px rgba(15,23,42,.05)}
+  .card h2{font-size:16px;margin:0 0 12px}
+  .row{display:flex;gap:10px}
+  input[type=text]{flex:1;min-width:0;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-size:15px;outline:none;background:#fff;color:var(--ink)}
+  input[type=text]:focus{border-color:var(--blue);box-shadow:0 0 0 3px #2563eb22}
+  button{border:0;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;padding:12px 18px;color:#fff;background:var(--green)}
+  button:hover{background:var(--green-d)}
+  button:disabled{opacity:.55;cursor:not-allowed}
+  button.secondary{background:#0f172a}
+  button.secondary:hover{background:#1e293b}
+  button.ghost{background:#f1f5f9;color:var(--ink);border:1px solid var(--line)}
+  button.ghost:hover{background:#e2e8f0}
+  button.danger{background:var(--red)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .chip{background:var(--soft);border:1px solid #dbeafe;color:#1e40af;font-size:13px;padding:7px 12px;border-radius:999px;cursor:pointer}
+  .chip:hover{background:#dbeafe}
+  .hint{font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.5}
+  .status{margin-top:12px;font-size:14px;line-height:1.5;display:none}
+  .status.show{display:block}
+  .status.err{color:var(--red)}
+  .status.ok{color:var(--green-d)}
+  .status.info{color:var(--muted)}
+  .spinner{width:16px;height:16px;border:2px solid #bbf7d0;border-top-color:var(--green);border-radius:50%;display:inline-block;vertical-align:-3px;animation:spin .8s linear infinite;margin-right:6px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  #result{display:none}
+  #result.show{display:block}
+  .player{width:100%;border-radius:10px;background:#000;max-height:420px;display:block}
+  .thumb{width:100%;border-radius:10px;display:block}
+  .meta{margin-top:12px}
+  .meta h3{margin:0 0 6px;font-size:17px;line-height:1.35}
+  .meta .sub{color:var(--muted);font-size:13.5px;line-height:1.6}
+  .meta .sub b{color:var(--ink)}
+  .kv{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+  .kv div{background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:9px 10px;text-align:center}
+  .kv .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+  .kv .v{font-size:14.5px;font-weight:700;margin-top:2px;word-break:break-word}
+  .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .progress{height:10px;background:#e2e8f0;border-radius:999px;overflow:hidden;margin-top:14px;display:none}
+  .progress.show{display:block}
+  .progress i{display:block;height:100%;width:0%;background:var(--green);transition:width .2s}
+  .dlstatus{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.5;display:none}
+  .dlstatus.show{display:block}
+  .recent-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border:1px solid var(--line);border-radius:10px;margin-top:8px;cursor:pointer;background:#fff}
+  .recent-item:hover{background:#f8fafc}
+  .recent-item img{width:64px;height:36px;object-fit:cover;border-radius:6px;flex:0 0 auto;background:#000}
+  .recent-item .t{font-size:13.5px;font-weight:600;line-height:1.3}
+  .recent-item .s{font-size:12px;color:var(--muted);margin-top:2px}
+  .recent-item .x{margin-left:auto;color:var(--muted);background:none;border:0;font-size:18px;padding:4px 8px;cursor:pointer}
+  .note{font-size:13px;color:var(--muted);line-height:1.65}
+  .note b{color:var(--ink)}
+  footer{margin-top:22px;text-align:center;font-size:12.5px;color:var(--muted);line-height:1.8}
+  footer a{font-weight:600}
+  .empty{color:var(--muted);font-size:13.5px}
+  @media (max-width:560px){
+    header h1{font-size:18px}
+    .kv{grid-template-columns:repeat(2,1fr)}
+    .row{flex-direction:column}
+    button{width:100%}
+    .pill{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <img class="logo" src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone" onerror="this.style.display='none'">
+    <div>
+      <h1>DTZ Kick Clip Downloader</h1>
+      <p>Download any public Kick clip as a real MP4 — free, no signup.</p>
+    </div>
+    <span class="pill"><span class="dot"></span>Free &amp; No Signup</span>
+  </header>
+
+  <div class="card">
+    <h2>Paste a Kick clip link</h2>
+    <div class="row">
+      <input type="text" id="inpUrl" placeholder="https://kick.com/xqc/clips/clip_01H811MXG4FBR62FXPE1AXABDH" autocomplete="off" spellcheck="false">
+      <button id="btnFetch">Get Clip</button>
+    </div>
+    <div class="chips" id="exampleChips"></div>
+    <p class="hint">Paste a full clip link, or just the clip ID (clip_...). Public clips only — private or deleted clips cannot be downloaded. The video is downloaded in your own browser; nothing is uploaded to any server.</p>
+    <div class="status" id="statusBox" role="status"></div>
+  </div>
+
+  <div class="card" id="result">
+    <video class="player" id="player" controls playsinline preload="metadata" style="display:none"></video>
+    <img class="thumb" id="thumbImg" alt="Clip thumbnail" style="display:none">
+    <div class="meta">
+      <h3 id="clipTitle"></h3>
+      <div class="sub" id="clipSub"></div>
+      <div class="kv">
+        <div><div class="k">Channel</div><div class="v" id="kvChannel">—</div></div>
+        <div><div class="k">Duration</div><div class="v" id="kvDuration">—</div></div>
+        <div><div class="k">Views</div><div class="v" id="kvViews">—</div></div>
+        <div><div class="k">Size (approx)</div><div class="v" id="kvSize">—</div></div>
+      </div>
+    </div>
+    <div class="actions">
+      <button id="btnDownload">Download MP4</button>
+      <button class="secondary" id="btnCopyLink">Copy Clip Link</button>
+      <button class="ghost" id="btnOpenKick">Open on Kick</button>
+    </div>
+    <div class="progress" id="progressWrap"><i id="progressBar"></i></div>
+    <div class="dlstatus" id="dlStatus"></div>
+  </div>
+
+  <div class="card" id="recentCard" style="display:none">
+    <h2>Recent clips</h2>
+    <div id="recentList"></div>
+    <div class="actions"><button class="ghost" id="btnClearRecent">Clear history</button></div>
+  </div>
+
+  <div class="card">
+    <h2>How it works</h2>
+    <p class="note">
+      <b>1.</b> Paste a public Kick clip link and tap <b>Get Clip</b> — the page reads the clip's public details from Kick.<br>
+      <b>2.</b> Watch the preview, then tap <b>Download MP4</b> — the clip is fetched and re-wrapped into a standard MP4 file right in your browser (no re-encode, original quality kept).<br>
+      <b>3.</b> Save the file. It plays in any video player — gallery, VLC, MX Player.<br><br>
+      <b>Honest limits:</b> only public clips work. Some very long clips can be large (tens of MB) and take a while on slow connections — the progress bar shows the real download. If the MP4 step ever fails, the page offers the raw stream file (.ts) as a fallback.
+    </p>
+  </div>
+
+  <footer>
+    Built by <a href="https://www.darktechzon.site/" target="_blank" rel="noopener">Dark Tech Zone</a> — free tools for everyone.<br>
+    Join our WhatsApp channel: <a href="https://whatsapp.com/channel/0029Vb9oK008V0txIkc3oj3z" target="_blank" rel="noopener">Dark Tech Zone</a>
+  </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.13/dist/hls.min.js"></script>
+<script>
+(function(){
+  "use strict";
+  var $ = function(id){ return document.getElementById(id); };
+  var API_BASE = "https://kick.com/api/v2/clips/";
+  var MUX_CDN = "https://cdn.jsdelivr.net/npm/mux.js@6.3.0/dist/mux.min.js";
+  var RECENT_KEY = "dtz_kick_recent_v1";
+  var current = null;      // clip object from Kick
+  var playlistInfo = null; // parsed playlist {segments,totalBytes,duration}
+  var downloading = false;
+
+  var EXAMPLES = [
+    { label: "xQc — soda (30s)", url: "https://kick.com/xqc/clips/clip_01H811MXG4FBR62FXPE1AXABDH" },
+    { label: "Trainwreckstv — 63k X Razor (60s)", url: "https://kick.com/trainwreckstv/clips/clip_01H6V5QHN7VMYHKNYVY7B6FRWW" },
+    { label: "xQc — BRUHHHHH (30s)", url: "https://kick.com/xqc/clips/clip_01H6QY1H0QCE582N739JNZTD3Q" }
+  ];
+
+  /* ---------- helpers ---------- */
+  function fmtViews(n){ if(n==null) return "—"; return Number(n).toLocaleString("en-US"); }
+  function fmtDur(s){
+    if(s==null || isNaN(s)) return "—";
+    s = Math.round(s);
+    var m = Math.floor(s/60), r = s%60;
+    return m + ":" + (r<10 ? "0" : "") + r;
+  }
+  function fmtBytes(n){
+    if(!n || n<=0) return "—";
+    if(n < 1024*1024) return (n/1024).toFixed(0) + " KB";
+    return (n/(1024*1024)).toFixed(1) + " MB";
+  }
+  function fmtDate(iso){
+    if(!iso) return "—";
+    var d = new Date(iso);
+    if(isNaN(d)) return "—";
+    return d.toLocaleDateString("en-GB", {day:"numeric", month:"short", year:"numeric"});
+  }
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+  function safeName(s){
+    var n = String(s||"kick-clip").replace(/[^a-zA-Z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,60);
+    return n || "kick-clip";
+  }
+  function setStatus(html, kind){
+    var box = $("statusBox");
+    box.className = "status show " + (kind||"info");
+    box.innerHTML = html;
+  }
+  function clearStatus(){ var box=$("statusBox"); box.className="status"; box.innerHTML=""; }
+  function setDlStatus(html){
+    var el = $("dlStatus");
+    el.className = "dlstatus show";
+    el.innerHTML = html;
+  }
+  function extractClipId(input){
+    input = (input||"").trim();
+    if(!input) return null;
+    var m = input.match(/clip_[A-Za-z0-9]+/);
+    if(m) return m[0];
+    return null;
+  }
+  function loadScript(src){
+    return new Promise(function(resolve, reject){
+      if(document.querySelector('script[src="'+src+'"]')) return resolve();
+      var s = document.createElement("script");
+      s.src = src; s.onload = resolve;
+      s.onerror = function(){ reject(new Error("Could not load " + src)); };
+      document.head.appendChild(s);
+    });
+  }
+
+  /* ---------- recent clips ---------- */
+  function getRecent(){
+    try { return JSON.parse(localStorage.getItem(RECENT_KEY) || "[]"); } catch(e){ return []; }
+  }
+  function saveRecent(clip){
+    try {
+      var list = getRecent().filter(function(c){ return c.id !== clip.id; });
+      list.unshift({ id: clip.id, title: clip.title, channel: (clip.channel&&clip.channel.username)||"", thumb: clip.thumbnail_url, url: "https://kick.com/" + ((clip.channel&&clip.channel.slug)||"") + "/clips/" + clip.id });
+      localStorage.setItem(RECENT_KEY, JSON.stringify(list.slice(0,8)));
+    } catch(e){}
+  }
+  function renderRecent(){
+    var list = getRecent();
+    var card = $("recentCard"), box = $("recentList");
+    if(!list.length){ card.style.display = "none"; box.innerHTML=""; return; }
+    card.style.display = "block";
+    box.innerHTML = list.map(function(c){
+      return '<div class="recent-item" data-url="'+esc(c.url)+'">' +
+        '<img src="'+esc(c.thumb||"")+'" alt="" onerror="this.style.visibility=\'hidden\'">' +
+        '<div><div class="t">'+esc(c.title||c.id)+'</div><div class="s">'+esc(c.channel||"")+'</div></div>' +
+        '<button class="x" data-del="'+esc(c.id)+'" title="Remove">×</button></div>';
+    }).join("");
+    Array.prototype.forEach.call(box.querySelectorAll(".recent-item"), function(el){
+      el.addEventListener("click", function(ev){
+        if(ev.target && ev.target.getAttribute("data-del")) return;
+        $("inpUrl").value = el.getAttribute("data-url");
+        fetchClip();
+        window.scrollTo({top:0, behavior:"smooth"});
+      });
+    });
+    Array.prototype.forEach.call(box.querySelectorAll("[data-del]"), function(btn){
+      btn.addEventListener("click", function(ev){
+        ev.stopPropagation();
+        var id = btn.getAttribute("data-del");
+        try { localStorage.setItem(RECENT_KEY, JSON.stringify(getRecent().filter(function(c){ return c.id!==id; }))); } catch(e){}
+        renderRecent();
+      });
+    });
+  }
+
+  /* ---------- playlist parsing ---------- */
+  // Returns {segments:[{url,len,off}], totalBytes, duration} or {variant:url} for master playlists.
+  function parsePlaylist(text, baseUrl){
+    var lines = text.split("\n").map(function(l){ return l.trim(); }).filter(function(l){ return l.length>0; });
+    var i, variants = [];
+    for(i=0;i<lines.length;i++){
+      if(lines[i].indexOf("#EXT-X-STREAM-INF")===0){
+        var bw = 0, m = lines[i].match(/BANDWIDTH=(\d+)/);
+        if(m) bw = parseInt(m[1],10);
+        var uri = lines[i+1] || "";
+        if(uri && uri.indexOf("#")!==0) variants.push({bw:bw, uri:uri});
+      }
+    }
+    if(variants.length){
+      variants.sort(function(a,b){ return b.bw-a.bw; });
+      return { variant: new URL(variants[0].uri, baseUrl).href };
+    }
+    var segments = [], totalBytes = 0, duration = 0, pending = null, lastEnd = 0;
+    for(i=0;i<lines.length;i++){
+      var l = lines[i];
+      if(l.indexOf("#EXT-X-BYTERANGE:")===0){
+        var mm = l.match(/#EXT-X-BYTERANGE:(\d+)(?:@(\d+))?/);
+        if(mm){
+          var len = parseInt(mm[1],10);
+          var off = mm[2] != null ? parseInt(mm[2],10) : lastEnd;
+          pending = { len: len, off: off };
+          lastEnd = off + len;
+        }
+      } else if(l.indexOf("#EXTINF:")===0){
+        var dm = l.match(/#EXTINF:([\d.]+)/);
+        if(dm) duration += parseFloat(dm[1]);
+      } else if(l.indexOf("#")!==0){
+        var seg = { url: new URL(l, baseUrl).href, len: pending?pending.len:null, off: pending?pending.off:0 };
+        segments.push(seg);
+        if(pending) totalBytes += pending.len;
+        pending = null;
+      }
+    }
+    return { segments: segments, totalBytes: totalBytes, duration: duration };
+  }
+
+  /* ---------- fetch + render clip ---------- */
+  function fetchClip(){
+    var raw = $("inpUrl").value;
+    var id = extractClipId(raw);
+    if(!id){
+      setStatus("Please paste a valid Kick clip link — it should look like kick.com/<b>channel</b>/clips/<b>clip_...</b>", "err");
+      return;
+    }
+    clearStatus();
+    setStatus('<span class="spinner"></span>Fetching clip details from Kick…', "info");
+    $("btnFetch").disabled = true;
+    $("result").classList.remove("show");
+    current = null; playlistInfo = null;
+    $("progressWrap").classList.remove("show");
+    $("dlStatus").className = "dlstatus";
+    $("btnDownload").disabled = false;
+    $("btnDownload").textContent = "Download MP4";
+
+    fetch(API_BASE + encodeURIComponent(id), { headers: { "Accept": "application/json" } })
+      .then(function(res){
+        if(res.status === 404) throw new Error("Clip not found — it may be deleted, private, or the link is wrong.");
+        if(!res.ok) throw new Error("Kick answered with HTTP " + res.status + ". Please try again in a moment.");
+        return res.json();
+      })
+      .then(function(data){
+        var clip = data.clip || data;
+        if(!clip || !clip.clip_url) throw new Error("Kick did not return a playable clip for this link.");
+        current = clip;
+        renderClip(clip);
+        saveRecent(clip);
+        renderRecent();
+        setStatus("Clip found. Preview below — tap <b>Download MP4</b> to save it.", "ok");
+      })
+      .catch(function(err){
+        setStatus(esc(err.message || "Could not reach Kick. Check your connection and try again."), "err");
+      })
+      .finally(function(){ $("btnFetch").disabled = false; });
+  }
+
+  function renderClip(clip){
+    $("clipTitle").textContent = clip.title || "Untitled clip";
+    var ch = clip.channel || {};
+    var creator = clip.creator || {};
+    $("clipSub").innerHTML =
+      "Channel: <b>" + esc(ch.username || "—") + "</b>" +
+      (creator.username ? " &nbsp;·&nbsp; Clipped by <b>" + esc(creator.username) + "</b>" : "") +
+      (clip.category && clip.category.name ? " &nbsp;·&nbsp; " + esc(clip.category.name) : "") +
+      " &nbsp;·&nbsp; " + esc(fmtDate(clip.created_at));
+    $("kvChannel").textContent = ch.username || "—";
+    $("kvDuration").textContent = fmtDur(clip.duration);
+    $("kvViews").textContent = fmtViews(clip.view_count);
+    $("kvSize").textContent = "tap Download";
+
+    var video = $("player"), thumb = $("thumbImg");
+    video.style.display = "none"; thumb.style.display = "none";
+    video.removeAttribute("src"); video.load();
+    if(window.Hls && Hls.isSupported()){
+      try {
+        if(video._hls) { video._hls.destroy(); video._hls = null; }
+        var hls = new Hls({ maxBufferLength: 30 });
+        hls.loadSource(clip.clip_url);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, function(){ video.style.display = "block"; });
+        hls.on(Hls.Events.ERROR, function(ev, data){
+          if(data && data.fatal){ video.style.display="none"; thumb.style.display="block"; }
+        });
+        video._hls = hls;
+      } catch(e){ thumb.style.display = "block"; }
+    } else if(video.canPlayType("application/vnd.apple.mpegurl")){
+      video.src = clip.clip_url;
+      video.style.display = "block";
+    } else {
+      thumb.style.display = "block";
+    }
+    if(clip.thumbnail_url){
+      thumb.src = clip.thumbnail_url;
+      thumb.onerror = function(){ thumb.style.display = "none"; };
+    }
+    $("result").classList.add("show");
+  }
+
+  /* ---------- download MP4 ---------- */
+  function downloadMp4(){
+    if(!current){ setStatus("Fetch a clip first.", "err"); return; }
+    if(downloading) return;
+    downloading = true;
+    $("btnDownload").disabled = true;
+    $("btnDownload").textContent = "Preparing…";
+    $("progressWrap").classList.add("show");
+    $("progressBar").style.width = "0%";
+    setDlStatus("Step 1 of 3 — reading the clip playlist…");
+
+    loadScript(MUX_CDN).then(function(){
+      return fetch(current.clip_url, { headers: { "Accept": "*/*" } });
+    }).then(function(res){
+      if(!res.ok) throw new Error("Could not read the clip playlist (HTTP " + res.status + ").");
+      return res.text();
+    }).then(function(text){
+      var parsed = parsePlaylist(text, current.clip_url);
+      if(parsed.variant){
+        setDlStatus("Clip offers several qualities — picking the best one…");
+        return fetch(parsed.variant).then(function(r){
+          if(!r.ok) throw new Error("Could not read the best-quality playlist (HTTP " + r.status + ").");
+          return r.text();
+        }).then(function(t2){ return parsePlaylist(t2, parsed.variant); });
+      }
+      return parsed;
+    }).then(function(parsed){
+      if(!parsed.segments || !parsed.segments.length) throw new Error("No video segments found in this clip's playlist.");
+      if(parsed.segments.some(function(s){ return false; })) throw new Error("Unsupported clip format.");
+      playlistInfo = parsed;
+      $("kvSize").textContent = parsed.totalBytes ? ("~" + fmtBytes(parsed.totalBytes)) : "—";
+      setDlStatus("Step 2 of 3 — downloading " + parsed.segments.length + " parts (" + fmtBytes(parsed.totalBytes) + ")…");
+      return fetchSegments(parsed);
+    }).then(function(tsBuffer){
+      setDlStatus("Step 3 of 3 — building your MP4 (no re-encode, original quality)…");
+      return transmuxToMp4(tsBuffer);
+    }).then(function(mp4Blob){
+      triggerDownload(mp4Blob, safeName(current.title) + ".mp4");
+      setDlStatus("Done — your MP4 (" + fmtBytes(mp4Blob.size) + ") should now be downloading. If your browser asks, choose Save.");
+      $("btnDownload").textContent = "Download MP4";
+    }).catch(function(err){
+      var msg = err && err.message ? err.message : "Download failed.";
+      setDlStatus("MP4 build failed: " + esc(msg) + " — you can still save the raw stream file below.");
+      offerTsFallback();
+      $("btnDownload").textContent = "Download MP4";
+    }).finally(function(){
+      downloading = false;
+      $("btnDownload").disabled = false;
+    });
+  }
+
+  function fetchSegments(parsed){
+    var total = parsed.totalBytes || 0;
+    var received = 0;
+    var parts = new Array(parsed.segments.length);
+    var chain = Promise.resolve();
+    parsed.segments.forEach(function(seg, idx){
+      chain = chain.then(function(){
+        var headers = {};
+        if(seg.len != null) headers["Range"] = "bytes=" + seg.off + "-" + (seg.off + seg.len - 1);
+        return fetch(seg.url, { headers: headers }).then(function(res){
+          if(!res.ok) throw new Error("A video part failed to load (HTTP " + res.status + ").");
+          return res.arrayBuffer();
+        }).then(function(buf){
+          var arr = new Uint8Array(buf);
+          if(seg.len != null && arr.length > seg.len){
+            // Server ignored the Range header and sent the whole file — slice our part out.
+            arr = arr.slice(seg.off, seg.off + seg.len);
+          }
+          if(seg.len != null && arr.length !== seg.len){
+            throw new Error("A video part came back incomplete (" + arr.length + " of " + seg.len + " bytes).");
+          }
+          parts[idx] = arr;
+          received += arr.length;
+          if(total) $("progressBar").style.width = Math.min(100, Math.round(received/total*100)) + "%";
+          setDlStatus("Step 2 of 3 — downloading " + (idx+1) + " of " + parsed.segments.length + " parts (" + fmtBytes(received) + (total ? " of " + fmtBytes(total) : "") + ")…");
+        });
+      });
+    });
+    return chain.then(function(){
+      var totalLen = parts.reduce(function(a,p){ return a + p.length; }, 0);
+      var out = new Uint8Array(totalLen);
+      var pos = 0;
+      parts.forEach(function(p){ out.set(p, pos); pos += p.length; });
+      return out;
+    });
+  }
+
+  function transmuxToMp4(tsBuffer){
+    return new Promise(function(resolve, reject){
+      try {
+        var transmuxer = new muxjs.mp4.Transmuxer();
+        var chunks = [];
+        transmuxer.on("data", function(segment){
+          if(segment.initSegment) chunks.push(new Uint8Array(segment.initSegment));
+          if(segment.data) chunks.push(new Uint8Array(segment.data));
+        });
+        transmuxer.on("done", function(){
+          if(!chunks.length) return reject(new Error("The converter produced no output."));
+          resolve(new Blob(chunks, { type: "video/mp4" }));
+        });
+        transmuxer.on("error", function(e){ reject(new Error("Converter error.")); });
+        var SLICE = 8 * 1024 * 1024;
+        for(var i=0; i<tsBuffer.length; i+=SLICE){
+          transmuxer.push(tsBuffer.subarray(i, Math.min(i+SLICE, tsBuffer.length)));
+        }
+        transmuxer.flush();
+      } catch(e){
+        reject(new Error("Converter failed to start."));
+      }
+    });
+  }
+
+  function triggerDownload(blob, filename){
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 4000);
+  }
+
+  function offerTsFallback(){
+    if(!playlistInfo) return;
+    var wrap = $("dlStatus");
+    var btn = document.createElement("button");
+    btn.className = "ghost"; btn.textContent = "Download raw stream (.ts)";
+    btn.style.marginTop = "8px";
+    btn.onclick = function(){
+      btn.disabled = true; btn.textContent = "Preparing .ts…";
+      fetchSegments(playlistInfo).then(function(tsBuffer){
+        triggerDownload(new Blob([tsBuffer], { type: "video/MP2T" }), safeName(current.title) + ".ts");
+        btn.textContent = "Raw stream (.ts) downloading";
+      }).catch(function(){
+        btn.textContent = "Raw stream failed too — please retry";
+        btn.disabled = false;
+      });
+    };
+    wrap.appendChild(document.createElement("br"));
+    wrap.appendChild(btn);
+  }
+
+  /* ---------- copy / open ---------- */
+  function copyText(text, okMsg){
+    function done(){ setStatus(okMsg, "ok"); }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done, function(){ fallbackCopy(text); done(); });
+    } else { fallbackCopy(text); done(); }
+  }
+  function fallbackCopy(text){
+    var ta = document.createElement("textarea");
+    ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); } catch(e){}
+    document.body.removeChild(ta);
+  }
+
+  /* ---------- wire up ---------- */
+  $("btnFetch").addEventListener("click", fetchClip);
+  $("inpUrl").addEventListener("keydown", function(e){ if(e.key === "Enter") fetchClip(); });
+  $("btnDownload").addEventListener("click", downloadMp4);
+  $("btnCopyLink").addEventListener("click", function(){
+    if(!current) return;
+    var ch = (current.channel && current.channel.slug) || "";
+    copyText("https://kick.com/" + ch + "/clips/" + current.id, "Clip link copied.");
+  });
+  $("btnOpenKick").addEventListener("click", function(){
+    if(!current) return;
+    var ch = (current.channel && current.channel.slug) || "";
+    window.open("https://kick.com/" + ch + "/clips/" + current.id, "_blank", "noopener");
+  });
+  $("btnClearRecent").addEventListener("click", function(){
+    try { localStorage.removeItem(RECENT_KEY); } catch(e){}
+    renderRecent();
+  });
+
+  // Example chips
+  var chipBox = $("exampleChips");
+  EXAMPLES.forEach(function(ex){
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "chip"; b.textContent = "Try: " + ex.label;
+    b.addEventListener("click", function(){
+      $("inpUrl").value = ex.url;
+      fetchClip();
+    });
+    chipBox.appendChild(b);
+  });
+  renderRecent();
+})();
+</script>
+</body>
+</html>
