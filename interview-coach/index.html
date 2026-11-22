@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTZ AI Interview Coach — Dark Tech Zone</title>
+<meta name="description" content="Practice real job interviews with AI: answer interview questions one by one, get a score and feedback on every answer, and a final report with your strengths and what to improve. Free, no signup.">
+<link rel="icon" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg">
+<style>
+  :root{
+    --bg:#f7f7f8; --surface:#ffffff; --surface2:#f0f0f2; --text:#1a1a1e; --muted:#6b6b72;
+    --border:#e4e4e7; --accent:#0f7b5f; --accent2:#0b5e49; --danger:#c0392b; --radius:14px;
+    --shadow:0 1px 3px rgba(0,0,0,.08),0 4px 14px rgba(0,0,0,.06);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.55}
+  a{color:var(--accent);text-decoration:none}
+  header{background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10}
+  .head{max-width:1060px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .head img.logo{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--accent)}
+  .head h1{font-size:19px;margin:0;line-height:1.2}
+  .head p{margin:0;font-size:12.5px;color:var(--muted)}
+  .pill{margin-left:auto;font-size:12.5px;font-weight:600;padding:5px 11px;border-radius:999px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);white-space:nowrap}
+  .pill.on{color:#0b6b4a;border-color:#bfe6d6;background:#e7f6ef}
+  .pill.off{color:#a33;border-color:#f0c6c0;background:#fdeceb}
+  main{max-width:1060px;margin:0 auto;padding:18px 16px 48px}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px;margin-bottom:16px}
+  h2{font-size:16px;margin:0 0 10px}
+  .label{font-size:13px;font-weight:600;color:var(--muted);margin:14px 0 7px}
+  .label:first-child{margin-top:0}
+  .seg{display:flex;flex-wrap:wrap;gap:8px}
+  .seg button{border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:999px;padding:8px 15px;font-size:14px;cursor:pointer}
+  .seg button.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+  input[type=text],textarea{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:10px;font-size:15px;background:var(--surface);color:var(--text);font-family:inherit}
+  input[type=text]:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:1px}
+  textarea{resize:vertical;min-height:96px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+  .chips button{border:1px solid var(--border);background:var(--surface2);color:var(--text);border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px}
+  .btn{border:none;border-radius:10px;padding:11px 20px;font-size:15px;font-weight:600;cursor:pointer;background:var(--accent);color:#fff}
+  .btn:hover{background:var(--accent2)}
+  .btn:disabled{opacity:.55;cursor:not-allowed}
+  .btn.ghost{background:var(--surface);color:var(--text);border:1px solid var(--border)}
+  .btn.danger{background:var(--danger);color:#fff}
+  .btn.small{padding:8px 14px;font-size:14px}
+  .hidden{display:none !important}
+  .err{background:#fdeceb;border:1px solid #f0c6c0;color:#8c2f26;border-radius:10px;padding:11px 14px;font-size:14px;margin-top:14px}
+  .hint{font-size:13px;color:var(--muted);margin-top:10px}
+  .prog{height:8px;background:var(--surface2);border-radius:99px;overflow:hidden;margin:4px 0 14px}
+  .prog>div{height:100%;background:var(--accent);width:0%;transition:width .4s}
+  .qnum{font-size:13px;font-weight:700;color:var(--accent);letter-spacing:.4px;text-transform:uppercase}
+  .question{font-size:19px;font-weight:700;margin:6px 0 14px;line-height:1.45}
+  .typing{color:var(--muted);font-size:14px}
+  .score-badge{display:inline-block;font-size:22px;font-weight:800;color:#fff;background:var(--accent);border-radius:12px;padding:8px 16px;margin:4px 0 10px}
+  .score-badge.low{background:#b7791f}
+  .score-badge.verylow{background:var(--danger)}
+  .fb{border-left:4px solid var(--accent);background:var(--surface2);border-radius:0 10px 10px 0;padding:12px 14px;font-size:15px;white-space:pre-wrap}
+  .fb[dir="rtl"]{border-left:none;border-right:4px solid var(--accent);border-radius:10px 0 0 10px;text-align:right}
+  .bigscore{text-align:center;padding:8px 0 4px}
+  .bigscore .num{font-size:44px;font-weight:800;color:var(--accent);line-height:1}
+  .bigscore .of{font-size:15px;color:var(--muted)}
+  .rep-row{display:flex;gap:10px;padding:10px 0;border-top:1px solid var(--border);font-size:14.5px}
+  .rep-row:first-of-type{border-top:none}
+  .rep-row b{min-width:92px;color:var(--accent)}
+  .rep-row[dir="rtl"]{text-align:right}
+  .rep-row[dir="rtl"] b{min-width:0}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin-top:6px}
+  th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--border);vertical-align:top}
+  th{color:var(--muted);font-size:12.5px;text-transform:uppercase;letter-spacing:.4px}
+  td.sc{font-weight:800;white-space:nowrap}
+  .recent-item{display:flex;justify-content:space-between;gap:10px;padding:9px 2px;border-top:1px solid var(--border);font-size:14px;cursor:pointer}
+  .recent-item:first-of-type{border-top:none}
+  .recent-item:hover{color:var(--accent)}
+  .recent-item .meta{color:var(--muted);font-size:12.5px;white-space:nowrap}
+  footer{max-width:1060px;margin:0 auto;padding:0 16px 32px;color:var(--muted);font-size:13px;text-align:center}
+  .spinner{display:inline-block;width:14px;height:14px;border:2px solid #cfe8de;border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;vertical-align:-2px;margin-right:6px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @media (max-width:640px){
+    .head h1{font-size:16px}
+    .head p{display:none}
+    .question{font-size:17px}
+    .rep-row{flex-direction:column;gap:2px}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="head">
+    <img class="logo" src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone logo">
+    <div>
+      <h1>DTZ AI Interview Coach</h1>
+      <p>Practice real job interviews with AI — answer, get scored, improve.</p>
+    </div>
+    <span class="pill" id="statusPill">Checking AI…</span>
+  </div>
+</header>
+
+<main>
+  <!-- SETUP -->
+  <section class="card" id="setupCard">
+    <h2>Start a mock interview</h2>
+    <div class="label">Job / Post you are applying for</div>
+    <input type="text" id="jobInput" placeholder="e.g. Computer Operator" maxlength="80" value="Computer Operator">
+    <div class="chips" id="jobChips">
+      <button type="button" data-job="Computer Operator">Computer Operator</button>
+      <button type="button" data-job="Sales Executive">Sales Executive</button>
+      <button type="button" data-job="Customer Service Representative">Customer Service</button>
+      <button type="button" data-job="School Teacher">Teacher</button>
+      <button type="button" data-job="Bank Officer">Bank Officer</button>
+      <button type="button" data-job="Software Developer">Software Developer</button>
+      <button type="button" data-job="Graphic Designer">Graphic Designer</button>
+      <button type="button" data-job="Nurse">Nurse</button>
+    </div>
+    <div class="label">Difficulty</div>
+    <div class="seg" id="diffSeg">
+      <button type="button" data-v="Beginner">Beginner</button>
+      <button type="button" data-v="Intermediate" class="active">Intermediate</button>
+      <button type="button" data-v="Advanced">Advanced</button>
+    </div>
+    <div class="label">Answer language</div>
+    <div class="seg" id="langSeg">
+      <button type="button" data-v="English" class="active">English</button>
+      <button type="button" data-v="Roman Urdu">Roman Urdu</button>
+      <button type="button" data-v="Urdu script">Urdu script</button>
+    </div>
+    <div class="label">Number of questions</div>
+    <div class="seg" id="countSeg">
+      <button type="button" data-v="5" class="active">5 questions</button>
+      <button type="button" data-v="10">10 questions</button>
+    </div>
+    <div class="row">
+      <button class="btn" id="btnStart">Start Interview</button>
+    </div>
+    <p class="hint">The AI asks one real interview question at a time, scores your answer out of 10, and tells you how to improve. At the end you get a full report you can download. Free — no signup, no key.</p>
+    <div class="err hidden" id="setupErr"></div>
+  </section>
+
+  <!-- INTERVIEW -->
+  <section class="card hidden" id="interviewCard">
+    <div class="qnum" id="qNum">Question 1 of 5</div>
+    <div class="prog"><div id="progBar"></div></div>
+    <div id="questionArea">
+      <p class="typing" id="questionLoading"><span class="spinner"></span>Preparing your question…</p>
+      <div class="question hidden" id="questionText"></div>
+    </div>
+    <div id="answerArea" class="hidden">
+      <div class="label">Your answer</div>
+      <textarea id="answerInput" placeholder="Type your answer here, like you would say it in the interview…" maxlength="2000"></textarea>
+      <div class="row">
+        <button class="btn" id="btnSubmit">Submit Answer</button>
+        <button class="btn ghost" id="btnStopInterview">Stop Interview</button>
+      </div>
+    </div>
+    <div id="feedbackArea" class="hidden" style="margin-top:16px">
+      <div class="label">Your score</div>
+      <span class="score-badge" id="scoreBadge">–/10</span>
+      <div class="label">Coach feedback</div>
+      <div class="fb" id="feedbackText"></div>
+      <div class="row">
+        <button class="btn" id="btnNext">Next Question</button>
+        <button class="btn ghost" id="btnFinishEarly">Finish &amp; See Report</button>
+      </div>
+    </div>
+    <div class="err hidden" id="interviewErr"></div>
+  </section>
+
+  <!-- REPORT -->
+  <section class="card hidden" id="reportCard">
+    <h2>Your interview report</h2>
+    <div class="bigscore"><span class="num" id="totalScore">0</span> <span class="of" id="totalOf">/ 50</span></div>
+    <p style="text-align:center;color:var(--muted);margin:2px 0 12px" id="totalPct">0%</p>
+    <div id="reportRows"></div>
+    <h2 style="margin-top:18px">Question by question</h2>
+    <div style="overflow-x:auto">
+      <table>
+        <thead><tr><th>#</th><th>Question</th><th>Score</th></tr></thead>
+        <tbody id="breakdownBody"></tbody>
+      </table>
+    </div>
+    <div class="row">
+      <button class="btn" id="btnDownload">Download Report (.txt)</button>
+      <button class="btn ghost" id="btnCopyReport">Copy Report</button>
+      <button class="btn ghost" id="btnNew">New Interview</button>
+    </div>
+  </section>
+
+  <!-- RECENT -->
+  <section class="card" id="recentCard">
+    <h2>Recent interviews</h2>
+    <div id="recentList"><p class="hint">No interviews yet — your finished interviews will appear here.</p></div>
+    <div class="row hidden" id="recentRow"><button class="btn ghost small" id="btnClearRecent">Clear history</button></div>
+  </section>
+</main>
+
+<footer>
+  Free tool by <a href="https://www.darktechzon.site/" target="_blank" rel="noopener">Dark Tech Zone</a> ·
+  <a href="https://whatsapp.com/channel/0029Vb9oK008V0txIkc3oj3z" target="_blank" rel="noopener">WhatsApp Channel</a> ·
+  Answers are scored by AI — treat the score as practice feedback, not a real hiring decision.
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var API_CHAT = "https://dark-tech-zone-ai.vercel.app/api/chat";
+  var API_HEALTH = "https://dark-tech-zone-ai.vercel.app/api/health";
+  var API_KEY = "DarkTech";
+  var MAX_ANSWER = 2000;
+
+  var $ = function(id){ return document.getElementById(id); };
+  var state = {
+    job: "", difficulty: "Intermediate", language: "English", count: 5,
+    questions: [], answers: [], current: 0, abort: null, report: null, busy: false
+  };
+
+  /* ---------- helpers ---------- */
+  function show(el){ el.classList.remove("hidden"); }
+  function hide(el){ el.classList.add("hidden"); }
+  function setErr(el, msg){ if(!msg){ hide(el); el.textContent=""; } else { el.textContent = msg; show(el); } }
+  function segValue(segId){
+    var b = document.querySelector("#"+segId+" button.active");
+    return b ? b.getAttribute("data-v") : "";
+  }
+  function wireSeg(segId, cb){
+    document.querySelectorAll("#"+segId+" button").forEach(function(b){
+      b.addEventListener("click", function(){
+        document.querySelectorAll("#"+segId+" button").forEach(function(x){ x.classList.remove("active"); });
+        b.classList.add("active");
+        if(cb) cb(b.getAttribute("data-v"));
+      });
+    });
+  }
+  function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+  /* ---------- AI calls ---------- */
+  async function askAI(prompt, signal){
+    var res = await fetch(API_CHAT, {
+      method: "POST",
+      headers: { "X-API-Key": API_KEY, "Content-Type": "application/json" },
+      body: JSON.stringify({ q: prompt }),
+      signal: signal || undefined
+    });
+    if(!res.ok) throw new Error("AI service returned " + res.status);
+    var reader = res.body.getReader();
+    var dec = new TextDecoder();
+    var buf = "", out = "";
+    while(true){
+      var r = await reader.read();
+      if(r.done) break;
+      buf += dec.decode(r.value, { stream: true });
+      var lines = buf.split("\n");
+      buf = lines.pop();
+      for(var i=0;i<lines.length;i++){
+        var line = lines[i].trim();
+        if(line === "data: [DONE]"){ reader.cancel(); return out.trim(); }
+        var m = line.match(/^data: (\{.*\})$/);
+        if(m){ try{ var j = JSON.parse(m[1]); if(j.chunk) out += j.chunk; }catch(e){} }
+      }
+    }
+    if(buf.trim() === "data: [DONE]") return out.trim();
+    return out.trim();
+  }
+  function langLine(){
+    if(state.language === "Roman Urdu") return "Write everything in Roman Urdu (Urdu written in English letters).";
+    if(state.language === "Urdu script") return "Write everything in Urdu script.";
+    return "Write everything in English.";
+  }
+  function questionPrompt(){
+    var asked = state.questions.length ? " Do NOT repeat any of these questions you already asked: " + state.questions.map(function(q,i){ return (i+1)+") "+q; }).join(" | ") : "";
+    return "You are a strict but fair job interviewer. Ask me ONE interview question for a " + state.job +
+      " job in Pakistan. Difficulty: " + state.difficulty + ". " + langLine() +
+      " The question must be a realistic question a real interviewer would ask for this job." + asked +
+      " Reply with ONLY the question text — no greeting, no explanation, no numbering, no quotes around it.";
+  }
+  function feedbackPrompt(q, a){
+    return "You are an interview coach scoring a job interview answer. Job: " + state.job +
+      ". Difficulty: " + state.difficulty + ". Question: \"" + q + "\" Candidate answer: \"" + a + "\" " + langLine() +
+      " Reply in this exact format and nothing else: first line exactly SCORE: X/10 where X is a whole number from 0 to 10, " +
+      "then 2 short sentences of feedback: one sentence about what was good, one sentence about how to improve the answer.";
+  }
+  function reportPrompt(){
+    var lines = state.answers.map(function(r,i){ return (i+1)+") Q: "+r.q+" | Score: "+r.score+"/10"; }).join("\n");
+    var total = state.answers.reduce(function(s,r){ return s + r.score; }, 0);
+    var max = state.answers.length * 10;
+    return "You are an interview coach. A candidate finished a mock interview for a " + state.job +
+      " job and scored " + total + " out of " + max + ". Scores by question:\n" + lines +
+      "\n" + langLine() + " Write a short final report with exactly these four sections, each on its own line starting with the label: " +
+      "OVERALL: one line with the total score and a one-line verdict. " +
+      "STRENGTHS: one line naming what the candidate did well. " +
+      "IMPROVE: one line naming the main thing to improve. " +
+      "TIP: one practical tip for the real interview. Nothing else.";
+  }
+  function parseFeedback(raw){
+    var m = raw.match(/SCORE:\s*(\d{1,2})\s*\/\s*10/i);
+    var score = m ? Math.max(0, Math.min(10, parseInt(m[1], 10))) : null;
+    var fb = raw.replace(/SCORE:\s*\d{1,2}\s*\/\s*10/i, "").trim();
+    return { score: score, feedback: fb || raw };
+  }
+  function parseReport(raw){
+    var out = { OVERALL: "", STRENGTHS: "", IMPROVE: "", TIP: "" };
+    var found = false;
+    raw.split("\n").forEach(function(line){
+      var m = line.match(/^\s*(OVERALL|STRENGTHS|IMPROVE|TIP)\s*:\s*(.+)$/i);
+      if(m){ out[m[1].toUpperCase()] = m[2].trim(); found = true; }
+    });
+    if(!found) out.OVERALL = raw.trim();
+    return out;
+  }
+
+  /* ---------- health ---------- */
+  async function checkHealth(){
+    var pill = $("statusPill");
+    try{
+      var res = await fetch(API_HEALTH, { cache: "no-store" });
+      var j = await res.json();
+      if(res.ok && j && j.status === "online"){ pill.textContent = "AI Online"; pill.classList.add("on"); }
+      else { pill.textContent = "AI Offline"; pill.classList.add("off"); }
+    }catch(e){ pill.textContent = "AI Offline"; pill.classList.add("off"); }
+  }
+
+  /* ---------- interview flow ---------- */
+  function setProgress(){
+    var done = state.answers.length;
+    $("qNum").textContent = "Question " + (state.current + 1) + " of " + state.count;
+    $("progBar").style.width = Math.round(done / state.count * 100) + "%";
+  }
+  async function fetchQuestion(){
+    setErr($("interviewErr"), "");
+    hide($("answerArea")); hide($("feedbackArea"));
+    show($("questionLoading")); hide($("questionText"));
+    $("questionLoading").innerHTML = '<span class="spinner"></span>Preparing your question…';
+    state.abort = new AbortController();
+    try{
+      var q = await askAI(questionPrompt(), state.abort.signal);
+      if(!q) throw new Error("Empty answer from AI");
+      state.questions.push(q);
+      $("questionText").textContent = q;
+      hide($("questionLoading")); show($("questionText"));
+      $("answerInput").value = "";
+      show($("answerArea"));
+      $("answerInput").focus();
+      setProgress();
+    }catch(e){
+      if(e && e.name === "AbortError") return;
+      $("questionLoading").textContent = "Could not load the question.";
+      setErr($("interviewErr"), "The AI did not answer. Check your connection and tap Start Interview again, or try again in a minute.");
+    }finally{ state.busy = false; }
+  }
+  async function submitAnswer(){
+    var a = $("answerInput").value.trim();
+    if(a.length < 3){ setErr($("interviewErr"), "Please write at least a few words for your answer."); return; }
+    if(a.length > MAX_ANSWER){ setErr($("interviewErr"), "Answer is too long — keep it under " + MAX_ANSWER + " characters."); return; }
+    if(state.busy) return;
+    state.busy = true;
+    setErr($("interviewErr"), "");
+    $("btnSubmit").disabled = true;
+    var q = state.questions[state.current];
+    hide($("answerArea"));
+    show($("questionLoading"));
+    $("questionLoading").innerHTML = '<span class="spinner"></span>Scoring your answer…';
+    state.abort = new AbortController();
+    try{
+      var raw = await askAI(feedbackPrompt(q, a), state.abort.signal);
+      var parsed = parseFeedback(raw);
+      if(parsed.score === null) throw new Error("Could not read the score");
+      var rec = { q: q, a: a, score: parsed.score, feedback: parsed.feedback };
+      state.answers.push(rec);
+      hide($("questionLoading"));
+      var badge = $("scoreBadge");
+      badge.textContent = parsed.score + "/10";
+      badge.className = "score-badge" + (parsed.score <= 3 ? " verylow" : parsed.score <= 6 ? " low" : "");
+      var fb = $("feedbackText");
+      fb.textContent = parsed.feedback;
+      fb.dir = state.language === "Urdu script" ? "rtl" : "ltr";
+      show($("feedbackArea"));
+      $("btnNext").textContent = state.answers.length >= state.count ? "See My Report" : "Next Question";
+      setProgress();
+    }catch(e){
+      if(e && e.name === "AbortError"){ state.busy = false; $("btnSubmit").disabled = false; return; }
+      show($("answerArea"));
+      hide($("questionLoading"));
+      setErr($("interviewErr"), "The AI did not score your answer. Your answer is still in the box — tap Submit Answer again.");
+    }finally{
+      $("btnSubmit").disabled = false;
+      state.busy = false;
+    }
+  }
+  async function finishInterview(){
+    hide($("interviewCard"));
+    show($("reportCard"));
+    var total = state.answers.reduce(function(s,r){ return s + r.score; }, 0);
+    var max = state.answers.length * 10;
+    var pct = max ? Math.round(total / max * 100) : 0;
+    $("totalScore").textContent = total;
+    $("totalOf").textContent = "/ " + max;
+    $("totalPct").textContent = pct + "% — " + state.answers.length + " question" + (state.answers.length === 1 ? "" : "s") + " answered · " + state.job;
+    var rows = $("reportRows");
+    rows.innerHTML = "";
+    var body = $("breakdownBody");
+    body.innerHTML = "";
+    state.answers.forEach(function(r, i){
+      var tr = document.createElement("tr");
+      var td1 = document.createElement("td"); td1.textContent = i + 1;
+      var td2 = document.createElement("td"); td2.textContent = r.q;
+      var td3 = document.createElement("td"); td3.className = "sc"; td3.textContent = r.score + "/10";
+      tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3);
+      body.appendChild(tr);
+    });
+    rows.innerHTML = '<p class="typing"><span class="spinner"></span>Writing your final report…</p>';
+    try{
+      var raw = await askAI(reportPrompt());
+      var rep = parseReport(raw);
+      state.report = rep;
+      var html = "";
+      [["OVERALL","Overall"],["STRENGTHS","Strengths"],["IMPROVE","To improve"],["TIP","Tip"]].forEach(function(pair){
+        if(rep[pair[0]]){
+          var dir = state.language === "Urdu script" ? ' dir="rtl"' : "";
+          html += '<div class="rep-row"' + dir + '><b>' + pair[1] + '</b><span>' + esc(rep[pair[0]]) + '</span></div>';
+        }
+      });
+      rows.innerHTML = html || '<p class="typing">Report could not be written — your scores are in the table below.</p>';
+    }catch(e){
+      rows.innerHTML = '<p class="typing">Report could not be written — your scores are in the table below.</p>';
+    }
+    saveRecent(total, max, pct);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  function reportText(){
+    var total = state.answers.reduce(function(s,r){ return s + r.score; }, 0);
+    var max = state.answers.length * 10;
+    var lines = [];
+    lines.push("DTZ AI INTERVIEW COACH — INTERVIEW REPORT");
+    lines.push("Job: " + state.job + " | Difficulty: " + state.difficulty + " | Language: " + state.language);
+    lines.push("Date: " + new Date().toLocaleString());
+    lines.push("Total score: " + total + "/" + max + " (" + (max ? Math.round(total/max*100) : 0) + "%)");
+    lines.push("");
+    if(state.report){
+      ["OVERALL","STRENGTHS","IMPROVE","TIP"].forEach(function(k){ if(state.report[k]) lines.push(k + ": " + state.report[k]); });
+      lines.push("");
+    }
+    state.answers.forEach(function(r, i){
+      lines.push("Q" + (i+1) + ": " + r.q);
+      lines.push("Your answer: " + r.a);
+      lines.push("Score: " + r.score + "/10");
+      lines.push("Feedback: " + r.feedback);
+      lines.push("");
+    });
+    lines.push("— Dark Tech Zone · https://www.darktechzon.site/");
+    return lines.join("\n");
+  }
+
+  /* ---------- recent ---------- */
+  function loadRecent(){
+    try{ return JSON.parse(localStorage.getItem("dtz-interview-coach-recent") || "[]"); }
+    catch(e){ return []; }
+  }
+  function renderRecent(){
+    var list = loadRecent();
+    var box = $("recentList");
+    if(!list.length){
+      box.innerHTML = '<p class="hint">No interviews yet — your finished interviews will appear here.</p>';
+      hide($("recentRow"));
+      return;
+    }
+    box.innerHTML = "";
+    list.forEach(function(r){
+      var d = document.createElement("div");
+      d.className = "recent-item";
+      var left = document.createElement("span");
+      left.textContent = r.job + " — " + r.total + "/" + r.max + " (" + r.pct + "%)";
+      var right = document.createElement("span");
+      right.className = "meta";
+      right.textContent = new Date(r.ts).toLocaleDateString();
+      d.appendChild(left); d.appendChild(right);
+      box.appendChild(d);
+    });
+    show($("recentRow"));
+  }
+  function saveRecent(total, max, pct){
+    var list = loadRecent();
+    list.unshift({ job: state.job, total: total, max: max, pct: pct, ts: Date.now() });
+    list = list.slice(0, 8);
+    try{ localStorage.setItem("dtz-interview-coach-recent", JSON.stringify(list)); }catch(e){}
+    renderRecent();
+  }
+
+  /* ---------- events ---------- */
+  wireSeg("diffSeg");
+  wireSeg("langSeg");
+  wireSeg("countSeg");
+  document.querySelectorAll("#jobChips button").forEach(function(b){
+    b.addEventListener("click", function(){ $("jobInput").value = b.getAttribute("data-job"); });
+  });
+  $("btnStart").addEventListener("click", function(){
+    var job = $("jobInput").value.trim();
+    if(job.length < 2){ setErr($("setupErr"), "Please type the job or post you are applying for."); return; }
+    setErr($("setupErr"), "");
+    state.job = job;
+    state.difficulty = segValue("diffSeg");
+    state.language = segValue("langSeg");
+    state.count = parseInt(segValue("countSeg"), 10) || 5;
+    state.questions = []; state.answers = []; state.current = 0; state.report = null;
+    hide($("setupCard")); hide($("reportCard"));
+    show($("interviewCard"));
+    setProgress();
+    state.busy = true;
+    fetchQuestion();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+  $("btnSubmit").addEventListener("click", submitAnswer);
+  $("btnStopInterview").addEventListener("click", function(){
+    if(state.abort) state.abort.abort();
+    if(state.answers.length >= 1){ finishInterview(); }
+    else {
+      hide($("interviewCard")); show($("setupCard"));
+      state.busy = false;
+    }
+  });
+  $("btnNext").addEventListener("click", function(){
+    if(state.answers.length >= state.count){ finishInterview(); return; }
+    state.current = state.answers.length;
+    hide($("feedbackArea"));
+    state.busy = true;
+    fetchQuestion();
+  });
+  $("btnFinishEarly").addEventListener("click", function(){
+    if(state.abort) state.abort.abort();
+    finishInterview();
+  });
+  $("btnDownload").addEventListener("click", function(){
+    var blob = new Blob([reportText()], { type: "text/plain;charset=utf-8" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "dtz-interview-report.txt";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 5000);
+  });
+  $("btnCopyReport").addEventListener("click", function(){
+    var txt = reportText();
+    var done = function(){ $("btnCopyReport").textContent = "Copied"; setTimeout(function(){ $("btnCopyReport").textContent = "Copy Report"; }, 2000); };
+    if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done, function(){ fallbackCopy(txt); done(); }); }
+    else { fallbackCopy(txt); done(); }
+    function fallbackCopy(t){
+      var ta = document.createElement("textarea");
+      ta.value = t; ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      try{ document.execCommand("copy"); }catch(e){}
+      ta.remove();
+    }
+  });
+  $("btnNew").addEventListener("click", function(){
+    hide($("reportCard")); show($("setupCard"));
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+  $("btnClearRecent").addEventListener("click", function(){
+    try{ localStorage.removeItem("dtz-interview-coach-recent"); }catch(e){}
+    renderRecent();
+  });
+
+  checkHealth();
+  renderRecent();
+})();
+</script>
+</body>
+</html>
