@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTZ APK Analyzer — Dark Tech Zone</title>
+<meta name="description" content="Drop any Android APK and see inside it: package name, version, SDK levels, permissions in plain English, activities, services, receivers, native libraries and security flags. 100% on your device, nothing uploaded. Free, no signup.">
+<link rel="icon" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg">
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<style>
+:root{--bg:#f7f7f8;--card:#fff;--ink:#1a1a1e;--muted:#6b7280;--line:#e5e7eb;--green:#16a34a;--green-d:#15803d;--red:#dc2626;--red-d:#b91c1c;--amber:#b45309;--amber-bg:#fef3c7;--blue:#2563eb;--soft:#f3f4f6}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+header{background:var(--card);border-bottom:1px solid var(--line);padding:14px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header img{width:40px;height:40px;border-radius:50%;object-fit:cover}
+header h1{font-size:19px;font-weight:700}
+header p{font-size:13px;color:var(--muted)}
+.pill{margin-left:auto;font-size:12px;font-weight:600;padding:5px 11px;border-radius:999px;background:#dcfce7;color:#166534;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.pill .dot{width:8px;height:8px;border-radius:50%;background:#16a34a}
+main{max-width:780px;margin:0 auto;padding:24px 16px 60px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px}
+h2{font-size:17px;margin-bottom:4px}
+h3{font-size:15px;margin:20px 0 8px}
+.sub{font-size:13px;color:var(--muted);margin-bottom:14px}
+.drop{border:2px dashed #d1d5db;border-radius:12px;padding:26px 16px;text-align:center;color:var(--muted);font-size:14px;cursor:pointer;transition:.2s;background:var(--soft)}
+.drop:hover,.drop.over{border-color:var(--green);color:var(--green-d);background:#f0fdf4}
+.drop b{color:var(--ink)}
+.btn{display:inline-block;border:none;border-radius:10px;padding:12px 20px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-green{background:var(--green);color:#fff;width:100%;margin-top:18px}
+.btn-green:hover{background:var(--green-d)}
+.btn-ghost{background:#fff;border:1px solid #d1d5db;color:var(--ink)}
+.btn-ghost:hover{border-color:var(--green);color:var(--green-d)}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.btn-row .btn{width:auto;padding:10px 16px;font-size:14px;margin-top:0}
+.status{font-size:13px;color:var(--muted);margin-top:12px;min-height:20px}
+.status.err{color:var(--red);font-weight:600}
+.hidden{display:none!important}
+.idrow{display:flex;gap:14px;align-items:center;margin-bottom:14px}
+.idrow img{width:56px;height:56px;border-radius:14px;object-fit:contain;background:var(--soft);border:1px solid var(--line)}
+.idrow h2{font-size:19px;margin:0}
+.idrow p{font-size:13px;color:var(--muted);word-break:break-all}
+.kv{display:grid;grid-template-columns:150px 1fr;gap:6px 12px;font-size:14px;margin-top:6px}
+.kv dt{color:var(--muted)}
+.kv dd{font-weight:600;word-break:break-all}
+.kv dd.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;font-weight:400}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:6px}
+.stat{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:12px 10px;text-align:center}
+.stat b{display:block;font-size:20px;line-height:1.2}
+.stat span{font-size:12px;color:var(--muted)}
+.check{display:flex;gap:10px;align-items:flex-start;padding:9px 2px;border-bottom:1px solid var(--line);font-size:14px}
+.check:last-child{border-bottom:none}
+.check .mark{flex:0 0 20px;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;margin-top:2px}
+.mark.ok{background:var(--green)}
+.mark.warn{background:#d97706}
+.mark.bad{background:var(--red)}
+.mark.info{background:var(--blue)}
+.check small{display:block;color:var(--muted);font-size:12px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;color:var(--muted);font-weight:600;padding:8px 6px;border-bottom:2px solid var(--line)}
+td{padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+td.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;word-break:break-all}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.badge.danger{background:#fee2e2;color:#991b1b}
+.badge.normal{background:#f3f4f6;color:#4b5563}
+.badge.special{background:#dbeafe;color:#1e40af}
+.badge.green{background:#dcfce7;color:#166534}
+.badge.amber{background:var(--amber-bg);color:var(--amber)}
+.badge.blue{background:#dbeafe;color:#1e40af}
+.comp{padding:8px 2px;border-bottom:1px solid var(--line);font-size:14px}
+.comp:last-child{border-bottom:none}
+.comp .nm{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13px;word-break:break-all}
+.comp .badges{margin-top:4px;display:flex;gap:6px;flex-wrap:wrap}
+.bar-row{display:grid;grid-template-columns:130px 1fr 64px;gap:10px;align-items:center;margin:8px 0;font-size:13px}
+.bar-row .nm{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-track{height:14px;background:#e5e7eb;border-radius:999px;overflow:hidden}
+.bar-track i{display:block;height:100%;background:var(--green);border-radius:999px}
+.bar-row .ct{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.file-row{display:flex;justify-content:space-between;gap:10px;padding:7px 2px;border-bottom:1px solid var(--line);font-size:13px}
+.file-row:last-child{border-bottom:none}
+.file-row .fn{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;word-break:break-all}
+.file-row .fs{color:var(--muted);white-space:nowrap}
+.note{font-size:12px;color:var(--muted);margin-top:12px}
+.recent-item{display:flex;justify-content:space-between;gap:10px;padding:10px 2px;border-bottom:1px solid var(--line);font-size:13px;cursor:pointer}
+.recent-item:last-child{border-bottom:none}
+.recent-item:hover{color:var(--green-d)}
+.recent-item small{color:var(--muted);white-space:nowrap}
+footer{text-align:center;font-size:12px;color:var(--muted);margin-top:8px}
+footer a{color:var(--green-d);font-weight:600;text-decoration:none}
+.howto{font-size:14px;color:var(--muted)}
+.howto ol{margin:6px 0 0 20px}
+.howto li{margin:4px 0}
+@media(max-width:560px){.stats{grid-template-columns:repeat(2,1fr)}.bar-row{grid-template-columns:96px 1fr 52px}.kv{grid-template-columns:120px 1fr}}
+</style>
+</head>
+<body>
+<header>
+  <img src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone logo" onerror="this.style.display='none'">
+  <div>
+    <h1>DTZ APK Analyzer</h1>
+    <p>See inside any Android APK — no upload, no signup, free</p>
+  </div>
+  <span class="pill"><span class="dot"></span>100% on-device</span>
+</header>
+<main>
+  <section class="card" id="uploadCard">
+    <h2>Analyze an APK</h2>
+    <p class="sub">Drop an .apk file below. It is read only in your browser — nothing is uploaded to any server.</p>
+    <div class="drop" id="dropZone" role="button" tabindex="0">
+      <b>Drop an APK file here</b><br>or tap to choose a file from your phone or computer
+      <input type="file" id="fileInput" accept=".apk,application/vnd.android.package-archive" class="hidden">
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" id="btnSample" type="button">Try a sample APK</button>
+      <button class="btn btn-ghost" id="btnClear" type="button">Clear recent</button>
+    </div>
+    <p class="status" id="status"></p>
+    <p class="note">Max file size 200 MB. Works with real APKs from the Play Store, APK mirrors, or your own builds. The app name is shown as a resource reference (like @string/app_name) when it lives in resources.arsc — the package name is always exact.</p>
+  </section>
+
+  <section class="card hidden" id="resultCard">
+    <div class="idrow">
+      <img id="appIcon" class="hidden" alt="App icon">
+      <div>
+        <h2 id="appTitle">App</h2>
+        <p id="appSub"></p>
+      </div>
+    </div>
+    <dl class="kv" id="kvList"></dl>
+
+    <h3>Security checks</h3>
+    <div id="secList"></div>
+
+    <h3 id="permHeading">Permissions</h3>
+    <div style="overflow-x:auto">
+      <table>
+        <thead><tr><th>Permission</th><th>Level</th><th>What it means</th></tr></thead>
+        <tbody id="permTable"></tbody>
+      </table>
+    </div>
+
+    <h3>Components</h3>
+    <div id="compList"></div>
+
+    <h3>Files inside the APK</h3>
+    <div class="stats" id="fileStats"></div>
+    <div id="fileBars"></div>
+    <div id="largestFiles"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-green" id="btnReport" type="button">Download Report (.txt)</button>
+      <button class="btn btn-ghost" id="btnCopy" type="button">Copy Summary</button>
+      <button class="btn btn-ghost" id="btnAnother" type="button">Analyze another APK</button>
+    </div>
+    <p class="status" id="reportStatus"></p>
+  </section>
+
+  <section class="card" id="recentCard">
+    <h2>Recent analyses</h2>
+    <p class="sub">Only the file name and package are remembered on this device — never the APK itself.</p>
+    <div id="recentList"><p class="note">No APK analyzed yet.</p></div>
+  </section>
+
+  <section class="card">
+    <h2>How it works</h2>
+    <div class="howto">
+      <ol>
+        <li><b>Pick an APK</b> — from your downloads, a backup, or your own build.</li>
+        <li><b>It is unzipped in your browser</b> (JSZip) and the binary AndroidManifest.xml is decoded by a built-in parser — package, version, SDK levels, permissions, activities, services, receivers, providers, native libraries and signing info.</li>
+        <li><b>Read the report</b> — dangerous permissions are explained in plain English and risky flags (debuggable, cleartext traffic, old target SDK) are highlighted.</li>
+      </ol>
+      <p class="note">This tool reads the manifest and file list only. It does not decompile code — for code, use JADX or apktool on a computer. A clean report here does not mean an app is safe; it only shows what the app declares it can do.</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>Dark Tech Zone — Free Tools &nbsp;|&nbsp; <a href="https://whatsapp.com/channel/0029Vb9oK008V0txIkc3oj3z" target="_blank" rel="noopener">Join our WhatsApp Channel</a></p>
+  </footer>
+</main>
+<script>
+// axml.js — Binary AndroidManifest.xml (AXML) parser. Pure JS, no deps.
+// Works in Node and in the browser (window.DTZAXML).
+// Parses the string pool, resource map, element tree and typed attribute values.
+(function (root, factory) {
+  if (typeof module !== 'undefined' && module.exports) module.exports = factory();
+  else root.DTZAXML = factory();
+})(typeof self !== 'undefined' ? self : this, function () {
+  'use strict';
+
+  var TYPE_REFERENCE = 0x01, TYPE_ATTRIBUTE = 0x02, TYPE_STRING = 0x03;
+  var TYPE_FLOAT = 0x04, TYPE_DIMENSION = 0x05, TYPE_FRACTION = 0x06;
+  var TYPE_INT_DEC = 0x10, TYPE_INT_HEX = 0x11, TYPE_INT_BOOLEAN = 0x12;
+  var TYPE_INT_COLOR_ARGB8 = 0x1c, TYPE_INT_COLOR_RGB8 = 0x1d;
+  var TYPE_INT_COLOR_ARGB4 = 0x1e, TYPE_INT_COLOR_RGB4 = 0x1f;
+
+  var RADIX_MULT = [1.0 / (1 << 23), 1.0 / (1 << 15), 1.0 / (1 << 7), 1.0];
+  var DIM_UNITS = ['px', 'dp', 'sp', 'pt', 'in', 'mm'];
+  var FRAC_UNITS = ['%', '%p'];
+
+  function hex(n, pad) {
+    var s = (n >>> 0).toString(16);
+    while (s.length < pad) s = '0' + s;
+    return s;
+  }
+
+  function parseAXML(buf) {
+    var bytes = buf instanceof ArrayBuffer ? new Uint8Array(buf) : buf;
+    var dv = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+    var u16 = function (o) { return dv.getUint16(o, true); };
+    var u32 = function (o) { return dv.getUint32(o, true); };
+    var f32 = function (o) { return dv.getFloat32(o, true); };
+
+    if (dv.byteLength < 8 || u32(0) !== 0x00080003) {
+      throw new Error('Not a binary Android XML file (bad magic)');
+    }
+
+    var strings = [];
+    var resMap = [];
+
+    function str(idx) {
+      if (idx === 0xFFFFFFFF || idx < 0 || idx >= strings.length) return null;
+      return strings[idx];
+    }
+
+    function readUtf16String(off) {
+      var len = u16(off); off += 2;
+      if (len === 0xFFFF) { len = u32(off); off += 4; }
+      var out = '';
+      for (var i = 0; i < len; i++) {
+        var c = u16(off + i * 2);
+        if (c === 0) break;
+        out += String.fromCharCode(c);
+      }
+      return out;
+    }
+
+    function readUtf8String(off) {
+      function readLen(o) {
+        var b = dv.getUint8(o);
+        if ((b & 0x80) === 0) return { len: b, next: o + 1 };
+        return { len: ((b & 0x7F) << 8) | dv.getUint8(o + 1), next: o + 2 };
+      }
+      var a = readLen(off);            // character length (ignored)
+      var b = readLen(a.next);         // byte length
+      var start = b.next, end = start + b.len, out = '';
+      var i = start;
+      while (i < end) {
+        var c = dv.getUint8(i++);
+        if (c === 0) break;
+        if (c < 0x80) { out += String.fromCharCode(c); continue; }
+        if ((c & 0xE0) === 0xC0 && i < end) {
+          out += String.fromCharCode(((c & 0x1F) << 6) | (dv.getUint8(i++) & 0x3F));
+        } else if ((c & 0xF0) === 0xE0 && i + 1 < end) {
+          out += String.fromCharCode(
+            ((c & 0x0F) << 12) | ((dv.getUint8(i++) & 0x3F) << 6) | (dv.getUint8(i++) & 0x3F));
+        } else if ((c & 0xF8) === 0xF0 && i + 2 < end) {
+          var cp = ((c & 0x07) << 18) | ((dv.getUint8(i++) & 0x3F) << 12) |
+                   ((dv.getUint8(i++) & 0x3F) << 6) | (dv.getUint8(i++) & 0x3F);
+          cp -= 0x10000;
+          out += String.fromCharCode(0xD800 + (cp >> 10), 0xDC00 + (cp & 0x3FF));
+        } else { out += '?'; }
+      }
+      return out;
+    }
+
+    function decodeValue(raw, type, data, dataOff) {
+      if (raw !== 0xFFFFFFFF) {
+        var s = str(raw);
+        if (s !== null) return s;
+      }
+      switch (type) {
+        case TYPE_STRING: return str(data);
+        case TYPE_REFERENCE: return '@0x' + hex(data, 8);
+        case TYPE_ATTRIBUTE: return '?0x' + hex(data, 8);
+        case TYPE_FLOAT: return String(f32(dataOff));
+        case TYPE_DIMENSION: {
+          var mant = data >> 8; // signed
+          var radix = (data >> 4) & 0x3;
+          var unit = DIM_UNITS[data & 0xF] || '?';
+          return (mant * RADIX_MULT[radix]).toFixed(2).replace(/\.?0+$/, '') + unit;
+        }
+        case TYPE_FRACTION: {
+          var m2 = data >> 8;
+          var r2 = (data >> 4) & 0x3;
+          var u2 = FRAC_UNITS[data & 0xF] || '?';
+          return (m2 * RADIX_MULT[r2]).toFixed(2).replace(/\.?0+$/, '') + u2;
+        }
+        case TYPE_INT_DEC: return String(data | 0);
+        case TYPE_INT_HEX: return '0x' + hex(data, 8);
+        case TYPE_INT_BOOLEAN: return data !== 0 ? 'true' : 'false';
+        case TYPE_INT_COLOR_ARGB8: return '#' + hex(data, 8);
+        case TYPE_INT_COLOR_RGB8: return '#' + hex(data & 0xFFFFFF, 6);
+        case TYPE_INT_COLOR_ARGB4: return '#' + hex(data & 0xFFFF, 4);
+        case TYPE_INT_COLOR_RGB4: return '#' + hex(data & 0xFFF, 3);
+        default: return String(data);
+      }
+    }
+
+    var root = { name: null, ns: null, attrs: [], children: [] };
+    var stack = [root];
+    var pos = 8;
+    while (pos + 8 <= dv.byteLength) {
+      var type = u16(pos);
+      var size = u32(pos + 4);
+      if (size < 8 || pos + size > dv.byteLength) break;
+      if (type === 0x0001) { // string pool
+        var count = u32(pos + 8);
+        var flags = u32(pos + 16);
+        var stringsStart = u32(pos + 20);
+        var utf8 = (flags & 0x100) !== 0;
+        var offsetsBase = pos + 28;
+        strings = [];
+        for (var i = 0; i < count; i++) {
+          var off = pos + stringsStart + u32(offsetsBase + i * 4);
+          strings.push(utf8 ? readUtf8String(off) : readUtf16String(off));
+        }
+      } else if (type === 0x0180) { // resource map
+        resMap = [];
+        for (var j = 8; j + 4 <= size; j += 4) resMap.push(u32(pos + j));
+      } else if (type === 0x0102) { // start element
+        var ns = u32(pos + 16);
+        var nameIdx = u32(pos + 20);
+        var attrCount = u16(pos + 28);
+        var attrs = [];
+        var ap = pos + 36;
+        for (var k = 0; k < attrCount; k++) {
+          var aNs = u32(ap), aName = u32(ap + 4), raw = u32(ap + 8);
+          var vType = dv.getUint8(ap + 15), vData = u32(ap + 16);
+          attrs.push({
+            ns: str(aNs), name: str(aName), raw: raw, type: vType, data: vData,
+            value: decodeValue(raw, vType, vData, ap + 16)
+          });
+          ap += 20;
+        }
+        var el = { name: str(nameIdx), ns: str(ns), attrs: attrs, children: [] };
+        stack[stack.length - 1].children.push(el);
+        stack.push(el);
+      } else if (type === 0x0103) { // end element
+        if (stack.length > 1) stack.pop();
+      }
+      pos += size;
+    }
+    return { root: root, strings: strings, resMap: resMap };
+  }
+
+  // ---- manifest analysis ----
+
+  function attr(el, name) {
+    if (!el) return null;
+    for (var i = 0; i < el.attrs.length; i++) {
+      if (el.attrs[i].name === name) return el.attrs[i].value;
+    }
+    return null;
+  }
+
+  function findAll(el, name, out) {
+    out = out || [];
+    if (!el) return out;
+    for (var i = 0; i < el.children.length; i++) {
+      var c = el.children[i];
+      if (c.name === name) out.push(c);
+      findAll(c, name, out);
+    }
+    return out;
+  }
+
+  function resolveClass(pkg, name) {
+    if (!name) return name;
+    if (name.charAt(0) === '.') return pkg + name;
+    if (name.indexOf('.') === -1) return pkg + '.' + name;
+    return name;
+  }
+
+  function isLauncher(el) {
+    var filters = findAll(el, 'intent-filter');
+    for (var i = 0; i < filters.length; i++) {
+      var hasMain = false, hasLauncher = false;
+      var f = filters[i];
+      for (var j = 0; j < f.children.length; j++) {
+        var c = f.children[j];
+        if (c.name === 'action' && attr(c, 'name') === 'android.intent.action.MAIN') hasMain = true;
+        if (c.name === 'category' && attr(c, 'name') === 'android.intent.category.LAUNCHER') hasLauncher = true;
+      }
+      if (hasMain && hasLauncher) return true;
+    }
+    return false;
+  }
+
+  function analyzeManifest(tree) {
+    var root = tree.root;
+    var manifest = null;
+    for (var i = 0; i < root.children.length; i++) {
+      if (root.children[i].name === 'manifest') { manifest = root.children[i]; break; }
+    }
+    if (!manifest) throw new Error('No <manifest> element found in AndroidManifest.xml');
+
+    var pkg = attr(manifest, 'package') || '';
+    var info = {
+      packageName: pkg,
+      versionCode: attr(manifest, 'versionCode'),
+      versionName: attr(manifest, 'versionName'),
+      compileSdkVersion: attr(manifest, 'compileSdkVersion'),
+      minSdkVersion: null, targetSdkVersion: null, maxSdkVersion: null,
+      appLabel: null, appIcon: null, debuggable: null, allowBackup: null,
+      usesCleartextTraffic: null, testOnly: null, largeHeap: null,
+      networkSecurityConfig: null, requestLegacyExternalStorage: null,
+      permissions: [], customPermissions: [], features: [], metaData: [],
+      activities: [], activityAliases: [], services: [], receivers: [], providers: [],
+      stringsCount: tree.strings.length
+    };
+
+    var sdk = null;
+    for (var s = 0; s < manifest.children.length; s++) {
+      if (manifest.children[s].name === 'uses-sdk') { sdk = manifest.children[s]; break; }
+    }
+    if (sdk) {
+      info.minSdkVersion = attr(sdk, 'minSdkVersion');
+      info.targetSdkVersion = attr(sdk, 'targetSdkVersion');
+      info.maxSdkVersion = attr(sdk, 'maxSdkVersion');
+    }
+
+    var app = null;
+    for (var a = 0; a < manifest.children.length; a++) {
+      if (manifest.children[a].name === 'application') { app = manifest.children[a]; break; }
+    }
+    if (app) {
+      info.appLabel = attr(app, 'label');
+      info.appIcon = attr(app, 'icon');
+      info.debuggable = attr(app, 'debuggable');
+      info.allowBackup = attr(app, 'allowBackup');
+      info.usesCleartextTraffic = attr(app, 'usesCleartextTraffic');
+      info.testOnly = attr(app, 'testOnly');
+      info.largeHeap = attr(app, 'largeHeap');
+      info.networkSecurityConfig = attr(app, 'networkSecurityConfig');
+      info.requestLegacyExternalStorage = attr(app, 'requestLegacyExternalStorage');
+
+      var kinds = [
+        ['activity', 'activities'], ['activity-alias', 'activityAliases'],
+        ['service', 'services'], ['receiver', 'receivers'], ['provider', 'providers']
+      ];
+      for (var k = 0; k < kinds.length; k++) {
+        var els = [];
+        for (var c = 0; c < app.children.length; c++) {
+          if (app.children[c].name === kinds[k][0]) els.push(app.children[c]);
+        }
+        info[kinds[k][1]] = els.map(function (el) {
+          return {
+            name: resolveClass(pkg, attr(el, 'name')),
+            shortName: attr(el, 'name'),
+            exported: attr(el, 'exported'),
+            enabled: attr(el, 'enabled'),
+            launcher: kinds[k][0] === 'activity' ? isLauncher(el) : false,
+            intentFilters: findAll(el, 'intent-filter').length
+          };
+        });
+      }
+      for (var m = 0; m < app.children.length; m++) {
+        var ch = app.children[m];
+        if (ch.name === 'meta-data') {
+          info.metaData.push({ name: attr(ch, 'name'), value: attr(ch, 'value') });
+        }
+      }
+    }
+
+    for (var p = 0; p < manifest.children.length; p++) {
+      var el = manifest.children[p];
+      if (el.name === 'uses-permission' || el.name === 'uses-permission-sdk-23' ||
+          el.name === 'uses-permission-sdk-m') {
+        var nm = attr(el, 'name');
+        if (nm) info.permissions.push(nm);
+      } else if (el.name === 'permission') {
+        info.customPermissions.push({ name: attr(el, 'name'), protectionLevel: attr(el, 'protectionLevel') });
+      } else if (el.name === 'uses-feature') {
+        info.features.push({ name: attr(el, 'name'), required: attr(el, 'required') });
+      }
+    }
+    // de-duplicate permissions, keep order
+    var seen = {}, uniq = [];
+    for (var q = 0; q < info.permissions.length; q++) {
+      if (!seen[info.permissions[q]]) { seen[info.permissions[q]] = true; uniq.push(info.permissions[q]); }
+    }
+    info.permissions = uniq;
+    return info;
+  }
+
+  // ---- APK signing block (v2/v3) detection ----
+  // Returns true when the "APK Sig Block 42" footer is present before the
+  // central directory. buf must be the whole APK file.
+  function hasApkSigningBlock(buf) {
+    var bytes = buf instanceof ArrayBuffer ? new Uint8Array(buf) : buf;
+    var dv = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+    var len = dv.byteLength;
+    var EOCD = 0x06054b50;
+    var start = Math.max(0, len - 65557);
+    var eocd = -1;
+    for (var i = len - 22; i >= start; i--) {
+      if (dv.getUint32(i, true) === EOCD) { eocd = i; break; }
+    }
+    if (eocd === -1) return false;
+    var cdOff = dv.getUint32(eocd + 16, true);
+    if (cdOff < 24 || cdOff > len) return false;
+    var magic = 'APK Sig Block 42';
+    for (var j = 0; j < 16; j++) {
+      if (dv.getUint8(cdOff - 16 + j) !== magic.charCodeAt(j)) return false;
+    }
+    return true;
+  }
+
+  return { parseAXML: parseAXML, analyzeManifest: analyzeManifest, hasApkSigningBlock: hasApkSigningBlock };
+});
+
+</script>
+<script>
+(function () {
+'use strict';
+var $ = function (id) { return document.getElementById(id); };
+var AX = (typeof DTZAXML !== 'undefined') ? DTZAXML : null;
+
+var PERM_INFO = {
+  'android.permission.INTERNET': ['normal', 'Can access the internet.'],
+  'android.permission.ACCESS_NETWORK_STATE': ['normal', 'Can check whether you are on Wi-Fi or mobile data.'],
+  'android.permission.ACCESS_WIFI_STATE': ['normal', 'Can see Wi-Fi network details.'],
+  'android.permission.CHANGE_WIFI_STATE': ['normal', 'Can turn Wi-Fi on or off.'],
+  'android.permission.BLUETOOTH': ['normal', 'Can connect to paired Bluetooth devices.'],
+  'android.permission.BLUETOOTH_ADMIN': ['normal', 'Can discover and pair Bluetooth devices.'],
+  'android.permission.BLUETOOTH_CONNECT': ['dangerous', 'Can connect to Bluetooth devices (headphones, speakers).'],
+  'android.permission.BLUETOOTH_SCAN': ['dangerous', 'Can scan for nearby Bluetooth devices.'],
+  'android.permission.BLUETOOTH_ADVERTISE': ['dangerous', 'Can make this phone visible to other Bluetooth devices.'],
+  'android.permission.NFC': ['normal', 'Can use NFC (tap to pay / tap to share).'],
+  'android.permission.VIBRATE': ['normal', 'Can make the phone vibrate.'],
+  'android.permission.WAKE_LOCK': ['normal', 'Can keep the phone awake while running.'],
+  'android.permission.FOREGROUND_SERVICE': ['normal', 'Can run a service in the foreground (shows a notification).'],
+  'android.permission.FOREGROUND_SERVICE_SPECIAL_USE': ['normal', 'Foreground service for a special use case.'],
+  'android.permission.FOREGROUND_SERVICE_DATA_SYNC': ['normal', 'Foreground service for syncing data.'],
+  'android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK': ['normal', 'Foreground service for playing media.'],
+  'android.permission.RECEIVE_BOOT_COMPLETED': ['normal', 'Can start automatically when the phone boots.'],
+  'android.permission.POST_NOTIFICATIONS': ['dangerous', 'Can show you notifications.'],
+  'android.permission.CAMERA': ['dangerous', 'Can take photos and record video.'],
+  'android.permission.RECORD_AUDIO': ['dangerous', 'Can record audio from the microphone.'],
+  'android.permission.ACCESS_FINE_LOCATION': ['dangerous', 'Can get your precise location (GPS).'],
+  'android.permission.ACCESS_COARSE_LOCATION': ['dangerous', 'Can get your approximate location (network).'],
+  'android.permission.ACCESS_BACKGROUND_LOCATION': ['dangerous', 'Can track your location even when the app is closed.'],
+  'android.permission.READ_CONTACTS': ['dangerous', 'Can read your contacts.'],
+  'android.permission.WRITE_CONTACTS': ['dangerous', 'Can add or change your contacts.'],
+  'android.permission.READ_CALL_LOG': ['dangerous', 'Can read your call history.'],
+  'android.permission.WRITE_CALL_LOG': ['dangerous', 'Can change your call history.'],
+  'android.permission.CALL_PHONE': ['dangerous', 'Can make phone calls directly.'],
+  'android.permission.READ_PHONE_STATE': ['dangerous', 'Can read your phone number, IMEI and call status.'],
+  'android.permission.READ_PHONE_NUMBERS': ['dangerous', 'Can read your phone number(s).'],
+  'android.permission.READ_SMS': ['dangerous', 'Can read your SMS messages.'],
+  'android.permission.SEND_SMS': ['dangerous', 'Can send SMS messages (may cost money).'],
+  'android.permission.RECEIVE_SMS': ['dangerous', 'Can read incoming SMS messages.'],
+  'android.permission.READ_EXTERNAL_STORAGE': ['dangerous', 'Can read files on your storage (photos, downloads).'],
+  'android.permission.WRITE_EXTERNAL_STORAGE': ['dangerous', 'Can write or delete files on your storage.'],
+  'android.permission.READ_MEDIA_IMAGES': ['dangerous', 'Can read photos on your phone.'],
+  'android.permission.READ_MEDIA_VIDEO': ['dangerous', 'Can read videos on your phone.'],
+  'android.permission.READ_MEDIA_AUDIO': ['dangerous', 'Can read music and audio files.'],
+  'android.permission.READ_MEDIA_VISUAL_USER_SELECTED': ['dangerous', 'Can read the photos/videos you selected.'],
+  'android.permission.ACCESS_MEDIA_LOCATION': ['dangerous', 'Can read location data stored in your photos.'],
+  'android.permission.BODY_SENSORS': ['dangerous', 'Can read body sensors (heart rate, steps).'],
+  'android.permission.ACTIVITY_RECOGNITION': ['dangerous', 'Can detect what you are doing (walking, driving).'],
+  'android.permission.SYSTEM_ALERT_WINDOW': ['special', 'Can draw over other apps (floating windows).'],
+  'android.permission.REQUEST_INSTALL_PACKAGES': ['special', 'Can ask to install other apps.'],
+  'android.permission.MANAGE_EXTERNAL_STORAGE': ['special', 'Can manage all files on your storage.'],
+  'android.permission.QUERY_ALL_PACKAGES': ['special', 'Can see every app installed on your phone.'],
+  'android.permission.BIND_ACCESSIBILITY_SERVICE': ['special', 'Accessibility service — can read the screen and tap for you.'],
+  'android.permission.BIND_NOTIFICATION_LISTENER_SERVICE': ['special', 'Can read all your notifications.'],
+  'android.permission.BIND_VPN_SERVICE': ['special', 'Can run a VPN and see your network traffic.'],
+  'android.permission.BIND_DEVICE_ADMIN': ['special', 'Device admin — can lock or wipe the phone.'],
+  'android.permission.WRITE_SETTINGS': ['special', 'Can change system settings.'],
+  'android.permission.INSTALL_PACKAGES': ['special', 'Can install apps silently (system apps only).'],
+  'android.permission.USE_FULL_SCREEN_INTENT': ['normal', 'Can show full-screen alerts (calls, alarms).'],
+  'android.permission.SCHEDULE_EXACT_ALARM': ['normal', 'Can set exact alarms.'],
+  'android.permission.MODIFY_AUDIO_SETTINGS': ['normal', 'Can change audio settings.'],
+  'android.permission.DISABLE_KEYGUARD': ['normal', 'Can disable the lock screen.'],
+  'android.permission.SET_WALLPAPER': ['normal', 'Can change your wallpaper.'],
+  'android.permission.FLASHLIGHT': ['normal', 'Can use the camera flash as a torch.'],
+  'android.permission.USE_BIOMETRIC': ['normal', 'Can use fingerprint / face unlock.'],
+  'android.permission.USE_FINGERPRINT': ['normal', 'Can use fingerprint unlock.'],
+  'android.permission.ACCESS_NOTIFICATION_POLICY': ['normal', 'Can read Do Not Disturb settings.'],
+  'android.permission.DOWNLOAD_WITHOUT_NOTIFICATION': ['normal', 'Can download files without showing a notification.'],
+  'android.permission.KILL_BACKGROUND_PROCESSES': ['normal', 'Can stop other apps running in the background.'],
+  'android.permission.REORDER_TASKS': ['normal', 'Can move its own tasks in the recent-apps list.'],
+  'android.permission.GET_ACCOUNTS': ['dangerous', 'Can see the accounts on your phone.'],
+  'android.permission.AUTHENTICATE_ACCOUNTS': ['dangerous', 'Can create and manage accounts.'],
+  'android.permission.USE_CREDENTIALS': ['dangerous', 'Can use your saved account credentials.'],
+  'android.permission.MANAGE_ACCOUNTS': ['dangerous', 'Can add or remove accounts.'],
+  'android.permission.READ_PROFILE': ['dangerous', 'Can read your personal profile.'],
+  'android.permission.SEND_RESPOND_VIA_MESSAGE': ['normal', 'Can send quick replies to calls.'],
+  'android.permission.PROCESS_OUTGOING_CALLS': ['dangerous', 'Can see and change outgoing calls.'],
+  'android.permission.ADD_VOICEMAIL': ['dangerous', 'Can add voicemail messages.'],
+  'android.permission.USE_SIP': ['dangerous', 'Can make internet (SIP) calls.'],
+  'android.permission.ANSWER_PHONE_CALLS': ['dangerous', 'Can answer incoming calls.'],
+  'android.permission.ACCEPT_HANDOVER': ['dangerous', 'Can take over an ongoing call.'],
+  'android.permission.MANAGE_OWN_CALLS': ['normal', 'Can manage its own calls.'],
+  'android.permission.READ_CALENDAR': ['dangerous', 'Can read your calendar events.'],
+  'android.permission.WRITE_CALENDAR': ['dangerous', 'Can add or change calendar events.'],
+  'android.permission.READ_SOCIAL_STREAM': ['dangerous', 'Can read your social feeds.'],
+  'android.permission.READ_USER_DICTIONARY': ['dangerous', 'Can read words you added to the keyboard dictionary.'],
+  'android.permission.WRITE_USER_DICTIONARY': ['dangerous', 'Can add words to the keyboard dictionary.'],
+  'android.permission.BROADCAST_STICKY': ['normal', 'Can send sticky broadcasts.'],
+  'android.permission.BROADCAST_PACKAGE_REMOVED': ['normal', 'Can broadcast when an app is removed.'],
+  'android.permission.SET_TIME_ZONE': ['normal', 'Can change the time zone.'],
+  'android.permission.SET_TIME': ['special', 'Can change the clock.'],
+  'android.permission.EXPAND_STATUS_BAR': ['normal', 'Can open or close the status bar.'],
+  'android.permission.PERSISTENT_ACTIVITY': ['normal', 'Can keep its activity always running.'],
+  'android.permission.RECEIVE_MMS': ['dangerous', 'Can receive MMS messages.'],
+  'android.permission.RECEIVE_WAP_PUSH': ['dangerous', 'Can receive WAP push messages.'],
+  'android.permission.READ_VOICEMAIL': ['dangerous', 'Can read your voicemail.'],
+  'android.permission.WRITE_VOICEMAIL': ['dangerous', 'Can write voicemail.'],
+  'android.permission.BODY_SENSORS_BACKGROUND': ['dangerous', 'Can read body sensors in the background.'],
+  'android.permission.HIGH_SAMPLING_RATE_SENSORS': ['dangerous', 'Can read sensors at a high rate.'],
+  'android.permission.NEARBY_WIFI_DEVICES': ['dangerous', 'Can see nearby Wi-Fi devices.'],
+  'android.permission.UWB_RANGING': ['dangerous', 'Can use ultra-wideband ranging.'],
+  'android.permission.TRANSMIT_IR': ['normal', 'Can use the infrared transmitter.'],
+  'android.permission.SET_ALARM': ['normal', 'Can set alarms.'],
+  'android.permission.INSTALL_SHORTCUT': ['normal', 'Can add shortcuts to the home screen.'],
+  'android.permission.UNINSTALL_SHORTCUT': ['normal', 'Can remove home screen shortcuts.']
+};
+
+var MAX_SIZE = 200 * 1024 * 1024;
+var RECENT_KEY = 'dtzApkAnalyzerRecent';
+var current = null; // {name, size, sha, info, files, v1, v2, iconUrl, reportText}
+
+function esc(s) {
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function fmtBytes(n) {
+  if (n == null || isNaN(n)) return '—';
+  if (n < 1024) return n + ' B';
+  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
+  return (n / (1024 * 1024)).toFixed(2) + ' MB';
+}
+function shortName(p) {
+  var parts = p.split('.');
+  return parts[parts.length - 1];
+}
+function permLevel(name) {
+  if (PERM_INFO[name]) return PERM_INFO[name];
+  if (name.indexOf('android.permission.') !== 0) return ['normal', 'Custom permission defined by this app or another app.'];
+  return ['normal', 'Standard Android permission.'];
+}
+function setStatus(msg, isErr) {
+  var el = $('status');
+  el.textContent = msg;
+  el.className = 'status' + (isErr ? ' err' : '');
+}
+function showResult() {
+  $('resultCard').classList.remove('hidden');
+  $('resultCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function sha256Hex(buf) {
+  if (window.crypto && crypto.subtle && crypto.subtle.digest) {
+    return crypto.subtle.digest('SHA-256', buf).then(function (h) {
+      return Array.prototype.map.call(new Uint8Array(h), function (b) {
+        return ('0' + b.toString(16)).slice(-2);
+      }).join('');
+    });
+  }
+  return Promise.resolve('unavailable in this browser');
+}
+
+function findIcon(zip) {
+  var prefs = ['xxxhdpi', 'xxhdpi', 'xhdpi', 'hdpi', 'mdpi', 'nodpi'];
+  var cands = [];
+  zip.forEach(function (path) {
+    if (/ic_launcher(_round)?\.(png|webp)$/i.test(path) && path.indexOf('mipmap') !== -1) {
+      cands.push(path);
+    }
+  });
+  cands.sort(function (a, b) {
+    var ra = prefs.findIndex(function (p) { return a.indexOf(p) !== -1; });
+    var rb = prefs.findIndex(function (p) { return b.indexOf(p) !== -1; });
+    if (ra === -1) ra = 99; if (rb === -1) rb = 99;
+    return ra - rb;
+  });
+  return cands.length ? cands[0] : null;
+}
+
+function buildSecurity(info, v1, v2) {
+  var list = [];
+  if (info.debuggable === 'true') {
+    list.push({ k: 'bad', t: 'Debuggable build', d: 'android:debuggable="true" — anyone can attach a debugger and inspect the running app. Release apps should never ship like this.' });
+  } else {
+    list.push({ k: 'ok', t: 'Not debuggable', d: 'The app does not declare itself debuggable.' });
+  }
+  if (info.allowBackup === 'true') {
+    list.push({ k: 'warn', t: 'Backups allowed', d: 'android:allowBackup="true" — app data can be pulled with adb backup on older Android versions.' });
+  } else if (info.allowBackup === 'false') {
+    list.push({ k: 'ok', t: 'Backups disabled', d: 'android:allowBackup="false" — app data cannot be backed up.' });
+  }
+  if (info.usesCleartextTraffic === 'true') {
+    list.push({ k: 'warn', t: 'Cleartext traffic allowed', d: 'android:usesCleartextTraffic="true" — the app may send data over plain http, not only https.' });
+  } else {
+    list.push({ k: 'ok', t: 'Cleartext traffic not allowed', d: 'Network traffic defaults to https only.' });
+  }
+  var target = parseInt(info.targetSdkVersion, 10);
+  if (!isNaN(target)) {
+    if (target < 31) list.push({ k: 'warn', t: 'Old target SDK (' + target + ')', d: 'The app targets Android ' + target + ' or older and may skip newer privacy and security rules.' });
+    else list.push({ k: 'ok', t: 'Modern target SDK (' + target + ')', d: 'The app targets a recent Android version.' });
+  }
+  if (info.testOnly === 'true') {
+    list.push({ k: 'warn', t: 'Test-only build', d: 'android:testOnly="true" — this APK cannot be installed normally.' });
+  }
+  if (v2) list.push({ k: 'ok', t: 'Signed with APK Signature Scheme v2/v3', d: 'The APK carries a v2/v3 signing block — the signature covers the whole file.' });
+  else list.push({ k: 'warn', t: 'No v2/v3 signing block', d: 'Only v1 (JAR) signing was found, or the signing block could not be read.' });
+  if (v1) list.push({ k: 'info', t: 'v1 (JAR) signature present', d: 'META-INF signature files found.' });
+  var exported = 0;
+  ['activities', 'services', 'receivers', 'providers'].forEach(function (kind) {
+    (info[kind] || []).forEach(function (c) { if (c.exported === 'true') exported++; });
+  });
+  if (exported > 0) list.push({ k: 'info', t: exported + ' exported component' + (exported > 1 ? 's' : ''), d: 'Exported activities, services, receivers or providers can be started by other apps.' });
+  else list.push({ k: 'ok', t: 'No exported components', d: 'No activity, service, receiver or provider is marked exported.' });
+  return list;
+}
+
+function render(info, fileMeta) {
+  var label = info.appLabel && info.appLabel.indexOf('@') !== 0 ? info.appLabel : null;
+  $('appTitle').textContent = label || info.packageName || 'Unknown app';
+  $('appSub').textContent = (info.packageName || '—') +
+    (info.versionName ? '  •  v' + info.versionName : '') +
+    (info.versionCode ? '  (' + info.versionCode + ')' : '');
+  var icon = $('appIcon');
+  if (fileMeta.iconUrl) { icon.src = fileMeta.iconUrl; icon.classList.remove('hidden'); }
+  else icon.classList.add('hidden');
+
+  var kv = [
+    ['File', fileMeta.name],
+    ['File size', fmtBytes(fileMeta.size)],
+    ['SHA-256', fileMeta.sha],
+    ['Package', info.packageName || '—'],
+    ['Version', (info.versionName || '—') + (info.versionCode ? '  (code ' + info.versionCode + ')' : '')],
+    ['Min SDK', info.minSdkVersion ? 'Android API ' + info.minSdkVersion : '—'],
+    ['Target SDK', info.targetSdkVersion ? 'Android API ' + info.targetSdkVersion : '—'],
+    ['Compile SDK', info.compileSdkVersion ? 'Android API ' + info.compileSdkVersion : '—'],
+    ['App label', info.appLabel || '—'],
+    ['Signing', (fileMeta.v2 ? 'v2/v3 block' : 'no v2 block') + (fileMeta.v1 ? ' + v1 (JAR)' : '')],
+    ['DEX files', String(fileMeta.dexCount)],
+    ['Native libraries', fileMeta.abis.length ? fileMeta.abis.join(', ') : 'none']
+  ];
+  $('kvList').innerHTML = kv.map(function (r) {
+    return '<dt>' + esc(r[0]) + '</dt><dd' + (r[0] === 'SHA-256' ? ' class="mono"' : '') + '>' + esc(r[1]) + '</dd>';
+  }).join('');
+
+  var checks = buildSecurity(info, fileMeta.v1, fileMeta.v2);
+  $('secList').innerHTML = checks.map(function (c) {
+    var mark = c.k === 'ok' ? '✓' : (c.k === 'warn' ? '!' : (c.k === 'bad' ? '✕' : 'i'));
+    return '<div class="check"><span class="mark ' + c.k + '">' + mark + '</span><div><b>' +
+      esc(c.t) + '</b><small>' + esc(c.d) + '</small></div></div>';
+  }).join('');
+
+  var dangerous = info.permissions.filter(function (p) { return permLevel(p)[0] === 'dangerous'; }).length;
+  $('permHeading').textContent = 'Permissions (' + info.permissions.length +
+    (dangerous ? ' — ' + dangerous + ' dangerous' : '') + ')';
+  $('permTable').innerHTML = info.permissions.length ? info.permissions.map(function (p) {
+    var lv = permLevel(p);
+    var badge = lv[0] === 'dangerous' ? 'danger' : (lv[0] === 'special' ? 'special' : 'normal');
+    var labelTxt = lv[0] === 'dangerous' ? 'Dangerous' : (lv[0] === 'special' ? 'Special' : 'Normal');
+    return '<tr><td class="mono">' + esc(p) + '</td><td><span class="badge ' + badge + '">' +
+      labelTxt + '</span></td><td>' + esc(lv[1]) + '</td></tr>';
+  }).join('') : '<tr><td colspan="3">No permissions declared.</td></tr>';
+
+  var compHtml = '';
+  [['Activities', 'activities'], ['Services', 'services'], ['Receivers', 'receivers'], ['Providers', 'providers']].forEach(function (pair) {
+    var arr = info[pair[1]] || [];
+    compHtml += '<h3 style="margin-top:14px">' + pair[0] + ' (' + arr.length + ')</h3>';
+    if (!arr.length) { compHtml += '<p class="note">None declared.</p>'; return; }
+    arr.forEach(function (c) {
+      var badges = '';
+      if (c.launcher) badges += '<span class="badge green">Launcher</span>';
+      if (c.exported === 'true') badges += '<span class="badge amber">Exported</span>';
+      if (c.exported === 'false') badges += '<span class="badge normal">Not exported</span>';
+      if (c.intentFilters) badges += '<span class="badge blue">' + c.intentFilters + ' intent filter' + (c.intentFilters > 1 ? 's' : '') + '</span>';
+      compHtml += '<div class="comp"><div class="nm">' + esc(c.name) + '</div>' +
+        (badges ? '<div class="badges">' + badges + '</div>' : '') + '</div>';
+    });
+  });
+  if (info.customPermissions.length) {
+    compHtml += '<h3 style="margin-top:14px">Custom permissions defined (' + info.customPermissions.length + ')</h3>';
+    info.customPermissions.forEach(function (p) {
+      compHtml += '<div class="comp"><div class="nm">' + esc(p.name || '—') + '</div>' +
+        (p.protectionLevel ? '<div class="badges"><span class="badge normal">' + esc(p.protectionLevel) + '</span></div>' : '') + '</div>';
+    });
+  }
+  if (info.features.length) {
+    compHtml += '<h3 style="margin-top:14px">Hardware features (' + info.features.length + ')</h3>';
+    info.features.forEach(function (f) {
+      compHtml += '<div class="comp"><div class="nm">' + esc(f.name || '—') + '</div>' +
+        '<div class="badges"><span class="badge ' + (f.required === 'false' ? 'normal' : 'blue') + '">' +
+        (f.required === 'false' ? 'Optional' : 'Required') + '</span></div></div>';
+    });
+  }
+  if (info.metaData.length) {
+    compHtml += '<h3 style="margin-top:14px">Meta-data (' + info.metaData.length + ')</h3>';
+    info.metaData.forEach(function (m) {
+      compHtml += '<div class="comp"><div class="nm">' + esc(m.name || '—') + '</div><div class="note" style="margin-top:2px">' +
+        esc(m.value == null ? '' : m.value) + '</div></div>';
+    });
+  }
+  $('compList').innerHTML = compHtml;
+
+  $('fileStats').innerHTML =
+    '<div class="stat"><b>' + fileMeta.totalFiles + '</b><span>files</span></div>' +
+    '<div class="stat"><b>' + fmtBytes(fileMeta.size) + '</b><span>total size</span></div>' +
+    '<div class="stat"><b>' + fileMeta.dexCount + '</b><span>DEX files</span></div>' +
+    '<div class="stat"><b>' + fileMeta.abis.length + '</b><span>native ABIs</span></div>';
+  var maxGroup = Math.max.apply(null, fileMeta.groups.map(function (g) { return g.size; }).concat([1]));
+  $('fileBars').innerHTML = fileMeta.groups.map(function (g) {
+    return '<div class="bar-row"><span class="nm">' + esc(g.name) + '</span><span class="bar-track"><i style="width:' +
+      Math.max(2, Math.round(g.size / maxGroup * 100)) + '%"></i></span><span class="ct">' + fmtBytes(g.size) + '</span></div>';
+  }).join('');
+  $('largestFiles').innerHTML = '<h3 style="margin-top:14px">Largest files</h3>' + fileMeta.largest.map(function (f) {
+    return '<div class="file-row"><span class="fn">' + esc(f.name) + '</span><span class="fs">' + fmtBytes(f.size) + '</span></div>';
+  }).join('');
+}
+
+function buildReport(info, fileMeta) {
+  var L = [];
+  L.push('DTZ APK Analyzer — report');
+  L.push('File: ' + fileMeta.name + ' (' + fmtBytes(fileMeta.size) + ')');
+  L.push('SHA-256: ' + fileMeta.sha);
+  L.push('');
+  L.push('Package: ' + (info.packageName || '—'));
+  L.push('Version: ' + (info.versionName || '—') + ' (code ' + (info.versionCode || '—') + ')');
+  L.push('Min SDK: ' + (info.minSdkVersion || '—') + ' | Target SDK: ' + (info.targetSdkVersion || '—') +
+    ' | Compile SDK: ' + (info.compileSdkVersion || '—'));
+  L.push('App label: ' + (info.appLabel || '—'));
+  L.push('Signing: ' + (fileMeta.v2 ? 'v2/v3 block' : 'no v2 block') + (fileMeta.v1 ? ' + v1 (JAR)' : ''));
+  L.push('DEX files: ' + fileMeta.dexCount + ' | Native ABIs: ' + (fileMeta.abis.join(', ') || 'none'));
+  L.push('');
+  L.push('SECURITY CHECKS');
+  buildSecurity(info, fileMeta.v1, fileMeta.v2).forEach(function (c) {
+    L.push('- [' + c.k.toUpperCase() + '] ' + c.t + ' — ' + c.d);
+  });
+  L.push('');
+  L.push('PERMISSIONS (' + info.permissions.length + ')');
+  info.permissions.forEach(function (p) {
+    var lv = permLevel(p);
+    L.push('- ' + p + ' [' + lv[0] + '] — ' + lv[1]);
+  });
+  L.push('');
+  [['Activities', 'activities'], ['Services', 'services'], ['Receivers', 'receivers'], ['Providers', 'providers']].forEach(function (pair) {
+    L.push(pair[0].toUpperCase() + ' (' + (info[pair[1]] || []).length + ')');
+    (info[pair[1]] || []).forEach(function (c) {
+      L.push('- ' + c.name + (c.launcher ? ' [LAUNCHER]' : '') + (c.exported === 'true' ? ' [exported]' : ''));
+    });
+    L.push('');
+  });
+  if (info.features.length) {
+    L.push('HARDWARE FEATURES');
+    info.features.forEach(function (f) { L.push('- ' + f.name + ' (required: ' + (f.required || '—') + ')'); });
+    L.push('');
+  }
+  if (info.metaData.length) {
+    L.push('META-DATA');
+    info.metaData.forEach(function (m) { L.push('- ' + m.name + ' = ' + (m.value == null ? '' : m.value)); });
+    L.push('');
+  }
+  L.push('LARGEST FILES');
+  fileMeta.largest.forEach(function (f) { L.push('- ' + f.name + ' (' + fmtBytes(f.size) + ')'); });
+  L.push('');
+  L.push('Generated by DTZ APK Analyzer — Dark Tech Zone (darktechzon.site/apk-analyzer/)');
+  return L.join('\n');
+}
+
+function analyzeFile(file, arrayBuf) {
+  if (!window.JSZip) { setStatus('JSZip library did not load. Check your connection and reload the page.', true); return; }
+  if (!AX) { setStatus('APK parser did not load. Reload the page and try again.', true); return; }
+  setStatus('Reading ' + file.name + ' (' + fmtBytes(file.size) + ')…');
+  var zip = new JSZip();
+  zip.loadAsync(arrayBuf).then(function (z) {
+    var manifestFile = z.file('AndroidManifest.xml');
+    if (!manifestFile) throw new Error('AndroidManifest.xml not found — this is not a valid APK.');
+    return manifestFile.async('uint8array').then(function (manBytes) {
+      var tree = AX.parseAXML(manBytes);
+      var info = AX.analyzeManifest(tree);
+      var files = [];
+      z.forEach(function (path, entry) {
+        if (entry.dir) return;
+        var sz = (entry._data && entry._data.uncompressedSize) || 0;
+        files.push({ name: path, size: sz });
+      });
+      var dexCount = files.filter(function (f) { return /\.dex$/i.test(f.name); }).length;
+      var abiSet = {};
+      files.forEach(function (f) {
+        var m = /^lib\/([^\/]+)\//.exec(f.name);
+        if (m) abiSet[m[1]] = true;
+      });
+      var groups = [
+        { name: 'Code (.dex)', size: 0 }, { name: 'Native libs', size: 0 },
+        { name: 'Resources', size: 0 }, { name: 'Assets', size: 0 },
+        { name: 'Signatures', size: 0 }, { name: 'Other', size: 0 }
+      ];
+      files.forEach(function (f) {
+        var g;
+        if (/\.dex$/i.test(f.name)) g = groups[0];
+        else if (/^lib\//.test(f.name)) g = groups[1];
+        else if (/^res\//.test(f.name) || f.name === 'resources.arsc') g = groups[2];
+        else if (/^assets\//.test(f.name)) g = groups[3];
+        else if (/^META-INF\//.test(f.name)) g = groups[4];
+        else g = groups[5];
+        g.size += f.size;
+      });
+      var v1 = files.some(function (f) { return /^META-INF\/.*\.(RSA|DSA|EC|SF)$/i.test(f.name); });
+      var v2 = AX.hasApkSigningBlock(arrayBuf);
+      var iconPath = findIcon(z);
+      var iconPromise = iconPath ? z.file(iconPath).async('blob').then(function (b) {
+        return URL.createObjectURL(b);
+      }) : Promise.resolve(null);
+      return sha256Hex(arrayBuf).then(function (sha) {
+        return iconPromise.then(function (iconUrl) {
+          var largest = files.slice().sort(function (a, b) { return b.size - a.size; }).slice(0, 8);
+          return {
+            name: file.name, size: file.size, sha: sha,
+            totalFiles: files.length, dexCount: dexCount,
+            abis: Object.keys(abiSet).sort(), groups: groups.filter(function (g) { return g.size > 0; }),
+            largest: largest, v1: v1, v2: v2, iconUrl: iconUrl
+          };
+        });
+      }).then(function (fileMeta) {
+        current = { info: info, fileMeta: fileMeta, reportText: buildReport(info, fileMeta) };
+        render(info, fileMeta);
+        showResult();
+        setStatus('');
+        saveRecent(file.name, info);
+      });
+    });
+  }).catch(function (err) {
+    setStatus('Could not analyze this file: ' + (err && err.message ? err.message : err), true);
+  });
+}
+
+function saveRecent(fileName, info) {
+  try {
+    var recents = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]');
+    recents = recents.filter(function (r) { return r.file !== fileName || r.pkg !== info.packageName; });
+    recents.unshift({
+      file: fileName, pkg: info.packageName || '—',
+      ver: info.versionName || '', date: new Date().toLocaleDateString()
+    });
+    localStorage.setItem(RECENT_KEY, JSON.stringify(recents.slice(0, 8)));
+    renderRecent();
+  } catch (e) { /* storage unavailable */ }
+}
+function renderRecent() {
+  var list = $('recentList');
+  try {
+    var recents = JSON.parse(localStorage.getItem(RECENT_KEY) || '[]');
+    if (!recents.length) { list.innerHTML = '<p class="note">No APK analyzed yet.</p>'; return; }
+    list.innerHTML = recents.map(function (r) {
+      return '<div class="recent-item"><span><b>' + esc(r.file) + '</b><br><small>' + esc(r.pkg) +
+        (r.ver ? ' v' + esc(r.ver) : '') + '</small></span><small>' + esc(r.date) + '</small></div>';
+    }).join('');
+  } catch (e) { list.innerHTML = '<p class="note">Recent list unavailable.</p>'; }
+}
+
+var SAMPLE_B64 = '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';
+function b64ToArrayBuffer(b64) {
+  var bin = atob(b64);
+  var bytes = new Uint8Array(bin.length);
+  for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return bytes.buffer;
+}
+
+function handleFile(file) {
+  if (!file) return;
+  if (file.size > MAX_SIZE) { setStatus('File is too large (max 200 MB).', true); return; }
+  var reader = new FileReader();
+  reader.onload = function () { analyzeFile(file, reader.result); };
+  reader.onerror = function () { setStatus('Could not read the file.', true); };
+  reader.readAsArrayBuffer(file);
+}
+
+var drop = $('dropZone'), input = $('fileInput');
+drop.addEventListener('click', function () { input.click(); });
+drop.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); input.click(); } });
+['dragenter', 'dragover'].forEach(function (ev) {
+  drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add('over'); });
+});
+['dragleave', 'drop'].forEach(function (ev) {
+  drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove('over'); });
+});
+drop.addEventListener('drop', function (e) {
+  var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+  if (f) handleFile(f);
+});
+input.addEventListener('change', function () { handleFile(input.files[0]); input.value = ''; });
+
+$('btnSample').addEventListener('click', function () {
+  try {
+    var buf = b64ToArrayBuffer(SAMPLE_B64);
+    analyzeFile({ name: 'sample-app.apk' }, buf);
+  } catch (e) { setStatus('Sample could not be loaded.', true); }
+});
+$('btnClear').addEventListener('click', function () {
+  try { localStorage.removeItem(RECENT_KEY); } catch (e) {}
+  renderRecent();
+  setStatus('Recent list cleared.');
+});
+$('btnAnother').addEventListener('click', function () {
+  $('resultCard').classList.add('hidden');
+  $('uploadCard').scrollIntoView({ behavior: 'smooth' });
+  setStatus('');
+});
+$('btnReport').addEventListener('click', function () {
+  if (!current) return;
+  var blob = new Blob([current.reportText], { type: 'text/plain' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = (current.info.packageName || 'apk') + '-analysis.txt';
+  document.body.appendChild(a); a.click(); a.remove();
+  $('reportStatus').textContent = 'Report downloaded.';
+});
+$('btnCopy').addEventListener('click', function () {
+  if (!current) return;
+  var info = current.info, fm = current.fileMeta;
+  var summary = (info.packageName || 'Unknown app') +
+    (info.versionName ? ' v' + info.versionName : '') +
+    ' — ' + info.permissions.length + ' permissions, ' +
+    info.activities.length + ' activities, ' + info.services.length + ' services, ' +
+    info.receivers.length + ' receivers, ' + info.providers.length + ' providers. ' +
+    'Target SDK ' + (info.targetSdkVersion || '—') + '. ' +
+    'SHA-256: ' + fm.sha + ' — via DTZ APK Analyzer';
+  function done(ok) { $('reportStatus').textContent = ok ? 'Summary copied.' : 'Copy failed — select the text manually.'; }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(summary).then(function () { done(true); }, function () { done(false); });
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = summary; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); done(true); } catch (e) { done(false); }
+    ta.remove();
+  }
+});
+
+renderRecent();
+})();
+</script>
+</body>
+</html>
