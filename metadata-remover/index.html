@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTZ Photo Metadata Remover — Dark Tech Zone</title>
+<meta name="description" content="See the hidden data inside your photos — camera, GPS location, date, software, AI prompts — then strip it all before you share. 100% on your device, nothing uploaded. Free, no signup.">
+<link rel="icon" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg">
+<style>
+:root{--bg:#f7f7f8;--card:#fff;--ink:#1a1a1e;--muted:#6b7280;--line:#e5e7eb;--green:#16a34a;--green-d:#15803d;--red:#dc2626;--red-d:#b91c1c;--amber:#b45309;--blue:#2563eb;--soft:#f3f4f6}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+header{background:var(--card);border-bottom:1px solid var(--line);padding:14px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header img{width:40px;height:40px;border-radius:50%;object-fit:cover}
+header h1{font-size:19px;font-weight:700}
+header p{font-size:13px;color:var(--muted)}
+.pill{margin-left:auto;font-size:12px;font-weight:600;padding:5px 11px;border-radius:999px;background:#dcfce7;color:#166534;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.pill .dot{width:8px;height:8px;border-radius:50%;background:#16a34a}
+main{max-width:820px;margin:0 auto;padding:24px 16px 60px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px}
+h2{font-size:17px;margin-bottom:4px}
+.sub{font-size:13px;color:var(--muted);margin-bottom:14px}
+.btn{border:none;border-radius:10px;padding:12px 20px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-green{background:var(--green);color:#fff}
+.btn-green:hover{background:var(--green-d)}
+.btn-ghost{background:#fff;border:1px solid var(--line);color:var(--ink)}
+.btn-ghost:hover{background:var(--soft)}
+.btn-red{background:var(--red);color:#fff}
+.btn-red:hover{background:var(--red-d)}
+.btn:disabled{opacity:.55;cursor:default}
+.btn-sm{padding:8px 14px;font-size:13px}
+.hint{font-size:13px;color:var(--muted);margin-top:10px}
+.err{background:#fef2f2;border:1px solid #fecaca;color:var(--red-d);border-radius:10px;padding:12px 14px;font-size:14px;margin-top:14px}
+.note{background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;border-radius:10px;padding:12px 14px;font-size:13px;margin-top:14px}
+.okbox{background:#f0fdf4;border:1px solid #bbf7d0;color:#166534;border-radius:10px;padding:12px 14px;font-size:13px;margin-top:14px}
+.hidden{display:none!important}
+.drop{border:2px dashed #cbd5e1;border-radius:14px;padding:28px 16px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s}
+.drop:hover,.drop.over{border-color:var(--green);background:#f0fdf4}
+.drop .big{font-size:16px;font-weight:700}
+.drop .small{font-size:13px;color:var(--muted);margin-top:4px}
+.drop input{display:none}
+.rowbtns{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.rowbtns .btn{flex:1;min-width:150px}
+.filecard{border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:14px}
+.filehead{display:flex;gap:12px;align-items:flex-start}
+.filehead img{width:72px;height:72px;object-fit:cover;border-radius:10px;border:1px solid var(--line);background:var(--soft);flex:none}
+.filehead .nm{font-weight:700;font-size:14px;word-break:break-all}
+.filehead .mt{font-size:12px;color:var(--muted);margin-top:2px}
+.badge{display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:#fee2e2;color:#991b1b}
+.badge-grey{background:#f3f4f6;color:#4b5563}
+.badge-green{background:#dcfce7;color:#166534}
+.badge-amber{background:#fef3c7;color:#92400e}
+.badge-blue{background:#dbeafe;color:#1e40af}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.chip{font-size:12px;font-weight:600;border-radius:999px;padding:4px 10px;background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
+.chip.ok{background:#f0fdf4;color:#166534;border-color:#bbf7d0}
+.chip.info{background:#eff6ff;color:#1e40af;border-color:#bfdbfe}
+table.meta{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}
+table.meta td{padding:6px 4px;border-top:1px solid var(--line);vertical-align:top}
+table.meta td:first-child{color:var(--muted);width:130px;font-weight:600}
+table.meta td:last-child{word-break:break-word}
+table.meta a{color:var(--blue);font-weight:600;text-decoration:none}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.cleanline{font-size:13px;margin-top:10px}
+.cleanline b{color:var(--green-d)}
+.bar{height:8px;border-radius:99px;background:#e5e7eb;margin-top:10px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--green);border-radius:99px}
+.summary{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.summary .txt{font-size:14px;font-weight:600}
+.summary .btns{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.recent-list{display:flex;flex-direction:column;gap:6px}
+.recent-item{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:13px;background:#fff}
+.recent-item .when{color:var(--muted);font-size:12px;white-space:nowrap}
+.clearlink{background:none;border:none;color:var(--red);font-size:13px;font-weight:600;cursor:pointer;padding:0}
+ul.tight{margin:6px 0 0 18px;font-size:13px;color:#374151}
+ul.tight li{margin-top:4px}
+footer{max-width:820px;margin:0 auto;padding:0 16px 40px;color:var(--muted);font-size:13px;text-align:center}
+footer a{color:var(--green-d);font-weight:600;text-decoration:none}
+@media(max-width:560px){header h1{font-size:17px}.filehead img{width:56px;height:56px}table.meta td:first-child{width:104px}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+</head>
+<body>
+<header>
+<img src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone logo">
+<div><h1>DTZ Photo Metadata Remover</h1><p>See what your photos leak — then strip it before you share.</p></div>
+<span class="pill"><span class="dot"></span>100% on-device</span>
+</header>
+<main>
+<div class="card">
+<h2>Drop your photos here</h2>
+<p class="sub">Every photo hides data: camera model, the exact date, your GPS location, the app that made it — and AI images even carry their prompt. This tool shows you everything, then removes it. Your pixels are never re-encoded: the image data is copied byte-for-byte, only the metadata blocks are cut out.</p>
+<div class="drop" id="dropZone" tabindex="0" role="button" aria-label="Choose photos">
+<div class="big">Tap to choose photos, or drag &amp; drop them here</div>
+<div class="small">You can also paste a copied image (Ctrl+V). JPG, PNG, WebP, GIF · up to 20 files, 25 MB each.</div>
+<input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp,image/gif" multiple>
+</div>
+<div class="rowbtns">
+<button class="btn btn-green" id="btnPick">Choose photos</button>
+<button class="btn btn-ghost" id="btnSample">Try the sample photo</button>
+</div>
+<p class="hint">Nothing is uploaded to any server — the files never leave your device. No signup, no key, no account.</p>
+<div id="errBox" class="err hidden"></div>
+</div>
+
+<div id="filesCard" class="card hidden">
+<div class="summary">
+<span class="txt" id="summaryTxt"></span>
+<span class="btns">
+<button class="btn btn-red btn-sm" id="btnCleanAll">Remove metadata from all</button>
+<button class="btn btn-green btn-sm" id="btnZipAll">Download all cleaned (.zip)</button>
+<button class="btn btn-ghost btn-sm" id="btnClearAll">Clear list</button>
+</span>
+</div>
+<div id="fileList"></div>
+</div>
+
+<div class="card">
+<h2>What gets removed</h2>
+<ul class="tight">
+<li><b>EXIF</b> — camera make &amp; model, lens, date &amp; time taken, orientation, exposure settings.</li>
+<li><b>GPS location</b> — the exact latitude, longitude and altitude where the photo was taken.</li>
+<li><b>XMP &amp; IPTC</b> — editing history, keywords, copyright and app tags (Photoshop, Lightroom…).</li>
+<li><b>AI &amp; C2PA tags</b> — generator prompts stored in PNG text chunks, and Content Credentials (JUMBF) blocks.</li>
+<li><b>Comments &amp; timestamps</b> — JPEG comments, PNG creation time, GIF comments.</li>
+</ul>
+<div class="note">Kept on purpose: your image itself, its size and quality, and the colour profile (ICC) so colours stay exactly the same.</div>
+<div class="note" style="margin-top:10px">Honest limits: HEIC photos (iPhone default) are not supported in the browser yet — on iPhone, share the photo as JPG first, or set Camera &gt; Formats &gt; Most Compatible. Some apps (like WhatsApp) already strip metadata when you send a photo — this tool is for direct sharing, uploads and downloads, where the data survives.</div>
+</div>
+
+<div class="card" id="recentCard">
+<div style="display:flex;align-items:center;gap:10px"><h2 style="margin:0">Recent clean-ups</h2><button class="clearlink" id="btnClearRecent" style="margin-left:auto">Clear</button></div>
+<p class="sub">Only file names are remembered on this device — never the photos themselves.</p>
+<div class="recent-list" id="recentList"></div>
+</div>
+</main>
+<footer>
+Made by <a href="https://whatsapp.com/channel/0029Vb9oK008V0txIkc3oj3z" target="_blank" rel="noopener">Dark Tech Zone</a> — free tools for the community.
+</footer>
+<script>
+"use strict";
+
+/* ===== CORE START — pure functions, no DOM. Node tests extract this block. ===== */
+function dtzU8(buf){ return buf instanceof Uint8Array ? buf : new Uint8Array(buf); }
+function dtzAscii(b, off, len){ let s=""; for(let i=0;i<len;i++){ const c=b[off+i]; if(c===0) break; s+=String.fromCharCode(c); } return s; }
+function dtzFmtBytes(n){ if(n<1024) return n+" B"; if(n<1048576) return (n/1024).toFixed(1)+" KB"; return (n/1048576).toFixed(2)+" MB"; }
+function dtzFmtGps(v, ref){ const d=Math.floor(v), m=Math.floor((v-d)*60), s=((v-d)*3600-m*60).toFixed(1); return d+"° "+m+"' "+s+"\" "+ref; }
+
+function dtzParseTiff(b, base){
+  if(base+8 > b.length) return null;
+  const le = b[base]===0x49 && b[base+1]===0x49;
+  const be = b[base]===0x4D && b[base+1]===0x4D;
+  if(!le && !be) return null;
+  const u16 = o => le ? (b[o]|(b[o+1]<<8)) : ((b[o]<<8)|b[o+1]);
+  const u32 = o => le ? ((b[o]|(b[o+1]<<8)|(b[o+2]<<16)|(b[o+3]<<24))>>>0) : (((b[o]<<24)|(b[o+1]<<16)|(b[o+2]<<8)|b[o+3])>>>0);
+  if(u16(base+2)!==42) return null;
+  const TSIZE={1:1,2:1,3:2,4:4,5:8,6:1,7:1,8:2,9:4,10:8,11:4,12:8};
+  function readIfd(off){
+    if(off<0 || off+2 > b.length) return {};
+    const n=u16(base+off); const out={};
+    for(let i=0;i<n;i++){
+      const e=base+off+2+i*12; if(e+12 > b.length) break;
+      const tag=u16(e), type=u16(e+2), count=u32(e+4);
+      const sz=TSIZE[type]||1, total=sz*count;
+      const vo = total<=4 ? e+8 : base+u32(e+8);
+      if(vo<0 || vo+Math.min(total,8) > b.length) continue;
+      let val=null;
+      if(type===2) val=dtzAscii(b,vo,count);
+      else if(type===3){ val=[]; for(let k=0;k<count;k++) val.push(u16(vo+k*2)); if(count===1) val=val[0]; }
+      else if(type===4){ val=[]; for(let k=0;k<count;k++) val.push(u32(vo+k*4)); if(count===1) val=val[0]; }
+      else if(type===5||type===10){ val=[]; for(let k=0;k<count;k++){ const num=u32(vo+k*8), den=u32(vo+k*8+4); val.push(den?num/den:0); } if(count===1) val=val[0]; }
+      else if(type===1||type===7||type===6){ val=[]; for(let k=0;k<count;k++) val.push(b[vo+k]); if(count===1) val=val[0]; }
+      else if(type===9){ val=[]; for(let k=0;k<count;k++){ let v=u32(vo+k*4); if(v>=0x80000000) v-=0x100000000; val.push(v);} if(count===1) val=val[0]; }
+      out[tag]=val;
+    }
+    return out;
+  }
+  const ifd0=readIfd(u32(base+4));
+  const out={ifd0:ifd0, exif:{}, gps:{}};
+  if(ifd0[0x8769]!==undefined && typeof ifd0[0x8769]==="number") out.exif=readIfd(ifd0[0x8769]);
+  if(ifd0[0x8825]!==undefined && typeof ifd0[0x8825]==="number") out.gps=readIfd(ifd0[0x8825]);
+  return out;
+}
+function dtzExifFields(t){
+  const f={};
+  const g0=t.ifd0||{}, gx=t.exif||{}, gg=t.gps||{};
+  if(g0[0x010F]) f.make=String(g0[0x010F]).trim();
+  if(g0[0x0110]) f.model=String(g0[0x0110]).trim();
+  if(g0[0x0131]) f.software=String(g0[0x0131]).trim();
+  if(g0[0x0132]) f.dateTime=String(g0[0x0132]).trim();
+  if(g0[0x0112]!==undefined) f.orientation=g0[0x0112];
+  if(g0[0x0100]!==undefined) f.width=g0[0x0100];
+  if(g0[0x0101]!==undefined) f.height=g0[0x0101];
+  // Some writers (e.g. Pillow) put these tags straight in IFD0 instead of a separate Exif IFD — check both.
+  if(gx[0x9003]||g0[0x9003]) f.dateOriginal=String(gx[0x9003]||g0[0x9003]).trim();
+  if(gx[0xA434]||g0[0xA434]) f.lens=String(gx[0xA434]||g0[0xA434]).trim();
+  if(gx[0x8827]!==undefined) f.iso=gx[0x8827]; else if(g0[0x8827]!==undefined) f.iso=g0[0x8827];
+  if(gx[0x920A]!==undefined) f.focal=gx[0x920A]; else if(g0[0x920A]!==undefined) f.focal=g0[0x920A];
+  if(gx[0x829D]!==undefined) f.fNumber=gx[0x829D]; else if(g0[0x829D]!==undefined) f.fNumber=g0[0x829D];
+  if(gg[0x0002] && gg[0x0004]){
+    const latA=Array.isArray(gg[0x0002])?gg[0x0002]:[gg[0x0002],0,0];
+    const lngA=Array.isArray(gg[0x0004])?gg[0x0004]:[gg[0x0004],0,0];
+    let lat=latA[0]+(latA[1]||0)/60+(latA[2]||0)/3600;
+    let lng=lngA[0]+(lngA[1]||0)/60+(lngA[2]||0)/3600;
+    if(String(gg[0x0001]||"N").toUpperCase()==="S") lat=-lat;
+    if(String(gg[0x0003]||"E").toUpperCase()==="W") lng=-lng;
+    f.gps={lat:lat, lng:lng};
+    if(gg[0x0006]!==undefined) f.gps.alt=gg[0x0006];
+    if(gg[0x001D]) f.gps.date=String(gg[0x001D]).trim();
+  }
+  return f;
+}
+
+function dtzDetectFormat(b){
+  if(b.length>=2 && b[0]===0xFF && b[1]===0xD8) return "JPEG";
+  if(b.length>=8 && b[0]===0x89 && b[1]===0x50 && b[2]===0x4E && b[3]===0x47) return "PNG";
+  if(b.length>=12 && dtzAscii(b,0,4)==="RIFF" && dtzAscii(b,8,4)==="WEBP") return "WebP";
+  if(b.length>=6 && (dtzAscii(b,0,6)==="GIF87a" || dtzAscii(b,0,6)==="GIF89a")) return "GIF";
+  return null;
+}
+
+function dtzReadJpeg(b){
+  const blocks=[], fields={}; let width=null, height=null, i=2;
+  while(i+4 <= b.length){
+    if(b[i]!==0xFF){ break; }
+    const marker=b[i+1];
+    if(marker===0xD8 || marker===0x01 || (marker>=0xD0 && marker<=0xD7)){ i+=2; continue; }
+    if(marker===0xDA){ break; } // SOS: scan data follows, stop
+    if(i+4 > b.length) break;
+    const len=(b[i+2]<<8)|b[i+3];
+    if(len<2 || i+2+len > b.length) break;
+    const segStart=i+4, segLen=len-2;
+    if(marker>=0xC0 && marker<=0xCF && marker!==0xC4 && marker!==0xC8 && marker!==0xCC){
+      height=(b[segStart+1]<<8)|b[segStart+2]; width=(b[segStart+3]<<8)|b[segStart+4];
+    } else if(marker===0xE1){
+      const isExif = b[segStart]===0x45 && b[segStart+1]===0x78 && b[segStart+2]===0x69 && b[segStart+3]===0x66 && b[segStart+4]===0x00 && b[segStart+5]===0x00;
+      if(isExif){
+        blocks.push({kind:"exif", label:"EXIF data", bytes:len+2});
+        const t=dtzParseTiff(b, segStart+6);
+        if(t) Object.assign(fields, dtzExifFields(t));
+      } else if(dtzAscii(b,segStart,28)==="http://ns.adobe.com/xap/1.0/" || dtzAscii(b,segStart,24)==="http://ns.adobe.com/xmp/"){
+        blocks.push({kind:"xmp", label:"XMP metadata", bytes:len+2});
+      } else {
+        blocks.push({kind:"app1", label:"APP1 block", bytes:len+2});
+      }
+    } else if(marker===0xED){
+      blocks.push({kind:"iptc", label:"IPTC / Photoshop data", bytes:len+2});
+    } else if(marker===0xEB){
+      if(dtzAscii(b,segStart,5)==="JUMBF") blocks.push({kind:"c2pa", label:"C2PA Content Credentials (JUMBF)", bytes:len+2});
+      else blocks.push({kind:"app11", label:"APP11 block", bytes:len+2});
+    } else if(marker===0xFE){
+      blocks.push({kind:"comment", label:"JPEG comment", bytes:len+2, detail:dtzAscii(b,segStart,Math.min(segLen,120))});
+    } else if(marker===0xE2){
+      blocks.push({kind:"icc", label:"Colour profile (ICC) — kept", bytes:len+2, keep:true});
+    }
+    i+=2+len;
+  }
+  return {blocks:blocks, fields:fields, width:width, height:height};
+}
+function dtzReadPng(b){
+  const blocks=[], fields={}; let width=null, height=null, pngText=[];
+  if(b.length<8) return {blocks:blocks, fields:fields, width:width, height:height};
+  width=(b[16]<<24)|(b[17]<<16)|(b[18]<<8)|b[19];
+  height=(b[20]<<24)|(b[21]<<16)|(b[22]<<8)|b[23];
+  let i=8;
+  while(i+8 <= b.length){
+    const len=((b[i]<<24)|(b[i+1]<<16)|(b[i+2]<<8)|b[i+3])>>>0;
+    const type=dtzAscii(b,i+4,4);
+    if(i+12+len > b.length) break;
+    const dataOff=i+8;
+    if(type==="tEXt"){
+      let nul=dataOff; while(nul<dataOff+len && b[nul]!==0) nul++;
+      const key=dtzAscii(b,dataOff,nul-dataOff);
+      const val=dtzAscii(b,nul+1,dataOff+len-(nul+1));
+      pngText.push({key:key, value:val});
+      blocks.push({kind:"png-text", label:"PNG text: "+key, bytes:len+12, detail:val.slice(0,120)});
+    } else if(type==="zTXt" || type==="iTXt"){
+      let nul=dataOff; while(nul<dataOff+len && b[nul]!==0) nul++;
+      const key=dtzAscii(b,dataOff,nul-dataOff);
+      pngText.push({key:key, value:"(compressed / international text)"});
+      blocks.push({kind:"png-text", label:"PNG text: "+key, bytes:len+12});
+    } else if(type==="eXIf"){
+      blocks.push({kind:"exif", label:"EXIF data", bytes:len+12});
+      const t=dtzParseTiff(b, dataOff);
+      if(t) Object.assign(fields, dtzExifFields(t));
+    } else if(type==="tIME"){
+      blocks.push({kind:"time", label:"Creation time", bytes:len+12});
+    } else if(type==="iCCP"){
+      blocks.push({kind:"icc", label:"Colour profile (ICC) — kept", bytes:len+12, keep:true});
+    }
+    if(type==="IEND") break;
+    i+=12+len;
+  }
+  return {blocks:blocks, fields:fields, width:width, height:height, pngText:pngText};
+}
+function dtzReadWebp(b){
+  const blocks=[], fields={}; let width=null, height=null, i=12;
+  while(i+8 <= b.length){
+    const type=dtzAscii(b,i,4);
+    const len=(b[i+4]|(b[i+5]<<8)|(b[i+6]<<16)|(b[i+7]<<24))>>>0;
+    if(i+8+len > b.length) break;
+    const dataOff=i+8;
+    if(type==="VP8X" && len>=10){
+      width=1+((b[dataOff+4])|(b[dataOff+5]<<8)|(b[dataOff+6]<<16));
+      height=1+((b[dataOff+7])|(b[dataOff+8]<<8)|(b[dataOff+9]<<16));
+    } else if(type==="EXIF"){
+      blocks.push({kind:"exif", label:"EXIF data", bytes:len+8});
+      let off=dataOff;
+      if(b[off]===0x45 && b[off+1]===0x78 && b[off+2]===0x69 && b[off+3]===0x66 && b[off+4]===0x00 && b[off+5]===0x00) off+=6;
+      const t=dtzParseTiff(b, off);
+      if(t) Object.assign(fields, dtzExifFields(t));
+    } else if(type==="XMP "){
+      blocks.push({kind:"xmp", label:"XMP metadata", bytes:len+8});
+    } else if(type==="ICCP"){
+      blocks.push({kind:"icc", label:"Colour profile (ICC) — kept", bytes:len+8, keep:true});
+    }
+    i+=8+len+(len%2);
+  }
+  return {blocks:blocks, fields:fields, width:width, height:height};
+}
+function dtzReadGif(b){
+  const blocks=[], fields={}; let width=null, height=null;
+  if(b.length<13) return {blocks:blocks, fields:fields, width:width, height:height};
+  width=b[6]|(b[7]<<8); height=b[8]|(b[9]<<8);
+  const packed=b[10];
+  let i=13 + ((packed&0x80)?3*(1<<((packed&0x07)+1)):0);
+  while(i < b.length){
+    const tag=b[i];
+    if(tag===0x3B) break;
+    if(tag===0x21){
+      const label=b[i+1];
+      if(label===0xFE){
+        let j=i+2, text="";
+        while(j < b.length && b[j]!==0){ const n=b[j]; text+=dtzAscii(b,j+1,Math.min(n,200)); j+=1+n; }
+        blocks.push({kind:"comment", label:"GIF comment", bytes:(j-i)+1, detail:text.slice(0,120)});
+        i=j+1; continue;
+      }
+      if(label===0xFF){
+        let j=i+2; const appLen=b[j]||0;
+        const appId=dtzAscii(b,j+1,Math.min(appLen,11));
+        if(appId==="XMP DataXMP"){
+          let k=j+1+appLen, total=0;
+          while(k < b.length && b[k]!==0){ total+=1+b[k]; k+=1+b[k]; }
+          blocks.push({kind:"xmp", label:"XMP metadata", bytes:(k-i)+1});
+        }
+        while(j < b.length && b[j]!==0){ j+=1+b[j]; }
+        i=j+1; continue;
+      }
+      let j=i+2;
+      while(j < b.length && b[j]!==0){ j+=1+b[j]; }
+      i=j+1; continue;
+    }
+    if(tag===0x2C){
+      const p=b[i+9];
+      let j=i+10 + ((p&0x80)?3*(1<<((p&0x07)+1)):0) + 1;
+      while(j < b.length && b[j]!==0){ j+=1+b[j]; }
+      i=j+1; continue;
+    }
+    break;
+  }
+  return {blocks:blocks, fields:fields, width:width, height:height};
+}
+
+function dtzReadMetadata(buf){
+  const b=dtzU8(buf);
+  const format=dtzDetectFormat(b);
+  if(!format) return {ok:false, error:"Not a supported image — this tool reads JPG, PNG, WebP and GIF files."};
+  let r;
+  if(format==="JPEG") r=dtzReadJpeg(b);
+  else if(format==="PNG") r=dtzReadPng(b);
+  else if(format==="WebP") r=dtzReadWebp(b);
+  else r=dtzReadGif(b);
+  const removable=r.blocks.filter(x=>!x.keep);
+  const metaBytes=removable.reduce((s,x)=>s+x.bytes,0);
+  const risks=[];
+  if(r.fields.gps) risks.push("GPS location");
+  if(r.fields.make||r.fields.model) risks.push("Camera model");
+  if(r.fields.dateTime||r.fields.dateOriginal) risks.push("Date & time taken");
+  if(r.fields.software) risks.push("Software tag");
+  if(r.blocks.some(x=>x.kind==="xmp")) risks.push("XMP editing data");
+  if(r.blocks.some(x=>x.kind==="iptc")) risks.push("IPTC keywords");
+  if(r.blocks.some(x=>x.kind==="c2pa")) risks.push("C2PA / AI credentials");
+  if(r.blocks.some(x=>x.kind==="png-text")) risks.push("Embedded text" + (r.pngText&&r.pngText.some(t=>/parameters|prompt/i.test(t.key))?" (AI prompt)":""));
+  if(r.blocks.some(x=>x.kind==="comment")) risks.push("Hidden comment");
+  if(r.blocks.some(x=>x.kind==="time")) risks.push("Creation time");
+  return {ok:true, format:format, width:r.width, height:r.height, blocks:r.blocks, fields:r.fields,
+    pngText:r.pngText||[], removable:removable, metaBytes:metaBytes, risks:risks, totalBytes:b.length};
+}
+
+function dtzStripJpeg(b){
+  const out=[]; out.push(0xFF,0xD8);
+  let i=2;
+  while(i+4 <= b.length){
+    if(b[i]!==0xFF) break;
+    const marker=b[i+1];
+    if(marker===0xD8 || marker===0x01 || (marker>=0xD0 && marker<=0xD7)){ out.push(0xFF,marker); i+=2; continue; }
+    if(marker===0xDA){ for(let k=i;k<b.length;k++) out.push(b[k]); return new Uint8Array(out); }
+    if(i+4 > b.length) break;
+    const len=(b[i+2]<<8)|b[i+3];
+    if(len<2 || i+2+len > b.length) break;
+    const drop = marker===0xE1 || marker===0xED || marker===0xEB || marker===0xFE;
+    if(!drop){ for(let k=i;k<i+2+len;k++) out.push(b[k]); }
+    i+=2+len;
+  }
+  for(let k=i;k<b.length;k++) out.push(b[k]);
+  return new Uint8Array(out);
+}
+function dtzStripPng(b){
+  const out=[]; for(let k=0;k<8;k++) out.push(b[k]);
+  let i=8;
+  while(i+8 <= b.length){
+    const len=((b[i]<<24)|(b[i+1]<<16)|(b[i+2]<<8)|b[i+3])>>>0;
+    const type=dtzAscii(b,i+4,4);
+    if(i+12+len > b.length) break;
+    const drop = type==="tEXt"||type==="zTXt"||type==="iTXt"||type==="eXIf"||type==="tIME";
+    if(!drop){ for(let k=i;k<i+12+len;k++) out.push(b[k]); }
+    if(type==="IEND") break;
+    i+=12+len;
+  }
+  return new Uint8Array(out);
+}
+function dtzStripWebp(b){
+  const chunks=[]; let i=12, hasVpx=false;
+  while(i+8 <= b.length){
+    const type=dtzAscii(b,i,4);
+    const len=(b[i+4]|(b[i+5]<<8)|(b[i+6]<<16)|(b[i+7]<<24))>>>0;
+    if(i+8+len > b.length) break;
+    const drop = type==="EXIF"||type==="XMP ";
+    if(type==="VP8X") hasVpx=true;
+    if(!drop){
+      const chunk=Array.from(b.slice(i, i+8+len+(len%2)));
+      if(type==="VP8X" && len>=1){
+        if(chunk[8+0]!==undefined){ chunk[8]=chunk[8]&~0x08&~0x04; }
+      }
+      chunks.push(chunk);
+    }
+    i+=8+len+(len%2);
+  }
+  let total=4; chunks.forEach(c=>{ total+=c.length; });
+  const out=[];
+  out.push(0x52,0x49,0x46,0x46); // RIFF
+  out.push(total&0xFF,(total>>8)&0xFF,(total>>16)&0xFF,(total>>24)&0xFF);
+  out.push(0x57,0x45,0x42,0x50); // WEBP
+  chunks.forEach(c=>{ for(let k=0;k<c.length;k++) out.push(c[k]); });
+  return new Uint8Array(out);
+}
+function dtzStripGif(b){
+  const out=[];
+  if(b.length<13) return new Uint8Array(b);
+  const packed=b[10];
+  const gctSize=(packed&0x80)?3*(1<<((packed&0x07)+1)):0;
+  for(let k=0;k<13+gctSize;k++) out.push(b[k]);
+  let i=13+gctSize;
+  while(i < b.length){
+    const tag=b[i];
+    if(tag===0x3B){ out.push(0x3B); break; }
+    if(tag===0x21){
+      const label=b[i+1];
+      if(label===0xFE){ // comment: drop
+        let j=i+2; while(j < b.length && b[j]!==0){ j+=1+b[j]; } i=j+1; continue;
+      }
+      if(label===0xFF){
+        let j=i+2; const appLen=b[j]||0;
+        const appId=dtzAscii(b,j+1,Math.min(appLen,11));
+        if(appId==="XMP DataXMP"){ let k=j+1+appLen; while(k < b.length && b[k]!==0){ k+=1+b[k]; } i=k+1; continue; }
+        out.push(0x21,0xFF);
+        let k=j; while(k < b.length && b[k]!==0){ const n=b[k]; for(let m=k;m<k+1+n;m++) out.push(b[m]); k+=1+n; }
+        out.push(0); i=k+1; continue;
+      }
+      out.push(0x21,label);
+      let j=i+2;
+      while(j < b.length && b[j]!==0){ const n=b[j]; for(let k=j;k<j+1+n;k++) out.push(b[k]); j+=1+n; }
+      out.push(0); i=j+1; continue;
+    }
+    if(tag===0x2C){
+      const p=b[i+9];
+      const lctSize=(p&0x80)?3*(1<<((p&0x07)+1)):0;
+      for(let k=i;k<i+10+lctSize+1;k++) out.push(b[k]);
+      let j=i+10+lctSize+1;
+      while(j < b.length && b[j]!==0){ const n=b[j]; for(let k=j;k<j+1+n;k++) out.push(b[k]); j+=1+n; }
+      out.push(0); i=j+1; continue;
+    }
+    break;
+  }
+  return new Uint8Array(out);
+}
+
+function dtzStripMetadata(buf){
+  const b=dtzU8(buf);
+  const format=dtzDetectFormat(b);
+  if(!format) return {ok:false, error:"Not a supported image — this tool reads JPG, PNG, WebP and GIF files."};
+  let clean;
+  if(format==="JPEG") clean=dtzStripJpeg(b);
+  else if(format==="PNG") clean=dtzStripPng(b);
+  else if(format==="WebP") clean=dtzStripWebp(b);
+  else clean=dtzStripGif(b);
+  const verify=dtzReadMetadata(clean);
+  const leftovers=verify.ok?verify.removable.length:-1;
+  return {ok:true, format:format, cleaned:clean, originalBytes:b.length, cleanedBytes:clean.length,
+    removedBytes:b.length-clean.length, leftovers:leftovers, verify:verify};
+}
+/* ===== CORE END ===== */
+
+/* ===== UI ===== */
+const SAMPLE_B64="/9j/4AAQSkZJRgABAQAAAQABAAD/4QFIRXhpZgAATU0AKgAAAAgABgEPAAIAAAASAAAAVgEQAAIAAAANAAAAaAExAAIAAAAPAAAAdgEyAAIAAAAUAAAAhoglAAQAAAABAAAAmpADAAIAAAAUAAABLAAAAABEVFogU2FtcGxlIENhbWVyYQBEVFotUGhvbmUgWDEAAERUWiBDYW1lcmEgMS4wAAAyMDI2OjExOjIzIDE4OjMwOjAwAAAHAAAAAQAAAAQCAgAAAAEAAgAAAAJOAAAAAAIABQAAAAMAAAD0AAMAAgAAAAJFAAAAAAQABQAAAAMAAAEMAAUAAQAAAAEAAAAAAAYABQAAAAEAAAEkAAAAAAAAABgAAAABAAAAMwAAAAEAAAA2AAAAAQAAAEMAAAABAAAAAAAAAAEAAAAkAAAAAQAAAAwAAAABMjAyNjoxMToyMyAxODozMDowMAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAFAAeADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD5q204LTwtOC1+jXOJSGBaULTwtOC0rmqkMC04LTwtKFqbmqkMC04LTwtOC1NzVSGBaULUgWlC0rmqkMC04LTwtOC1NzVSIwtOC08LTgtK5qpDAtKFqQLSham5opDAtOC08LTgtTc1UhgWlC1IFpQtK5qpDAtOC08LTgtTc1UiMLTgtPC04LU3NVIYFpQtSBaULSuaqQwLTgtPC04LU3NVIYFpQtSBaULU3NVIYFpwWnhacFpXNFIjC04LTwtOC1NzVSGBaULUgWlC0rmqkMC04LTwtOC1NzVSGBaULTwtOC1NzVSGBacBTwtKFpXNVIYFpwWnhacFqbmqkMC0oWpAtKFqbmikMC04LTwtOC0rmqkR7acFp4WnBam5qpDAtKFqQLShaVzVSGBacFp4WnBam5qpDAtKFqQLSham5qpDAtOC08LTgtK5opEYWnBaeFpwWpuaqR5AFpwWnhacFr6u5/NikMC0oWnhacFqbmqkMC04LTwtKFqbmqkMC04LTwtOC0rmqkMC0oWpAtKFqbmqkMC04LTwtOC1NzVSIwtOC08LTgtK5qpDAtKFqQLSham5opDAtOC08LTgtK5qpDAtKFqQLSham5qpDAtOC08LTgtTc1UiMLTgtPC04LSuaqQwLShakC0oWpuaqQwLTgtPC04LU3NVIYFpQtSBaULSuaKQwLTgtPC04LU3NVIjC04LTwtOC1NzVSGBaULUgWlC0rmqkMC04LTwtOC1NzVSGBaULTwtOC0rmqkMC0oWpNtKFqbmqkMC04LTwtOC1NzRSGBaULUgWlC1NzVSGBacFp4WnBaVzVSIwtOC08LTgtTc1UhgWlC1IFpQtK5qpDAtOC08LTgtTc1UhgWlC1IFpQtTc1UhgWnBaeFpwWlc0UiMLTgtPC04LU3NVI8gC04LTwtOC19Xc/mxSGBaULTwtOC1NzVSGBacFp4WlC0rmqkMC04LTwtOC1LZqpDAtKFqQLSham5qpDAtOC08LTgtK5qpDAtKFp4WnBam5qpDAtOC08LSham5opDAtOC08LTgtK5qpDAtKFqQLSham5qpDAtOC08LTgtTc1UiMLTgtPC04LSuaqQwLShakC0oWpuaqQwLTgtPC04LU3NFIYFpQtSBaULSuaqQwLTgtPC04LU3NVIjC04LTwtOC1NzVSGBaULUgWlC0rmqkMC04LTwtOC1NzVSGBaULTwtOC0rmqkMC04LTwtKFqbmikMC04LTwtOC1NzVSGBaULUgWlC0rmqkMC04LTwtOC1NzVSIwtOC08LTgtTc1UhgWlC1IFpQtK5qpDAtOC08LTgtTc1UhgWlC1IFpQtTc0UhgWnBaeFpwWlc1UiMLTgtPC04LU3NVI8gC04LTwtOC19Xc/mxSGBaULUgWlC1NzVSGBacFp4WnBaVzVSIwtOC08LTgtTc1UhgWlC1IFpQtTc1UhgWnBaeFpwWlc0UiMLTgtPC04LU3NVIYFpwWnhaULU3NVIYFpwWnhacFpXNVIYFpQtSBaULU3NVIYFpwWnhacFpXNVIjC04LTwtOC1NzVSGBaXbUgWlC1NzVSGBacFp4WnBaVzRSGBaULUgWlC1NzVSGBacFp4WnBam5qpEYWnBaeFpwWlc1UhgWlC1IFpQtTc1UhgWnBaeFpwWpuaqQwLShakC0oWlc0UhgWnBaeFpwWpuaqRGFpwWnhacFqbmqkMC0oWpAtKFpXNVIYFpwWnhacFqbmqkRhacFp4WnBaVzVSGBaULUgWlC1NzVSGBacFp4WnBam5opDAtKFqQLShaVzVSGBacFp4WnBam5qpEYWnBaeFpwWpuaqR5AFpwWnhacFr6u5/NikRhacFp4WnBam5qpDAtKFqQLShaVzVSGBacFp4WnBam5qpDAtKFqQLShaVzRSGBacFp4WnBam5qpEYWnBaeFpwWpuaqQwLShakC0oWlc1UhgWnBaeFp22puaqQwLShakC0oWpuaqQwLShakC04LSuaqRGFpwWnhacFqbmqkMC0oWpAtKFqbmikMC04LTwtOC0rmqkRhacFqQLSham5qpDAtKFqQLShaVzVSGBacFp4WnBam5qpDAtKFqQLSham5qpDAtOC08LTgtK5qpEYWnBaeFpwWpuaKQwLShakC0oWpuaqQwLTgtPC04LSuaqQwLSgVIFpQtTc1UhgWnBaeFpwWlc1UiMLTgtPC04LU3NVIYFpQtSBaULU3NVIYFpwWnhacFqbmikMC0oWnhacFpXNVIYFpwWnhaULU3NVIYFpwWnhacFpXNVI8gC04LTwtOC19Vc/mxSIwtOC08LTgtK5qpDAtKFqQLSham5qpDAtOC08LTgtTc1UhgWlC1IFpQtK5opDAtOC08LTgtTc1UiMLTgtPC04LSuaqQwLShakC0oWpuaqQwLTgtPC04LU3NVIYFpQtSBaULSuaqQwLTgtPC04LU3NVIjC04LTwtOC1NzRSGBaULUgWlC0rmqkMC04LTwtOC1NzVSGBaULTwtOC1NzVSGBacFp4WlC0rmqkMC04LTwtOC1NzVSGBaULUgWlC1LZqpDAtOC08LTgtK5opEYWnBaeFpwWpuaqQwLShakC0oWpuaqQwLTgtPC04LSuaqQwLShak20oWpuaqQwLTgtPC04LSuaqRGFpwWnhacFqbmqkMC0oWpAtKFqbmikMC04LTwtOC0rmqkMC0oWpAtKFqWzVSGBacFp4WnBam5qpEYWnBaeFpwWlc1UjyALTgtPC04LX1Vz+bFIjC04LTwtOC0rmqkMC0oWpAtKFqbmqkMC04LTwtOC0rmikMC0oWpAtKFqbmqkMC04LTwtOC1NzVSIwtOC08LTgtK5qpDAtKFqQLSham5qpDAtOC08LTgtTc1UhgWlC1IFpQtK5qpDAtOC08LTgtTc0UiMLTgtPC04LU3NVIYFpQtSBaULSuaqQwLTgtPC04LU3NVIYFpQtPC04LU3NVIYFpwWnhaULSuaqQwLTgtPC04LU3NVIYFpQtSBaULSuaqQwLTgtPC04LU3NFIYFpQtPC04LU3NVIYFpQtSBaULSuaqQwLTgtPC04LU3NVIYFpQtSBaULU3NVIYFpwWnhacFpXNVIjC04LTwtOC1NzRSGBaULUgWlC1NzVSGBacFp4WnBaVzVSGBaULTwtOC1NzVSGBacFp4WnBaVzVSIwtOC08LTgtTc1UjyALTgtPC04LX1dz+bFIjC04LUgWlC1NzVSGBaULUgWlC1NzRSGBacFp4WnBaVzVSGBaULUgWlC1NzVSGBacFp4WnBam5qpEYWnBaeFpwWlc1UhgWlC1IFpQtTc1UhgWnBaeFpwWlc0UhgWlC1IFpQtTc1UhgWnBaeFpwWpuaqRGFpwWnhacFqWzVSGBaULUgWlC0rmqkMC04LTwtOC1NzVSIwtOC1IFpQtK5qpDAtOC08LSham5qpDAtOC08LTgtTc0UhgWlC1IFpQtK5qpDNtOC08LTgtTc1UhgWlC08LTgtTc1UhgWlC1IFpQtK5qpDAtOC08LTgtS2aqQwLShakC0oWpuaqQwLTgtPC04LSuaKRGFpwWnhacFqbmqkMC0oWpAtKFqbmqkMC04LTwtOC0rmqkMC0oWpAtKFqbmqkMC04LTwtOC0rmqkRhacFp4WnBam5qpHkAWnAU8LTgtfV3P5sUiMLTgtPC04LU3NVIYFpQtSBaULSuaKQwLTgtPC04LU3NVIYBShakC0oWpuaqQwLTgtPC04LSuaqRGFpwWnhacFqbmqkMC0oWpAtKFqbmqkMC04LTwtOC0rmqkRhacFp4WnBam5opDAtKFqQLS7am5qpDAtOC08LTgtK5qpDAtKFqQLSham5qpDAtOC08LTgtTc1UiMLTgtP204LSuaqQwLShakC0oWpuaqQwLTgtPC04LSuaqQwLShakC0oWpuaKQwLShakC04LU3NVIjC04LTwtOC0rmqkMC0oWpAtKFqbmqkMC04LTwtOC1NzVSGBaXbTwtOC0rmikMC04LTwtKFqbmqkMC04CnhacFqbmqkMC0oWpAtKFpXNVIYFpwWnhacFqbmqkMC0oWnhacFpXNVIYBShakC04LU3NVIjC04LTwtOC1NzVSPIAtOC08LSha+rufzWpDAtOC08LTgtTc1UhgWlC1IFpQtK5qpDAtOC08LTgtTc1UiMLTgtPC04LU3NVIYFpQtSBacFpXNVIjC04LTwtOC1NzVSGBaULUgWlC0rmqkMC04LTwtOC1NzRSIwtOC08LTgtTc1UhgWlC1IFpQtK5qpDAtOC08LTgtTc1UhgWlC1IFpQtTc1UhgWnBaeFpwWlc1UiMLTgtPC04LU3NVIYFpQtSBaULU3NFIYFpwWnhacFpXNVIYFpQtSBaULU3NVIYFpwWnhacFqbmqkRhacFp4WnBaVzVSGBaULUgWlC1NzVSGBacFp4WnBaVzVSIwtOC08LTgtTc1UhgWlC1IFpQtTc0UhgWnBaeFpwWlc1UhgWlC1IFpQtTc1UhgWnBaeFpwWpuaqRGFpwWnhacFpXNVIYFpQtSBaULU3NVIYFpwWnhacFqbmqkeQBacFp4WnBa+rufzWpEYWnBaeFpwWlc1UhgWlC1IFpQtTc1UhgWnBaeFpwWpuaqQwLShaeFpwWlc1UhgWnBaeFpQtS2aqQwLTgtPC04LU3NFIYFpQtSBaULSuaqQwLTgtPC04LU3NVIYFpQtPC04LU3NVIYFpwWnhaULSuaqQwLTgtPC04LU3NVIYFpQtSBaULU3NVIYFpwWnhacFpXNVIjC04LTwtOC1NzRSGBaULUgWlC0mzVSGBacFp4WnBam5qpDAtKFqQLSham5qpDAtOC08LTgtK5qpEYWnBaeFpwWpuaqQwLShakC0oWpuaqQwLTgtPC04LSuaKQwLShakC0oWpuaqQwLTgtPC0oWpuaqQwLTgtPC04LSuaqQwLShakC0oWpuaqQwLTgtPC04LU3NVIYFpQtPC04LSuaqQwLTgtPC0oWpuaqQwLTgtPC04LU3NFI8gC04LTwtOC19Xc/mxSIwtOC08LTgtK5qpDAtKFqQLSham5qpDAtOC08LTgtTc1UhgWlC1IFpQtK5qpDAtKFqQLTgtTc1UiMLTgtPC04LSuaKQwLShakC0oWpuaqQwLTgtPC04LU3NVIjC04LUgWlC1NzVSGBaULUgWnBaVzVSIwtOC08LTgtTc1UhgWlC1IFpQtK5qpDAtOC08LTgtTc0UhgWlC08LTgtTc1UhgWlC1IFpQtK5qpDAtOC08LTgtTc1UhgWlC1IFpQtTc1UhgWnBaeFpwWlc1UiMLTgtPC04LU3NVIZtpQtSBaULU3NFIYFpwWnhacFpXNVIYFpQtSBaULU3NVIYFpwWnhacFqbmqkRhacFp4WnBaVzVSGBaULUgWlC1NzVSGBacFp4WnBaVzVSIwtOC1IFpQtTc0UhgWlC1IFpQtTc1UhgWnBaeFpwWlc1UjyALS7akC0oWvqrn82KQwLTgtPC04LSuaqQwLShakC0oWpuaqQwLTgtPC04LSuaqRHtpwWnhacFqbmqkMC0oWpAtKFqbmqkMApwWnhacFpXNFIYFpQtSBaULU3NVIYFpwWnhacFqbmqkRhacFp4WnBaVzVSGBaULUgWlC1NzVSGBacFp4WnBam5qpDAtKFqQLShaVzVSGBacFp4WnBam5opEYWnBaeFpwWlc1UhgWlC1IFpQtTc1UhgWnBaftpwWpuaqQwLShakC0oWlc1UhgWnBaeFpQtTc1UhgWnBaeFpwWpuaqQwLShakC0oWlc0UhgWnBaeFpwWpuaqRGFpwWnhacFqbmqkMC0oWpAtKFpXNVIYFp22nhacFqbmqkMC0oWpAtKFpXNVIYFpwWnhacFqbmqkRhacFp4WnBam5opDAtKFqQLShaVzVSGBacFp4WnBam5qpHkAWlC1IFpQtfV3P5sUhgWnBaeFpwWpuaqQwLShakC0oWpuaqQwLTgtPC04LSuaqRGFpwWnhacFqbmqkMC0oWpAtKFqbmikMC04LTwtOC0rmqkMC0oWpAtKFqbmqkMC04LTwtOC0rmqkRhacFp4WnBam5qpDAtKFqQLSham5qpDAtOC08LTgtK5qpDAtKFqQLSham5opDAtKFqQLTgtTc1UiMLTgtPC04LSuaqQwLShakC0oWpuaqQwLTgtPC04LU3NVIjC04LUgWlC0rmqkMC0oWpAtKFqbmqkMC04LTwtOC0rmikMC0oWpAtLtqbmqkMC04LTwtOC1NzVSIwtOC08LTgtK5qpDAtKFqQLSham5qpDAtOC08LTgtTc1UhgWlC1IFpQtK5qpDAtOC08LTgtTc0UiMLTgtPC04LU3NVIYFpQtSBaULSuaqQwLTgtPC04LUtmqkeQBacFp4WlC19Xc/mxSGBacFp4WnBam5qpDAtKFqQLShaVzVSGBacFp4WnBam5qpEYWnBaeFpwWpuaKQwLShakC0oWlc1UhgWnBaeFpwWpuaqQwLShakC0oWpuaqQwLTgtPC04LSuaqRGFpwWnhacFqbmqkMC0oWpAtKFqbmqkMC04LTwtOC0rmikMC0oWpAtKFqbmqkMC04LTwtOC1NzVSIwtOC08LTgtK5qpDAtKFqQLSham5qpDAtOC08LTgtK5qpDAtKFp4WnBam5qpDAtOC08LSham5qpDAtOC08LTgtK5opDAtKFqQLSham5qpDAtOC08LTgtTc1UhgWlC08LTgtK5qpDAtKFqQLSham5qpDAtOC08LTgtTc1UhgWlC1IFpQtK5qpDAtOC08LTgtTc0UiMLTgtPC04LU3NVIYFpQtSBaULSuaqQwLTgtPC04LU3NVI8gC04LTwtKFr6u5/NikMC04LTwtOC1NzVSGBaULUgWlC0rmqkMC04LTwtOC1NzRSIwtOC08LTgtTc1UhgWlC1IFpQtK5qpDAtOC08LTgtTc1UhgWlC1IFpQtTc1UhgWnBaeFpwWlc1UiMLTgtPC04LU3NVIYFpQtSBaULSuaKQwLTgtPC04LU3NVIYFpQtSBaULU3NVIYFpwWnhacFpXNVIjC04LTwtOC1NzVSGBaULUgWlC1NzVSGBadtp4WnBaVzVSGBaULUgWlC1NzVSGBacFp4WnBam5opEYWnBaeFpwWlc1UhgWlC1IFpQtTc1UhgWnBaeFpwWpuaqQwLShakC0oWlc1UhgWlC1IFpQtS2aqQwLTgtPC04LSuaqQwLShakC0oWpuaKQwLTgtPC04LU3NVIjC04LTwtOC0rmqkMC0oWpAtKFqbmqkMC04LTwtOC1NzVSPIAtKFqQLSha+rufzYpDAtOC08LTgtTc1UhgWlAqQLShaVzVSGBacFp4WnBam5opEYWnBaeFpwWlc1UhgWlC1IFpQtTc1Uhm2nBaeFpwWpuaqQwLShakC0oWlc1UhgWnBaeFpwWpuaqRGFpwWnhacFqbmqkMC0oWpAtKFpXNFIYFpwWnhacFqbmqkRhacFqQLShaVzVSGBaULUgWlC1NzVSGBacFp4WnBam5qpDAtKFqQLShaVzVSGBacFp4WnBam5qpEYWnBaeFpwWpuaKQwLShakC0oWlc1UhgWnBaeFpwWpuaqQwLShakC0oWpuaqQwLTgtPC04LSuaqRGFpwWnhacFqbmqkMC0oWpAtKFpXNVIYFpwWnhacFqbmikMC0oWnhacFqbmqkMC04CnhaULU3NVIYFpwWnhacFpXNVIYFpQtSBaULU3NVIYFpwWnhacFpXNVI8gC0oWpAtKFr6q5/NikMC04LTwtOC0rmqkMC0oWpNtKFqbmikMC04LTwtOC1NzVSIwtOC08LTgtK5qpDAtKFqQLSham5qpDAtOC08LTgtK5qpDAtKFp4WnBals1UhgWnBaeFpwWpuaqRGFpwWnhacFpXNFIYFpQtSBaULU3NVIYFpwWnhacFqbmqkRhacFp4WnBaVzVSGBaULUgWlC1NzVSGBacFp4WnBam5qpDAtKFqQLShaVzVSGBacFp4WnBam5opEYWnBaeFpwWpuaqQwLShakC0oWlc1UhgWnBaeFpwWpuaqQwLShakC0oWlc1UhgWnBaeFpwWpuaqRGFpwWnhadtqbmqkMC0oWpAtKFpXNFIYFpwWnhacFqbmqkMC0oWnhacFqbmqkMC0oWpNtOC0rmqkRhacFp4WnBam5qpDAtKFqQLSham5qpDAtOC08LTgtK5qpHkAWlC1IFpQtfVXP5sUhgWnBaeFpwWlc1UhgWlC1IFpQtTc0UhgWnBaeFpwWlc1UiMLTgtPC04LU3NVIYFpQtSBaULU3NVIYFpwWnhacFpXNVIYFpQtPC04LU3NVIYFpwWnhaULU3NVIYFpwWnhacFpXNFIYFpQtSBaULU3NVIYFpwWnhacFqbmqkMC0oWnhacFpXNVIYFpwWnhaULU3NVIYFpwWnhacFpXNVIYFpQtSBaULU3NFIYFpwWnhacFqbmqkRhacFp4WnBaTZqpDAtKFqQLSham5qpDAtOC08LTgtTc1UhgWlC1IFpQtK5qpDAtOC08LSham5qpDAtOC08LTgtTc0UhgWlC1IFpQtK5qpDAtOC08LTgtTc1UhgWlC08LTgtTc1UhgWnBaeFpQtK5qpDAtOC08LTgtS2aqQwLShakC0oWlc1UhgWnBaeFpwWpuaqR5AFpQtSBaULX1dz+a1IYFpwWnhacFqWzVSGBaULUgWlC1NzVSGBacFp4WnBaVzVSIwtOC08LTgtTc1UhgWlC1IFpQtTc1UhgWnBaeFpwWlc1UhgWlC1IFpQtTc1UhgWnBaeFpwWlc0UiMLTgtPC04LU3NVIYFpQtSBaULU3NVIYFpwWnhacFqbmqkMC0oWnhacFpXNVIYFpwWnhaULU3NVIYFpwWnhacFpXNVIYFpQtSBaULU3NFIYFpwWnhacFqbmqkRhacFp4WnBaVzVSGBaXbUgWlC1NzVSGBacFp4WnBam5qpDAtKFqQLShaVzVSGBacFp4WnBam5qpEYWnBaeFpwWlc0UhgWlC1IFpQtTc1UhgWnBaeFpwWpuaqQwLShakC0oWlc1UhgWnBaeFpwWpuaqRGFpwWnhacFqbmqkMC0oWpAtKFpXNVIYFpwWnhacFqbmikf/2Q==";
+const MAX_FILES=20, MAX_MB=25;
+const $=id=>document.getElementById(id);
+const els={drop:$("dropZone"), input:$("fileInput"), err:$("errBox"), list:$("fileList"), card:$("filesCard"),
+  summary:$("summaryTxt"), recent:$("recentList"), cleanAll:$("btnCleanAll"), zipAll:$("btnZipAll"), clearAll:$("btnClearAll")};
+let items=[]; // {id,name,size,type,bytes,meta,cleaned,cleanedBytes,thumbUrl,error}
+let uidSeq=0;
+function showErr(msg){ els.err.textContent=msg; els.err.classList.remove("hidden"); }
+function hideErr(){ els.err.classList.add("hidden"); }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function fmtDate(s){
+  if(!s) return "";
+  const m=/^(\d{4}):(\d{2}):(\d{2})[ T](\d{2}):(\d{2}):(\d{2})/.exec(s);
+  if(m) return m[3]+" "+["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][+m[2]-1]+" "+m[1]+", "+m[4]+":"+m[5];
+  return s;
+}
+function loadRecent(){
+  try{ return JSON.parse(localStorage.getItem("dtzMetaRemoverRecent")||"[]"); }catch(e){ return []; }
+}
+function saveRecent(name, removed){
+  try{
+    const r=loadRecent();
+    r.unshift({name:name, removed:removed, when:new Date().toLocaleString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})});
+    localStorage.setItem("dtzMetaRemoverRecent", JSON.stringify(r.slice(0,8)));
+  }catch(e){}
+}
+function renderRecent(){
+  const r=loadRecent();
+  els.recent.innerHTML = r.length ? r.map(x=>'<div class="recent-item"><span>'+esc(x.name)+' — '+esc(x.removed)+' removed</span><span class="when">'+esc(x.when)+'</span></div>').join("") : '<p class="hint">No clean-ups yet — your first cleaned photo will show up here.</p>';
+}
+function metaTable(it){
+  const f=it.meta.fields||{};
+  const rows=[];
+  if(f.make||f.model) rows.push(["Camera", esc([f.make,f.model].filter(Boolean).join(" "))]);
+  if(f.lens) rows.push(["Lens", esc(f.lens)]);
+  if(f.dateOriginal||f.dateTime) rows.push(["Taken on", esc(fmtDate(f.dateOriginal||f.dateTime))]);
+  if(f.gps){
+    const g=f.gps;
+    const maps="https://www.google.com/maps?q="+g.lat.toFixed(6)+","+g.lng.toFixed(6);
+    let gtxt=dtzFmtGps(Math.abs(g.lat), g.lat>=0?"N":"S")+" · "+dtzFmtGps(Math.abs(g.lng), g.lng>=0?"E":"W");
+    if(g.alt!==undefined) gtxt+=" · "+Math.round(g.alt)+" m altitude";
+    rows.push(["GPS location", esc(gtxt)+' <a href="'+maps+'" target="_blank" rel="noopener">View on map</a>']);
+  }
+  if(f.software) rows.push(["Software", esc(f.software)]);
+  if(f.iso!==undefined) rows.push(["ISO", esc(String(f.iso))]);
+  if(f.focal!==undefined) rows.push(["Focal length", esc(String(f.focal))+" mm"]);
+  if(f.fNumber!==undefined) rows.push(["Aperture", "f/"+esc(String(f.fNumber))]);
+  if(f.orientation!==undefined) rows.push(["Orientation", esc(String(f.orientation))]);
+  if(it.meta.width&&it.meta.height) rows.push(["Dimensions", it.meta.width+" × "+it.meta.height+" px"]);
+  (it.meta.pngText||[]).forEach(t=>{
+    rows.push([esc(t.key), esc(t.value.length>200?t.value.slice(0,200)+"…":t.value)]);
+  });
+  it.meta.blocks.forEach(bk=>{
+    if(bk.detail) rows.push([esc(bk.label), esc(bk.detail)]);
+  });
+  if(!rows.length) return "";
+  return '<table class="meta">'+rows.map(r=>"<tr><td>"+r[0]+"</td><td>"+r[1]+"</td></tr>").join("")+"</table>";
+}
+function render(){
+  els.card.classList.toggle("hidden", items.length===0);
+  const totalMeta=items.reduce((s,it)=>s+(it.meta&&it.meta.metaBytes||0),0);
+  const cleanedCount=items.filter(it=>it.cleaned).length;
+  els.summary.textContent = items.length+" file"+(items.length>1?"s":"")+" · "+dtzFmtBytes(totalMeta)+" of hidden metadata found"+(cleanedCount?" · "+cleanedCount+" cleaned":"");
+  els.cleanAll.disabled = items.every(it=>it.cleaned||it.error);
+  els.zipAll.disabled = !items.some(it=>it.cleaned);
+  els.list.innerHTML="";
+  items.forEach(it=>{
+    const div=document.createElement("div");
+    div.className="filecard";
+    const m=it.meta;
+    let inner='<div class="filehead">';
+    inner+='<img src="'+it.thumbUrl+'" alt="">';
+    inner+='<div style="min-width:0;flex:1"><div class="nm">'+esc(it.name)+'</div>';
+    inner+='<div class="mt">'+esc(it.type||"image")+' · '+dtzFmtBytes(it.size)+(m&&m.width?" · "+m.width+" × "+m.height+" px":"")+'</div>';
+    if(it.error){
+      inner+='<div class="err" style="margin-top:8px">'+esc(it.error)+'</div>';
+    } else if(m){
+      if(m.removable.length===0){
+        inner+='<div class="chips"><span class="chip ok">Already clean — no metadata found</span></div>';
+      } else {
+        inner+='<div class="chips">'+m.risks.map(r=>'<span class="chip">'+esc(r)+'</span>').join("")+'</div>';
+        inner+='<div class="cleanline">'+m.removable.length+' metadata block'+(m.removable.length>1?"s":"")+' found · '+dtzFmtBytes(m.metaBytes)+' hidden inside this file</div>';
+      }
+      inner+=metaTable(it);
+    }
+    inner+='</div></div>';
+    if(it.cleaned){
+      inner+='<div class="okbox">Cleaned — removed '+dtzFmtBytes(it.removedBytes)+' of metadata. '+(it.leftovers===0?'Verified: 0 metadata blocks remain. Pixels untouched.':'Warning: '+it.leftovers+' block(s) remain.')+' New size: '+dtzFmtBytes(it.cleanedBytes)+' (was '+dtzFmtBytes(it.size)+').</div>';
+    }
+    inner+='<div class="actions">';
+    if(!it.error && !it.cleaned) inner+='<button class="btn btn-red btn-sm" data-act="clean" data-id="'+it.id+'">Remove metadata</button>';
+    if(it.cleaned) inner+='<button class="btn btn-green btn-sm" data-act="dl" data-id="'+it.id+'">Download cleaned file</button>';
+    inner+='<button class="btn btn-ghost btn-sm" data-act="rm" data-id="'+it.id+'">Remove from list</button>';
+    inner+='</div>';
+    div.innerHTML=inner;
+    els.list.appendChild(div);
+  });
+}
+function addFiles(fileList){
+  hideErr();
+  const arr=Array.from(fileList||[]);
+  if(!arr.length) return;
+  if(items.length+arr.length>MAX_FILES){ showErr("Maximum "+MAX_FILES+" files at once — please remove some first."); return; }
+  let rejected=0;
+  arr.forEach(f=>{
+    if(f.size>MAX_MB*1048576){ rejected++; return; }
+    const id=++uidSeq;
+    const reader=new FileReader();
+    reader.onload=()=>{
+      const bytes=new Uint8Array(reader.result);
+      const meta=dtzReadMetadata(bytes);
+      const it={id:id, name:f.name, size:f.size, type:f.type, bytes:bytes, meta:meta.ok?meta:null,
+        error:meta.ok?null:meta.error, cleaned:null, thumbUrl:URL.createObjectURL(new Blob([bytes],{type:f.type||"image/jpeg"}))};
+      items.push(it);
+      render();
+    };
+    reader.onerror=()=>{ showErr("Could not read "+f.name+"."); };
+    reader.readAsArrayBuffer(f);
+  });
+  if(rejected) showErr(rejected+" file(s) were over the "+MAX_MB+" MB limit and were skipped.");
+}
+function cleanOne(it){
+  if(it.cleaned || !it.meta) return;
+  const res=dtzStripMetadata(it.bytes);
+  if(!res.ok){ it.error=res.error; render(); return; }
+  it.cleaned=res.cleaned; it.cleanedBytes=res.cleanedBytes; it.removedBytes=res.removedBytes; it.leftovers=res.leftovers;
+  saveRecent(it.name, dtzFmtBytes(res.removedBytes));
+  renderRecent();
+  render();
+}
+function downloadBlob(bytes, name){
+  const url=URL.createObjectURL(new Blob([bytes]));
+  const a=document.createElement("a");
+  a.href=url; a.download=name; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 800);
+}
+function cleanName(name){
+  const i=name.lastIndexOf(".");
+  if(i>0) return name.slice(0,i)+"-clean"+name.slice(i);
+  return name+"-clean";
+}
+els.drop.addEventListener("click", ()=>els.input.click());
+els.drop.addEventListener("keydown", e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); els.input.click(); } });
+$("btnPick").addEventListener("click", ()=>els.input.click());
+els.input.addEventListener("change", ()=>{ addFiles(els.input.files); els.input.value=""; });
+["dragover","dragenter"].forEach(ev=>els.drop.addEventListener(ev, e=>{ e.preventDefault(); els.drop.classList.add("over"); }));
+["dragleave","drop"].forEach(ev=>els.drop.addEventListener(ev, e=>{ e.preventDefault(); els.drop.classList.remove("over"); }));
+els.drop.addEventListener("drop", e=>addFiles(e.dataTransfer.files));
+document.addEventListener("paste", e=>{
+  const files=Array.from(e.clipboardData&&e.clipboardData.files||[]).filter(f=>f.type.indexOf("image/")===0);
+  if(files.length) addFiles(files);
+});
+$("btnSample").addEventListener("click", ()=>{
+  hideErr();
+  try{
+    const bin=atob(SAMPLE_B64);
+    const bytes=new Uint8Array(bin.length);
+    for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+    const meta=dtzReadMetadata(bytes);
+    const it={id:++uidSeq, name:"sample-photo.jpg", size:bytes.length, type:"image/jpeg", bytes:bytes,
+      meta:meta.ok?meta:null, error:meta.ok?null:meta.error, cleaned:null,
+      thumbUrl:URL.createObjectURL(new Blob([bytes],{type:"image/jpeg"}))};
+    items.push(it); render();
+  }catch(e){ showErr("Sample photo could not be loaded."); }
+});
+els.list.addEventListener("click", e=>{
+  const btn=e.target.closest("[data-act]"); if(!btn) return;
+  const it=items.find(x=>x.id===+btn.dataset.id); if(!it) return;
+  const act=btn.dataset.act;
+  if(act==="clean") cleanOne(it);
+  else if(act==="dl") downloadBlob(it.cleaned, cleanName(it.name));
+  else if(act==="rm"){ items=items.filter(x=>x.id!==it.id); render(); }
+});
+els.cleanAll.addEventListener("click", ()=>{ items.forEach(it=>{ if(!it.cleaned && !it.error) cleanOne(it); }); });
+els.clearAll.addEventListener("click", ()=>{ items=[]; render(); });
+els.zipAll.addEventListener("click", async ()=>{
+  const done=items.filter(it=>it.cleaned);
+  if(!done.length) return;
+  if(typeof JSZip==="undefined"){ showErr("ZIP library did not load — please download the cleaned files one by one."); return; }
+  const zip=new JSZip();
+  done.forEach(it=>zip.file(cleanName(it.name), it.cleaned));
+  const blob=await zip.generateAsync({type:"blob"});
+  downloadBlob(new Uint8Array(await blob.arrayBuffer()), "dtz-cleaned-photos.zip");
+});
+$("btnClearRecent").addEventListener("click", ()=>{ try{ localStorage.removeItem("dtzMetaRemoverRecent"); }catch(e){} renderRecent(); });
+renderRecent();
+</script>
+</body>
+</html>
