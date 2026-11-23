@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTZ AI PDF Chat — Dark Tech Zone</title>
+<meta name="description" content="Upload any PDF and ask questions about it — the AI reads your document and answers from its text. Free, no signup, nothing uploaded.">
+<link rel="icon" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+:root{--bg:#f7f7f8;--card:#fff;--ink:#1a1a1e;--muted:#6b7280;--line:#e5e7eb;--green:#16a34a;--green-d:#15803d;--red:#dc2626;--red-d:#b91c1c;--blue:#2563eb;--soft:#f3f4f6}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+header{background:var(--card);border-bottom:1px solid var(--line);padding:14px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header img{width:40px;height:40px;border-radius:50%;object-fit:cover}
+header h1{font-size:19px;font-weight:700}
+header p{font-size:13px;color:var(--muted)}
+.pill{margin-left:auto;font-size:12px;font-weight:600;padding:5px 11px;border-radius:999px;background:#f3f4f6;color:#4b5563;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.pill .dot{width:8px;height:8px;border-radius:50%;background:#9ca3af}
+.pill.on{background:#dcfce7;color:#166534}.pill.on .dot{background:#16a34a}
+.pill.off{background:#fee2e2;color:#991b1b}.pill.off .dot{background:#dc2626}
+main{max-width:780px;margin:0 auto;padding:24px 16px 60px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px}
+h2{font-size:17px;margin-bottom:4px}
+.sub{font-size:13px;color:var(--muted);margin-bottom:14px}
+.btn{border:none;border-radius:10px;padding:12px 20px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-green{background:var(--green);color:#fff}
+.btn-green:hover{background:var(--green-d)}
+.btn-ghost{background:#fff;border:1px solid var(--line);color:var(--ink)}
+.btn-ghost:hover{background:var(--soft)}
+.btn-red{background:#fff;border:1px solid #fecaca;color:var(--red-d)}
+.btn-red:hover{background:#fef2f2}
+.btn:disabled{opacity:.55;cursor:default}
+.btn-sm{padding:8px 14px;font-size:13px}
+.hidden{display:none!important}
+.err{background:#fef2f2;border:1px solid #fecaca;color:var(--red-d);border-radius:10px;padding:12px 14px;font-size:14px;margin-top:14px}
+.note{background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;border-radius:10px;padding:12px 14px;font-size:13px;margin-top:14px}
+.hint{font-size:13px;color:var(--muted);margin-top:10px}
+.drop{border:2px dashed #d1d5db;border-radius:12px;padding:28px 16px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s}
+.drop:hover,.drop.over{border-color:var(--green);background:#f0fdf4}
+.drop .big{font-size:15px;font-weight:700}
+.drop .small{font-size:13px;color:var(--muted);margin-top:4px}
+.progress{height:8px;border-radius:99px;background:#e5e7eb;margin-top:14px;overflow:hidden}
+.progress i{display:block;height:100%;background:var(--green);width:0%;transition:width .2s}
+.pstatus{font-size:13px;color:var(--muted);margin-top:8px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.stat{background:var(--soft);border-radius:10px;padding:10px 12px}
+.stat .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.stat .v{font-size:15px;font-weight:700;margin-top:2px;word-break:break-word}
+.docname{font-size:15px;font-weight:700;word-break:break-all}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.chat{border:1px solid var(--line);border-radius:12px;padding:6px 14px;max-height:460px;overflow-y:auto;background:#fbfbfc}
+.msg{padding:12px 2px;border-top:1px solid var(--line)}
+.msg:first-child{border-top:none}
+.msg .who{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);margin-bottom:4px}
+.msg.ai .who{color:var(--green-d)}
+.msg .body{font-size:14.5px;white-space:pre-wrap;word-break:break-word}
+.msg .body b{font-weight:700}
+.msg .copyrow{margin-top:8px}
+.copybtn{background:none;border:1px solid var(--line);border-radius:999px;padding:4px 11px;font-size:12px;font-weight:600;cursor:pointer;color:var(--muted);font-family:inherit}
+.copybtn:hover{border-color:var(--green);color:var(--green-d)}
+.askrow{display:flex;gap:10px;margin-top:14px}
+.askrow textarea{flex:1;border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:15px;font-family:inherit;min-width:0;resize:vertical;min-height:48px}
+.askrow textarea:focus{outline:2px solid var(--green);border-color:var(--green)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer;color:var(--ink);font-family:inherit}
+.chip:hover{border-color:var(--green);color:var(--green-d)}
+.chip:disabled{opacity:.55;cursor:default}
+.recent-list{display:flex;flex-direction:column;gap:6px}
+.recent-item{display:flex;justify-content:space-between;align-items:center;gap:10px;border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:13px;cursor:pointer;background:#fff}
+.recent-item:hover{border-color:var(--green)}
+.recent-item .when{color:var(--muted);font-size:12px;white-space:nowrap}
+.clearlink{background:none;border:none;color:var(--red);font-size:13px;font-weight:600;cursor:pointer;padding:0;font-family:inherit}
+.spin{width:16px;height:16px;border:2px solid #d1d5db;border-top-color:var(--green);border-radius:50%;animation:sp 0.8s linear infinite;display:inline-block;vertical-align:-3px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.empty{color:var(--muted);font-size:14px;padding:10px 2px}
+footer{max-width:780px;margin:0 auto;padding:0 16px 40px;color:var(--muted);font-size:13px;text-align:center}
+footer a{color:var(--green-d);font-weight:600;text-decoration:none}
+@media(max-width:560px){header h1{font-size:17px}.stats{grid-template-columns:repeat(2,1fr)}.askrow{flex-direction:column}.askrow .btn{width:100%}}
+</style>
+</head>
+<body>
+<header>
+<img src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone logo">
+<div><h1>DTZ AI PDF Chat</h1><p>Upload a PDF, ask questions — the AI answers from your document.</p></div>
+<span class="pill" id="statusPill"><span class="dot"></span><span id="statusText">Checking AI…</span></span>
+</header>
+<main>
+
+<div class="card" id="uploadCard">
+<h2>1. Upload your PDF</h2>
+<p class="sub">Notes, books, past papers, manuals — any PDF with selectable text. The text is read in your browser; nothing is uploaded to a server except your question and the document text sent to the AI.</p>
+<div class="drop" id="dropZone" tabindex="0" role="button" aria-label="Upload PDF">
+<div class="big">Drop a PDF here, or tap to choose a file</div>
+<div class="small">PDF only &middot; max 10 MB &middot; first 40 pages are read</div>
+</div>
+<input type="file" id="fileInput" accept=".pdf,application/pdf" class="hidden">
+<div class="progress hidden" id="progWrap"><i id="progBar"></i></div>
+<p class="pstatus hidden" id="progStatus"></p>
+<div id="errBox" class="err hidden"></div>
+<p class="hint">No PDF handy? <button class="copybtn" id="btnSample" type="button">Try the sample PDF</button> — a short Solar System fact sheet you can ask questions about.</p>
+</div>
+
+<div class="card hidden" id="docCard">
+<h2>2. Your document</h2>
+<p class="docname" id="docName"></p>
+<div class="stats">
+<div class="stat"><div class="k">Pages read</div><div class="v" id="statPages">—</div></div>
+<div class="stat"><div class="k">Characters</div><div class="v" id="statChars">—</div></div>
+<div class="stat"><div class="k">Words</div><div class="v" id="statWords">—</div></div>
+</div>
+<div id="ctxNote" class="note hidden"></div>
+<div class="actions">
+<button class="btn btn-ghost btn-sm" id="btnDlText" type="button">Download extracted text (.txt)</button>
+<button class="btn btn-red btn-sm" id="btnRemoveDoc" type="button">Remove document</button>
+</div>
+</div>
+
+<div class="card hidden" id="chatCard">
+<h2>3. Ask about your document</h2>
+<p class="sub">Answers come only from your document. If something is not in it, the AI will say so.</p>
+<div class="chat" id="chatBox">
+<div class="msg ai"><div class="who">AI</div><div class="body">Your document is loaded. Ask me anything about it — or tap one of the suggestions below.</div></div>
+</div>
+<div class="chips" id="quickChips">
+<button class="chip" type="button" data-q="Summarize this document in 5 short bullet points.">Summarize it</button>
+<button class="chip" type="button" data-q="List the 5 most important facts from this document.">Key points</button>
+<button class="chip" type="button" data-q="What is this document about? Answer in 2 short sentences.">What is this about?</button>
+</div>
+<div class="askrow">
+<textarea id="inpQ" rows="2" placeholder="Ask a question about your PDF…" maxlength="1000"></textarea>
+<button class="btn btn-green" id="btnAsk" type="button">Ask</button>
+<button class="btn btn-ghost hidden" id="btnStop" type="button">Stop</button>
+</div>
+<div class="actions">
+<button class="btn btn-ghost btn-sm" id="btnDlChat" type="button">Download chat (.txt)</button>
+<button class="btn btn-red btn-sm" id="btnClearChat" type="button">Clear chat</button>
+</div>
+</div>
+
+<div class="card">
+<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px">
+<h2 style="margin:0">Recent documents</h2>
+<button class="clearlink" id="btnClearRecent" type="button" style="margin-left:auto">Clear</button>
+</div>
+<div class="recent-list" id="recentList"><p class="empty">No documents yet — your last 8 PDFs will show here.</p></div>
+<p class="hint">Recent items only remember the file name. Re-upload a file to chat with it again.</p>
+</div>
+
+</main>
+<footer>
+<p>Powered by Dark Tech Zone AI &middot; Free, no signup, no key.<br>
+<a href="https://whatsapp.com/channel/0029Vb9oK008V0txIkc3oj3z" target="_blank" rel="noopener">Join the Dark Tech Zone WhatsApp channel</a> &middot; <a href="https://www.darktechzon.site/" target="_blank" rel="noopener">darktechzon.site</a></p>
+</footer>
+<script>
+"use strict";
+var API_CHAT = "https://dark-tech-zone-ai.vercel.app/api/chat";
+var API_HEALTH = "https://dark-tech-zone-ai.vercel.app/api/health";
+var CTX_LIMIT = 8000;
+var MAX_PAGES = 40;
+var MAX_MB = 10;
+
+var SAMPLE_B64 = "JVBERi0xLjQKMSAwIG9iago8PCAvVHlwZSAvQ2F0YWxvZyAvUGFnZXMgMiAwIFIgPj4KZW5kb2JqCjIgMCBvYmoKPDwgL1R5cGUgL1BhZ2VzIC9LaWRzIFszIDAgUl0gL0NvdW50IDEgPj4KZW5kb2JqCjMgMCBvYmoKPDwgL1R5cGUgL1BhZ2UgL1BhcmVudCAyIDAgUiAvTWVkaWFCb3ggWzAgMCA2MTIgNzkyXSAvUmVzb3VyY2VzIDw8IC9Gb250IDw8IC9GMSA0IDAgUiA+PiA+PiAvQ29udGVudHMgNSAwIFIgPj4KZW5kb2JqCjQgMCBvYmoKPDwgL1R5cGUgL0ZvbnQgL1N1YnR5cGUgL1R5cGUxIC9CYXNlRm9udCAvSGVsdmV0aWNhID4+CmVuZG9iago1IDAgb2JqCjw8IC9MZW5ndGggMTA3MyA+PgpzdHJlYW0KQlQKL0YxIDIwIFRmCjcyIDc2MCBUZAovRjEgMjAgVGYKKFNvbGFyIFN5c3RlbSBGYWN0cykgVGoKL0YxIDEyIFRmCjAgLTIwIFRkCi9GMSAxMiBUZgowIC0yMCBUZAooT3VyIFNvbGFyIFN5c3RlbSBoYXMgZWlnaHQgcGxhbmV0cyB0aGF0IG9yYml0IHRoZSBTdW4uIEluIG9yZGVyIGZyb20gdGhlIFN1biwgdGhleSBhcmUgTWVyY3VyeSwpIFRqCi9GMSAxMiBUZgowIC0yMCBUZAooVmVudXMsIEVhcnRoLCBNYXJzLCBKdXBpdGVyLCBTYXR1cm4sIFVyYW51cyBhbmQgTmVwdHVuZS4pIFRqCi9GMSAxMiBUZgowIC0yMCBUZAovRjEgMTIgVGYKMCAtMjAgVGQKKE1lcmN1cnkgaXMgdGhlIHNtYWxsZXN0IHBsYW5ldCBhbmQgdGhlIGNsb3Nlc3QgdG8gdGhlIFN1bi4gVmVudXMgaXMgdGhlIGhvdHRlc3QgcGxhbmV0LCB3aXRoIGEpIFRqCi9GMSAxMiBUZgowIC0yMCBUZAoodGhpY2sgYXRtb3NwaGVyZSB0aGF0IHRyYXBzIGhlYXQuIEVhcnRoIGlzIHRoZSBvbmx5IGtub3duIHBsYW5ldCB3aXRoIGxpZmUuKSBUagovRjEgMTIgVGYKMCAtMjAgVGQKL0YxIDEyIFRmCjAgLTIwIFRkCihNYXJzIGlzIGNhbGxlZCB0aGUgUmVkIFBsYW5ldCBhbmQgaGFzIHR3byBzbWFsbCBtb29ucyBuYW1lZCBQaG9ib3MgYW5kIERlaW1vcy4gSnVwaXRlciBpcyB0aGUpIFRqCi9GMSAxMiBUZgowIC0yMCBUZAoobGFyZ2VzdCBwbGFuZXQgaW4gdGhlIFNvbGFyIFN5c3RlbS4gU2F0dXJuIGlzIGZhbW91cyBmb3IgaXRzIGJyaWdodCByaW5ncyBtYWRlIG9mIGljZSBhbmQgcm9jay4pIFRqCi9GMSAxMiBUZgowIC0yMCBUZAovRjEgMTIgVGYKMCAtMjAgVGQKKFVyYW51cyByb3RhdGVzIG9uIGl0cyBzaWRlLiBOZXB0dW5lIGlzIHRoZSBmYXJ0aGVzdCBwbGFuZXQgZnJvbSB0aGUgU3VuIGFuZCBoYXMgdGhlIHN0cm9uZ2VzdCkgVGoKL0YxIDEyIFRmCjAgLTIwIFRkCih3aW5kcywgcmVhY2hpbmcgdXAgdG8gMiwxMDAga2lsb21ldHJlcyBwZXIgaG91ci4gVGhlIFN1biBob2xkcyA5OS44NiBwZXJjZW50IG9mIGFsbCB0aGUgbWFzcykgVGoKL0YxIDEyIFRmCjAgLTIwIFRkCihpbiB0aGUgU29sYXIgU3lzdGVtLikgVGoKRVQKZW5kc3RyZWFtCmVuZG9iagp4cmVmCjAgNgowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMDkgMDAwMDAgbiAKMDAwMDAwMDA1OCAwMDAwMCBuIAowMDAwMDAwMTE1IDAwMDAwIG4gCjAwMDAwMDAyNDEgMDAwMDAgbiAKMDAwMDAwMDMxMSAwMDAwMCBuIAp0cmFpbGVyCjw8IC9TaXplIDYgL1Jvb3QgMSAwIFIgPj4Kc3RhcnR4cmVmCjE0MzYKJSVFT0YK";
+
+var docText = "";
+var docName = "";
+var docPages = 0;
+var history = []; // {q, a}
+var aborter = null;
+var streaming = false;
+
+function $(id){ return document.getElementById(id); }
+function show(el){ el.classList.remove("hidden"); }
+function hide(el){ el.classList.add("hidden"); }
+function showErr(msg){ var b=$("errBox"); b.textContent=msg; show(b); }
+function clearErr(){ hide($("errBox")); }
+function esc(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function fmtBody(s){
+  var h = esc(s);
+  h = h.replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>");
+  return h;
+}
+function setProgress(pct, text){
+  show($("progWrap")); show($("progStatus"));
+  $("progBar").style.width = Math.round(pct) + "%";
+  $("progStatus").textContent = text;
+}
+function hideProgress(){ hide($("progWrap")); hide($("progStatus")); }
+
+function checkHealth(){
+  fetch(API_HEALTH, { method: "GET" }).then(function(r){ return r.json(); }).then(function(d){
+    var pill = $("statusPill");
+    if (d && d.status === "online") { pill.classList.add("on"); $("statusText").textContent = "AI Online"; }
+    else { pill.classList.add("off"); $("statusText").textContent = "AI Offline"; }
+  }).catch(function(){
+    $("statusPill").classList.add("off"); $("statusText").textContent = "AI Offline";
+  });
+}
+
+function b64ToBytes(b64){
+  var bin = atob(b64);
+  var bytes = new Uint8Array(bin.length);
+  for (var i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
+  return bytes;
+}
+
+function extractPdf(data){
+  if (typeof pdfjsLib === "undefined") return Promise.reject(new Error("PDF engine failed to load. Check your connection and reload the page."));
+  pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  return pdfjsLib.getDocument({ data: data }).promise.then(function(pdf){
+    var total = pdf.numPages;
+    var read = Math.min(total, MAX_PAGES);
+    var parts = [];
+    var chain = Promise.resolve();
+    for (var p=1; p<=read; p++){
+      (function(pageNum){
+        chain = chain.then(function(){
+          setProgress((pageNum-1)/read*100, "Reading page " + pageNum + " of " + read + "…");
+          return pdf.getPage(pageNum).then(function(page){
+            return page.getTextContent().then(function(tc){
+              var t = tc.items.map(function(it){ return it.str; }).join(" ");
+              parts.push(t);
+              setProgress(pageNum/read*100, "Reading page " + pageNum + " of " + read + "…");
+            });
+          });
+        });
+      })(p);
+    }
+    return chain.then(function(){
+      return { text: parts.join("\n\n").replace(/[ \t]+/g, " ").replace(/\n{3,}/g, "\n\n").trim(), pages: total, read: read };
+    });
+  });
+}
+
+function loadDoc(data, name){
+  clearErr();
+  setProgress(2, "Opening PDF…");
+  extractPdf(data).then(function(res){
+    hideProgress();
+    if (!res.text || res.text.length < 20){
+      showErr("No readable text found in this PDF. It may be a scanned image — try a PDF with selectable text.");
+      return;
+    }
+    docText = res.text;
+    docName = name;
+    docPages = res.pages;
+    history = [];
+    $("docName").textContent = name;
+    $("statPages").textContent = res.read + (res.pages > res.read ? " of " + res.pages : "");
+    $("statChars").textContent = res.text.length.toLocaleString("en-US");
+    $("statWords").textContent = res.text.split(/\s+/).filter(Boolean).length.toLocaleString("en-US");
+    var note = $("ctxNote");
+    var notes = [];
+    if (res.text.length > CTX_LIMIT) notes.push("This document is long — the AI reads the first " + CTX_LIMIT.toLocaleString("en-US") + " characters.");
+    if (res.pages > MAX_PAGES) notes.push("Only the first " + MAX_PAGES + " pages were read.");
+    if (notes.length){ note.textContent = notes.join(" "); show(note); } else { hide(note); }
+    show($("docCard")); show($("chatCard"));
+    $("chatBox").innerHTML = '<div class="msg ai"><div class="who">AI</div><div class="body">Your document is loaded. Ask me anything about it — or tap one of the suggestions below.</div></div>';
+    saveRecent(name, res.pages);
+    $("chatCard").scrollIntoView({ behavior: "smooth", block: "start" });
+  }).catch(function(e){
+    hideProgress();
+    showErr("Could not read this PDF. " + (e && e.message ? e.message : "The file may be damaged or protected."));
+  });
+}
+
+function handleFile(file){
+  if (!file) return;
+  if (!/\.pdf$/i.test(file.name) && file.type !== "application/pdf"){
+    showErr("Please choose a PDF file.");
+    return;
+  }
+  if (file.size > MAX_MB * 1024 * 1024){
+    showErr("This PDF is larger than " + MAX_MB + " MB. Please use a smaller file.");
+    return;
+  }
+  var reader = new FileReader();
+  reader.onload = function(){ loadDoc(new Uint8Array(reader.result), file.name); };
+  reader.onerror = function(){ showErr("Could not read the file. Please try again."); };
+  reader.readAsArrayBuffer(file);
+}
+
+function buildPrompt(q){
+  var ctx = docText.slice(0, CTX_LIMIT);
+  var parts = [];
+  parts.push("Answer using ONLY the document text below. If the answer is not in the document, say exactly: This is not in the document. Keep the answer short and clear.");
+  parts.push("DOCUMENT:\n" + ctx);
+  var prev = history.slice(-2);
+  if (prev.length){
+    parts.push("EARLIER IN THIS CHAT:");
+    prev.forEach(function(h){ parts.push("Q: " + h.q.slice(0, 300) + "\nA: " + h.a.slice(0, 500)); });
+  }
+  parts.push("QUESTION: " + q + "\nAnswer:");
+  return parts.join("\n\n");
+}
+
+function addMsg(who, text){
+  var box = $("chatBox");
+  var div = document.createElement("div");
+  div.className = "msg " + (who === "AI" ? "ai" : "user");
+  var body = document.createElement("div");
+  body.className = "body";
+  body.innerHTML = fmtBody(text);
+  div.innerHTML = '<div class="who">' + esc(who) + '</div>';
+  div.appendChild(body);
+  if (who === "AI"){
+    var row = document.createElement("div");
+    row.className = "copyrow";
+    var b = document.createElement("button");
+    b.className = "copybtn"; b.type = "button"; b.textContent = "Copy answer";
+    b.onclick = function(){ copyText(text, b); };
+    row.appendChild(b);
+    div.appendChild(row);
+  }
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+  return body;
+}
+
+function copyText(text, btn){
+  function done(){ if (btn){ var o = btn.textContent; btn.textContent = "Copied"; setTimeout(function(){ btn.textContent = o; }, 1500); } }
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done).catch(function(){ fallbackCopy(text); done(); });
+  } else { fallbackCopy(text); done(); }
+}
+function fallbackCopy(text){
+  var ta = document.createElement("textarea");
+  ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand("copy"); } catch(e){}
+  document.body.removeChild(ta);
+}
+
+function ask(q){
+  q = (q || "").trim();
+  if (!q) return;
+  if (!docText){ showErr("Upload a PDF first."); return; }
+  if (streaming) return;
+  addMsg("You", q);
+  $("inpQ").value = "";
+  var bodyEl = addMsg("AI", "");
+  bodyEl.innerHTML = '<span class="spin"></span>';
+  streaming = true;
+  $("btnAsk").disabled = true;
+  document.querySelectorAll("#quickChips .chip").forEach(function(c){ c.disabled = true; });
+  show($("btnStop"));
+  aborter = new AbortController();
+  var full = "";
+  fetch(API_CHAT, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "X-API-Key": "DarkTech" },
+    body: JSON.stringify({ q: buildPrompt(q) }),
+    signal: aborter.signal
+  }).then(function(r){
+    if (!r.ok) throw new Error("AI service returned " + r.status);
+    var reader = r.body.getReader();
+    var dec = new TextDecoder();
+    var buf = "";
+    function pump(){
+      return reader.read().then(function(res){
+        if (res.done) return;
+        buf += dec.decode(res.value, { stream: true });
+        var blocks = buf.split("\n\n");
+        buf = blocks.pop();
+        blocks.forEach(function(b){
+          var lines = b.split("\n");
+          lines.forEach(function(line){
+            if (line.indexOf("data: ") === 0){
+              var payload = line.slice(6).trim();
+              if (payload === "[DONE]") return;
+              try { var j = JSON.parse(payload); if (j.chunk){ full += j.chunk; bodyEl.innerHTML = fmtBody(full); $("chatBox").scrollTop = $("chatBox").scrollHeight; } } catch(e){}
+            }
+          });
+        });
+        return pump();
+      });
+    }
+    return pump();
+  }).then(function(){
+    finishAnswer(q, full, bodyEl, false);
+  }).catch(function(e){
+    if (e && e.name === "AbortError"){ finishAnswer(q, full, bodyEl, true); return; }
+    bodyEl.innerHTML = fmtBody("Sorry — the AI could not answer right now. " + (e && e.message ? e.message : "") + " Please try again.");
+    streaming = false;
+    $("btnAsk").disabled = false;
+    document.querySelectorAll("#quickChips .chip").forEach(function(c){ c.disabled = false; });
+    hide($("btnStop"));
+  });
+}
+
+function finishAnswer(q, full, bodyEl, stopped){
+  streaming = false;
+  $("btnAsk").disabled = false;
+  document.querySelectorAll("#quickChips .chip").forEach(function(c){ c.disabled = false; });
+  hide($("btnStop"));
+  full = (full || "").trim();
+  if (!full){
+    bodyEl.innerHTML = fmtBody("The AI returned an empty answer. Please try asking again.");
+    return;
+  }
+  if (stopped) full += "\n(Stopped.)";
+  bodyEl.innerHTML = fmtBody(full);
+  history.push({ q: q, a: full });
+}
+
+function downloadFile(name, text){
+  var blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+
+function saveRecent(name, pages){
+  try {
+    var list = JSON.parse(localStorage.getItem("dtzPdfChatRecent") || "[]");
+    list = list.filter(function(r){ return r.name !== name; });
+    list.unshift({ name: name, pages: pages, when: new Date().toISOString() });
+    list = list.slice(0, 8);
+    localStorage.setItem("dtzPdfChatRecent", JSON.stringify(list));
+  } catch(e){}
+  renderRecent();
+}
+function renderRecent(){
+  var box = $("recentList");
+  var list = [];
+  try { list = JSON.parse(localStorage.getItem("dtzPdfChatRecent") || "[]"); } catch(e){}
+  if (!list.length){ box.innerHTML = '<p class="empty">No documents yet — your last 8 PDFs will show here.</p>'; return; }
+  box.innerHTML = "";
+  list.forEach(function(r){
+    var d = document.createElement("div");
+    d.className = "recent-item";
+    var when = "";
+    try { when = new Date(r.when).toLocaleDateString("en-GB", { day: "numeric", month: "short" }); } catch(e){}
+    d.innerHTML = '<span>' + esc(r.name) + ' &middot; ' + (r.pages || "?") + ' pages</span><span class="when">' + esc(when) + '</span>';
+    d.onclick = function(){ alert("Re-upload \"" + r.name + "\" to chat with it again."); };
+    box.appendChild(d);
+  });
+}
+
+$("dropZone").addEventListener("click", function(){ $("fileInput").click(); });
+$("dropZone").addEventListener("keydown", function(e){ if (e.key === "Enter" || e.key === " "){ e.preventDefault(); $("fileInput").click(); } });
+$("fileInput").addEventListener("change", function(){ handleFile(this.files[0]); this.value = ""; });
+["dragover","dragenter"].forEach(function(ev){
+  $("dropZone").addEventListener(ev, function(e){ e.preventDefault(); $("dropZone").classList.add("over"); });
+});
+["dragleave","drop"].forEach(function(ev){
+  $("dropZone").addEventListener(ev, function(e){ e.preventDefault(); $("dropZone").classList.remove("over"); });
+});
+$("dropZone").addEventListener("drop", function(e){
+  var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+  handleFile(f);
+});
+$("btnSample").addEventListener("click", function(){
+  try { loadDoc(b64ToBytes(SAMPLE_B64), "Solar System Facts (sample).pdf"); }
+  catch(e){ showErr("Could not load the sample PDF. Please try again."); }
+});
+$("btnAsk").addEventListener("click", function(){ ask($("inpQ").value); });
+$("inpQ").addEventListener("keydown", function(e){
+  if (e.key === "Enter" && !e.shiftKey){ e.preventDefault(); ask(this.value); }
+});
+$("btnStop").addEventListener("click", function(){ if (aborter) aborter.abort(); });
+document.querySelectorAll("#quickChips .chip").forEach(function(c){
+  c.addEventListener("click", function(){ ask(c.getAttribute("data-q")); });
+});
+$("btnRemoveDoc").addEventListener("click", function(){
+  docText = ""; docName = ""; docPages = 0; history = [];
+  hide($("docCard")); hide($("chatCard"));
+  $("chatBox").innerHTML = "";
+  $("docName").textContent = "";
+});
+$("btnDlText").addEventListener("click", function(){
+  if (!docText) return;
+  downloadFile((docName || "document").replace(/\.pdf$/i, "") + "-extracted.txt", docText);
+});
+$("btnDlChat").addEventListener("click", function(){
+  var lines = ["DTZ AI PDF CHAT — " + (docName || "document"), ""];
+  history.forEach(function(h){ lines.push("Q: " + h.q); lines.push("A: " + h.a); lines.push(""); });
+  if (!history.length) lines.push("(No questions asked yet.)");
+  downloadFile((docName || "document").replace(/\.pdf$/i, "") + "-chat.txt", lines.join("\n"));
+});
+$("btnClearChat").addEventListener("click", function(){
+  history = [];
+  $("chatBox").innerHTML = '<div class="msg ai"><div class="who">AI</div><div class="body">Chat cleared. Ask me anything about your document.</div></div>';
+});
+$("btnClearRecent").addEventListener("click", function(){
+  try { localStorage.removeItem("dtzPdfChatRecent"); } catch(e){}
+  renderRecent();
+});
+
+checkHealth();
+renderRecent();
+</script>
+</body>
+</html>
