@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTZ Wayback Time Machine — Dark Tech Zone</title>
+<meta name="description" content="See any website's past: find the closest archived snapshot to any date, the first and latest captures, and a year-by-year timeline — from the Internet Archive's Wayback Machine. Free, no signup, public data only.">
+<link rel="icon" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg">
+<style>
+:root{--bg:#f7f7f8;--card:#fff;--ink:#1a1a1e;--muted:#6b7280;--line:#e5e7eb;--green:#16a34a;--green-d:#15803d;--red:#dc2626;--red-d:#b91c1c;--amber:#b45309;--blue:#2563eb;--soft:#f3f4f6}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+header{background:var(--card);border-bottom:1px solid var(--line);padding:14px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header img{width:40px;height:40px;border-radius:50%;object-fit:cover}
+header h1{font-size:19px;font-weight:700}
+header p{font-size:13px;color:var(--muted)}
+.pill{margin-left:auto;font-size:12px;font-weight:600;padding:5px 11px;border-radius:999px;background:#dcfce7;color:#166534;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.pill .dot{width:8px;height:8px;border-radius:50%;background:#16a34a}
+main{max-width:780px;margin:0 auto;padding:24px 16px 60px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px}
+h2{font-size:17px;margin-bottom:4px}
+.sub{font-size:13px;color:var(--muted);margin-bottom:14px}
+.searchrow{display:flex;gap:10px;flex-wrap:wrap}
+.searchrow input[type=text]{flex:1;border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:15px;font-family:inherit;min-width:200px}
+.searchrow input[type=date]{border:1px solid var(--line);border-radius:10px;padding:12px 10px;font-size:15px;font-family:inherit}
+.searchrow input:focus{outline:2px solid var(--green);border-color:var(--green)}
+.btn{border:none;border-radius:10px;padding:12px 20px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;text-decoration:none;display:inline-block;text-align:center}
+.btn-green{background:var(--green);color:#fff}
+.btn-green:hover{background:var(--green-d)}
+.btn-ghost{background:#fff;border:1px solid var(--line);color:var(--ink)}
+.btn-ghost:hover{background:var(--soft)}
+.btn-blue{background:var(--blue);color:#fff}
+.btn:disabled{opacity:.55;cursor:default}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer;color:var(--ink)}
+.chip:hover{border-color:var(--green);color:var(--green-d)}
+.hint{font-size:13px;color:var(--muted);margin-top:10px}
+.err{background:#fef2f2;border:1px solid #fecaca;color:var(--red-d);border-radius:10px;padding:12px 14px;font-size:14px;margin-top:14px}
+.note{background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;border-radius:10px;padding:12px 14px;font-size:13px;margin-top:14px}
+.warn{background:#fffbeb;border:1px solid #fde68a;color:#92400e;border-radius:10px;padding:12px 14px;font-size:13px;margin-top:14px}
+.hidden{display:none!important}
+.bigdate{font-size:26px;font-weight:800;line-height:1.25}
+.bigdate small{font-size:14px;font-weight:600;color:var(--muted);display:block}
+.meta{font-size:14px;color:var(--muted);margin:8px 0 14px}
+.meta b{color:var(--ink)}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap}
+.statgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.stat{border:1px solid var(--line);border-radius:12px;padding:14px}
+.stat .lbl{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.stat .val{font-size:17px;font-weight:700;margin:4px 0}
+.stat .lnk{font-size:13px;color:var(--blue);text-decoration:none}
+.stat .lnk:hover{text-decoration:underline}
+.yeargrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:10px;margin-top:6px}
+.yearcell{border:1px solid var(--line);border-radius:10px;padding:10px 12px;text-align:left;background:#fff;cursor:pointer;font-family:inherit}
+.yearcell:hover{border-color:var(--green)}
+.yearcell .y{font-size:15px;font-weight:800}
+.yearcell .d{font-size:12px;color:var(--muted)}
+.yearcell.none{cursor:default;background:var(--soft)}
+.yearcell.none:hover{border-color:var(--line)}
+.yearcell.none .d{color:var(--red)}
+.progress{font-size:13px;color:var(--muted);margin-top:10px}
+.recent-item{display:flex;justify-content:space-between;gap:10px;padding:10px 2px;border-top:1px solid var(--line);font-size:14px;cursor:pointer}
+.recent-item:hover{color:var(--green-d)}
+.recent-item:first-of-type{border-top:none}
+.recent-item span{color:var(--muted);font-size:13px;white-space:nowrap}
+footer{text-align:center;font-size:13px;color:var(--muted);margin-top:8px}
+footer a{color:var(--green-d)}
+@media(max-width:560px){.statgrid{grid-template-columns:1fr}.bigdate{font-size:22px}header h1{font-size:17px}}
+</style>
+</head>
+<body>
+<header>
+<img src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone logo">
+<div><h1>DTZ Wayback Time Machine</h1><p>See any website's past — Internet Archive snapshots</p></div>
+<span class="pill"><span class="dot"></span>Archive.org &bull; Free, no signup</span>
+</header>
+<main>
+
+<div class="card">
+<h2>Find archived snapshots</h2>
+<p class="sub">Paste any website or page link. The tool asks the Wayback Machine for the snapshot closest to your date, plus the first and latest captures ever, and builds a year-by-year timeline.</p>
+<div class="searchrow">
+<input type="text" id="inpUrl" placeholder="example.com or https://www.bbc.com/news" autocomplete="off" spellcheck="false">
+<input type="date" id="inpDate" aria-label="Target date">
+<button class="btn btn-green" id="btnSearch">Find Snapshots</button>
+</div>
+<div class="chips" id="chips"></div>
+<p class="hint">Try: <b>example.com</b> (archived since 2002) or <b>bbc.com</b>. Some pages were never archived — the tool will say so honestly instead of inventing a snapshot.</p>
+<div id="errBox" class="err hidden"></div>
+</div>
+
+<div class="card hidden" id="closestCard">
+<h2>Closest snapshot to your date</h2>
+<p class="sub" id="closestSub"></p>
+<div class="bigdate" id="closestDate"></div>
+<p class="meta" id="closestMeta"></p>
+<div class="btnrow">
+<a class="btn btn-green" id="btnOpen" href="#" target="_blank" rel="noopener">Open Archived Page</a>
+<a class="btn btn-ghost" id="btnRaw" href="#" target="_blank" rel="noopener">Download Archived HTML</a>
+<button class="btn btn-ghost" id="btnCopy">Copy Link</button>
+</div>
+<div id="gapWarn" class="warn hidden"></div>
+</div>
+
+<div class="card hidden" id="firstLastCard">
+<h2>First &amp; latest captures</h2>
+<p class="sub">The earliest snapshot the Wayback Machine holds for this exact URL, and the most recent one.</p>
+<div class="statgrid">
+<div class="stat"><div class="lbl">First snapshot ever</div><div class="val" id="firstVal">—</div><a class="lnk hidden" id="firstLink" href="#" target="_blank" rel="noopener">Open this snapshot &rarr;</a><div class="d" id="firstNone" style="font-size:13px;color:var(--muted)"></div></div>
+<div class="stat"><div class="lbl">Latest snapshot</div><div class="val" id="lastVal">—</div><a class="lnk hidden" id="lastLink" href="#" target="_blank" rel="noopener">Open this snapshot &rarr;</a><div class="d" id="lastNone" style="font-size:13px;color:var(--muted)"></div></div>
+</div>
+</div>
+
+<div class="card hidden" id="timelineCard">
+<h2>Year-by-year timeline</h2>
+<p class="sub">One snapshot per year — the capture closest to 1 January of each year. Tap any year to open that snapshot.</p>
+<div class="yeargrid" id="yearGrid"></div>
+<p class="progress" id="timelineProgress"></p>
+</div>
+
+<div class="card hidden" id="noneCard">
+<h2>No snapshots found</h2>
+<p class="sub">The Wayback Machine has never archived this exact URL. That happens with very new sites, pages blocked by robots.txt, and pages that no one ever saved.</p>
+<div class="btnrow">
+<a class="btn btn-blue" id="btnSave" href="#" target="_blank" rel="noopener">Save This Page Now (archive.org)</a>
+</div>
+<p class="hint">Saving takes you to archive.org, which captures the page live and adds it to the archive. After a few minutes, search here again.</p>
+</div>
+
+<div class="card">
+<h2>Recent lookups</h2>
+<p class="sub">Saved only in this browser.</p>
+<div id="recentList"><p class="hint">No lookups yet — search a URL above.</p></div>
+<button class="btn btn-ghost hidden" id="btnClearRecent" style="margin-top:12px">Clear history</button>
+</div>
+
+<div class="card">
+<h2>How it works &amp; honest limits</h2>
+<p class="sub" style="margin-bottom:0">Data comes live from the Internet Archive's free Availability API — no key, no signup, nothing uploaded. The full snapshot list (CDX API) cannot be read directly from a browser page, so the timeline shows one snapshot per year instead of every single capture. A snapshot shows the page as it was on that date, including its old design — and a snapshot can itself be a redirect or an error page if that is what the archive captured. Saving a page uses archive.org's own Save Page Now service.</p>
+</div>
+
+<footer>Dark Tech Zone &bull; Public archive data from the <a href="https://archive.org/" target="_blank" rel="noopener">Internet Archive</a> &bull; Join our WhatsApp channel: <a href="https://whatsapp.com/channel/0029Vb9oK008V0txIkc3oj3z" target="_blank" rel="noopener">Dark Tech Zone</a></footer>
+</main>
+<script>
+"use strict";
+/* ---------- pure helpers (also unit-tested in Node) ---------- */
+function normalizeUrl(input){
+  var u=(input||"").trim();
+  if(!u) return null;
+  u=u.replace(/^[\s\u200b]+|[\s\u200b]+$/g,"");
+  if(!/^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//.test(u)) u="https://"+u;
+  try{ var p=new URL(u); if(p.hostname.indexOf(".")===-1) return null; return p.href.replace(/\/$/,"")===p.origin? p.origin+"/" : p.href; }
+  catch(e){ return null; }
+}
+function tsToDate(ts){
+  // "20200101203046" -> Date (UTC)
+  var y=+ts.slice(0,4), mo=+ts.slice(4,6)-1, d=+ts.slice(6,8), h=+ts.slice(8,10)||0, mi=+ts.slice(10,12)||0, s=+ts.slice(12,14)||0;
+  return new Date(Date.UTC(y,mo,d,h,mi,s));
+}
+function fmtTs(ts){
+  var dt=tsToDate(ts);
+  var months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  var day=dt.getUTCDate(), hh=String(dt.getUTCHours()).padStart(2,"0"), mm=String(dt.getUTCMinutes()).padStart(2,"0");
+  return day+" "+months[dt.getUTCMonth()]+" "+dt.getUTCFullYear()+", "+hh+":"+mm+" UTC";
+}
+function fmtDateShort(ts){
+  var dt=tsToDate(ts);
+  var months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return dt.getUTCDate()+" "+months[dt.getUTCMonth()]+" "+dt.getUTCFullYear();
+}
+function dateInputToTs(dateStr){
+  // "2020-01-15" -> "20200115000000"
+  var p=dateStr.split("-");
+  return p[0]+p[1]+p[2]+"000000";
+}
+function nowTs(){
+  var n=new Date(), p=function(v){return String(v).padStart(2,"0");};
+  return ""+n.getUTCFullYear()+p(n.getUTCMonth()+1)+p(n.getUTCDate())+p(n.getUTCHours())+p(n.getUTCMinutes())+p(n.getUTCSeconds());
+}
+function archiveUrl(ts,url){ return "https://web.archive.org/web/"+ts+"/"+url; }
+function rawArchiveUrl(ts,url){ return "https://web.archive.org/web/"+ts+"id_/"+url; }
+function savePageUrl(url){ return "https://web.archive.org/save/"+url; }
+function parseAvailability(json){
+  if(!json||!json.archived_snapshots||!json.archived_snapshots.closest) return null;
+  var c=json.archived_snapshots.closest;
+  if(!c.available||!c.timestamp) return null;
+  return {timestamp:c.timestamp, url:c.url, status:c.status||""};
+}
+function yearRange(firstTs,lastTs){
+  var a=tsToDate(firstTs).getUTCFullYear(), b=tsToDate(lastTs).getUTCFullYear();
+  var out=[]; for(var y=a;y<=b;y++) out.push(y); return out;
+}
+function daysBetween(tsA,tsB){
+  return Math.round(Math.abs(tsToDate(tsA)-tsToDate(tsB))/86400000);
+}
+/* ---------- API ---------- */
+var API="https://archive.org/wayback/available?url=";
+async function fetchClosest(url,ts,retries){
+  var r;
+  try{ r=await fetch(API+encodeURIComponent(url)+"&timestamp="+ts); }
+  catch(e){ throw new Error("Network error — check your connection and try again."); }
+  if(r.status===429 && retries>0){ await new Promise(function(res){setTimeout(res,2500);}); return fetchClosest(url,ts,retries-1); }
+  if(!r.ok) throw new Error("Archive.org answered "+r.status+" — try again in a moment.");
+  var j; try{ j=await r.json(); }catch(e){ throw new Error("Archive.org sent an unreadable answer — try again."); }
+  return parseAvailability(j);
+}
+/* ---------- page state ---------- */
+var $=function(id){return document.getElementById(id);};
+var EXAMPLES=["example.com","bbc.com","google.com","en.wikipedia.org/wiki/Pakistan","darktechzon.site"];
+var RECENT_KEY="dtz-wayback-recent-v1";
+var currentUrl=null, currentClosest=null;
+function el(id){return document.getElementById(id);}
+function showErr(msg){ var b=el("errBox"); b.textContent=msg; b.classList.remove("hidden"); }
+function hideErr(){ el("errBox").classList.add("hidden"); }
+function hideResults(){ ["closestCard","firstLastCard","timelineCard","noneCard"].forEach(function(id){el(id).classList.add("hidden");}); }
+function loadRecent(){
+  try{ return JSON.parse(localStorage.getItem(RECENT_KEY)||"[]"); }catch(e){ return []; }
+}
+function saveRecent(url,label){
+  var list=loadRecent().filter(function(x){return x.url!==url;});
+  list.unshift({url:url,label:label,at:Date.now()});
+  localStorage.setItem(RECENT_KEY,JSON.stringify(list.slice(0,8)));
+  renderRecent();
+}
+function renderRecent(){
+  var list=loadRecent(), box=el("recentList");
+  el("btnClearRecent").classList.toggle("hidden",list.length===0);
+  if(!list.length){ box.innerHTML='<p class="hint">No lookups yet — search a URL above.</p>'; return; }
+  box.innerHTML="";
+  list.forEach(function(item){
+    var d=document.createElement("div"); d.className="recent-item";
+    var a=document.createElement("span"); a.textContent=item.url; a.style.color="inherit"; a.style.fontSize="14px";
+    var b=document.createElement("span"); b.textContent=item.label||"";
+    d.appendChild(a); d.appendChild(b);
+    d.addEventListener("click",function(){ el("inpUrl").value=item.url; doSearch(); });
+    box.appendChild(d);
+  });
+}
+function renderChips(){
+  var box=el("chips"); box.innerHTML="";
+  EXAMPLES.forEach(function(ex){
+    var c=document.createElement("button"); c.className="chip"; c.type="button"; c.textContent=ex;
+    c.addEventListener("click",function(){ el("inpUrl").value=ex; doSearch(); });
+    box.appendChild(c);
+  });
+}
+async function doSearch(){
+  hideErr(); hideResults();
+  var raw=el("inpUrl").value;
+  var url=normalizeUrl(raw);
+  if(!url){ showErr("Enter a valid website address, e.g. example.com or https://www.bbc.com"); return; }
+  var dateStr=el("inpDate").value;
+  var targetTs=dateStr? dateInputToTs(dateStr) : nowTs();
+  var btn=el("btnSearch"); btn.disabled=true; btn.textContent="Searching the archive…";
+  currentUrl=url; currentClosest=null;
+  try{
+    var closest=await fetchClosest(url,targetTs,2);
+    if(!closest){
+      // Double-check with no timestamp: maybe the closest-to-date missed but some snapshot exists.
+      var any=await fetchClosest(url,nowTs(),1);
+      if(any){ closest=any; }
+    }
+    if(!closest){
+      el("noneCard").classList.remove("hidden");
+      el("btnSave").href=savePageUrl(url);
+      saveRecent(url,"Not archived");
+      return;
+    }
+    currentClosest=closest;
+    el("closestSub").textContent="Snapshot of "+url+" closest to "+(dateStr? fmtDateShort(dateInputToTs(dateStr)) : "today")+".";
+    el("closestDate").innerHTML=fmtTs(closest.timestamp)+"<small>captured by the Wayback Machine</small>";
+    el("closestMeta").innerHTML="Original URL: <b>"+escapeHtml(url)+"</b> &nbsp;•&nbsp; Archived status: <b>"+(closest.status||"200")+"</b>";
+    el("btnOpen").href=archiveUrl(closest.timestamp,url);
+    el("btnRaw").href=rawArchiveUrl(closest.timestamp,url);
+    var gap=daysBetween(closest.timestamp,targetTs);
+    var gw=el("gapWarn");
+    if(gap>365){ gw.textContent="Note: the nearest snapshot is about "+Math.round(gap/365*10)/10+" year(s) away from your chosen date — this page was not archived near that date."; gw.classList.remove("hidden"); }
+    else gw.classList.add("hidden");
+    el("closestCard").classList.remove("hidden");
+    saveRecent(url,fmtDateShort(closest.timestamp));
+    // First + latest (parallel)
+    var firstP=fetchClosest(url,"19960101000000",2);
+    var lastP=fetchClosest(url,nowTs(),2);
+    var first=await firstP, last=await lastP;
+    if(first){ el("firstVal").textContent=fmtTs(first.timestamp); el("firstLink").href=archiveUrl(first.timestamp,url); el("firstLink").classList.remove("hidden"); el("firstNone").textContent=""; }
+    else { el("firstVal").textContent="None found"; el("firstLink").classList.add("hidden"); el("firstNone").textContent="No earlier capture for this URL."; }
+    if(last){ el("lastVal").textContent=fmtTs(last.timestamp); el("lastLink").href=archiveUrl(last.timestamp,url); el("lastLink").classList.remove("hidden"); el("lastNone").textContent=""; }
+    else { el("lastVal").textContent="None found"; el("lastLink").classList.add("hidden"); el("lastNone").textContent="No capture for this URL."; }
+    el("firstLastCard").classList.remove("hidden");
+    // Year-by-year timeline
+    var years=[];
+    if(first&&last) years=yearRange(first.timestamp,last.timestamp);
+    else years=[tsToDate(closest.timestamp).getUTCFullYear()];
+    el("timelineCard").classList.remove("hidden");
+    buildTimeline(url,years);
+  }catch(e){
+    showErr(e.message||"Something went wrong — try again.");
+  }finally{
+    btn.disabled=false; btn.textContent="Find Snapshots";
+  }
+}
+async function buildTimeline(url,years){
+  var grid=el("yearGrid"); grid.innerHTML="";
+  var prog=el("timelineProgress");
+  var seen={};
+  var done=0;
+  prog.textContent="Loading "+years.length+" years… (0/"+years.length+")";
+  var CONC=4;
+  for(var i=0;i<years.length;i+=CONC){
+    var batch=years.slice(i,i+CONC);
+    var results=await Promise.all(batch.map(function(y){
+      return fetchClosest(url,""+y+"0101000000",1).then(function(r){return {y:y,r:r};}).catch(function(){return {y:y,r:null};});
+    }));
+    results.forEach(function(item){
+      done++;
+      prog.textContent="Loading "+years.length+" years… ("+done+"/"+years.length+")";
+      if(!item.r){ addYearCell(item.y,null); return; }
+      if(seen[item.r.timestamp]) return; // same snapshot already shown for an earlier year
+      seen[item.r.timestamp]=true;
+      addYearCell(item.y,item.r);
+    });
+  }
+  var shown=grid.querySelectorAll(".yearcell:not(.none)").length;
+  prog.textContent=shown? shown+" year(s) with snapshots — tap a year to open it." : "No yearly snapshots could be loaded — the archive may be busy. Try again in a moment.";
+}
+function addYearCell(year,snap){
+  var grid=el("yearGrid");
+  var b=document.createElement("button"); b.type="button";
+  if(!snap){ b.className="yearcell none"; b.innerHTML='<div class="y">'+year+'</div><div class="d">No snapshot</div>'; b.disabled=true; }
+  else{
+    b.className="yearcell";
+    b.innerHTML='<div class="y">'+year+'</div><div class="d">'+fmtDateShort(snap.timestamp)+'</div>';
+    b.addEventListener("click",function(){ window.open(archiveUrl(snap.timestamp,currentUrl),"_blank","noopener"); });
+  }
+  grid.appendChild(b);
+}
+function escapeHtml(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+if(typeof document!=="undefined"){
+  document.addEventListener("DOMContentLoaded",function(){
+    var d=new Date(), p=function(v){return String(v).padStart(2,"0");};
+    el("inpDate").value=d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate());
+    el("inpDate").max=el("inpDate").value;
+    renderChips(); renderRecent();
+    el("btnSearch").addEventListener("click",doSearch);
+    el("inpUrl").addEventListener("keydown",function(e){ if(e.key==="Enter") doSearch(); });
+    el("btnCopy").addEventListener("click",function(){
+      var link=archiveUrl(currentClosest.timestamp,currentUrl);
+      var done=function(){ el("btnCopy").textContent="Copied"; setTimeout(function(){el("btnCopy").textContent="Copy Link";},2000); };
+      if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(link).then(done,function(){fallbackCopy(link);done();}); }
+      else { fallbackCopy(link); done(); }
+    });
+    el("btnClearRecent").addEventListener("click",function(){ localStorage.removeItem(RECENT_KEY); renderRecent(); });
+  });
+}
+function fallbackCopy(text){
+  var ta=document.createElement("textarea"); ta.value=text; ta.style.position="fixed"; ta.style.opacity="0";
+  document.body.appendChild(ta); ta.select();
+  try{ document.execCommand("copy"); }catch(e){}
+  document.body.removeChild(ta);
+}
+if(typeof module!=="undefined"){ module.exports={normalizeUrl:normalizeUrl,tsToDate:tsToDate,fmtTs:fmtTs,fmtDateShort:fmtDateShort,dateInputToTs:dateInputToTs,nowTs:nowTs,archiveUrl:archiveUrl,rawArchiveUrl:rawArchiveUrl,savePageUrl:savePageUrl,parseAvailability:parseAvailability,yearRange:yearRange,daysBetween:daysBetween}; }
+</script>
+</body>
+</html>
