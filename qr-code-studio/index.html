@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTZ QR Code Studio — Dark Tech Zone</title>
+<meta name="description" content="Create QR codes for websites, WiFi, WhatsApp, contacts and email — and scan any QR code. Free, in your browser, nothing uploaded.">
+<link rel="icon" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+<style>
+  :root{--bg:#f4f7f6;--card:#ffffff;--text:#0f172a;--muted:#64748b;--line:#e2e8f0;--accent:#0d9488;--accent-d:#0b7c74;--danger:#dc2626;--radius:14px}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
+  .wrap{max-width:880px;margin:0 auto;padding:20px 16px 48px}
+  header{display:flex;align-items:center;gap:12px;padding:8px 0 4px}
+  header img{width:44px;height:44px;border-radius:10px;object-fit:cover}
+  header h1{font-size:22px;line-height:1.2}
+  header p{color:var(--muted);font-size:13px}
+  .tabs{display:flex;gap:8px;margin:18px 0 0}
+  .tabs button{flex:1;padding:11px;border:1px solid var(--line);background:var(--card);border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;color:var(--muted)}
+  .tabs button.active{background:var(--accent);border-color:var(--accent);color:#fff}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-top:14px}
+  .modes{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+  .modes button{padding:8px 14px;border:1px solid var(--line);background:#f8fafc;border-radius:999px;font-size:14px;cursor:pointer;color:var(--text)}
+  .modes button.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+  label{display:block;font-size:13px;font-weight:600;margin:12px 0 5px}
+  input[type=text],input[type=url],input[type=email],input[type=tel],textarea,select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;font-size:15px;font-family:inherit;background:#fff;color:var(--text)}
+  textarea{resize:vertical;min-height:74px}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .opts{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:4px}
+  .opts label{margin-top:0}
+  input[type=color]{width:100%;height:42px;padding:2px;border:1px solid var(--line);border-radius:9px;background:#fff;cursor:pointer}
+  .check{display:flex;align-items:center;gap:8px;margin-top:14px;font-size:14px}
+  .check input{width:18px;height:18px;accent-color:var(--accent)}
+  .btn{display:inline-block;padding:12px 20px;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;background:var(--accent);color:#fff}
+  .btn:hover{background:var(--accent-d)}
+  .btn.ghost{background:#fff;color:var(--text);border:1px solid var(--line)}
+  .btn.ghost:hover{background:#f1f5f9}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .btnrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+  .hint{font-size:12.5px;color:var(--muted);margin-top:6px}
+  .error{display:none;background:#fef2f2;border:1px solid #fecaca;color:var(--danger);border-radius:9px;padding:10px 12px;font-size:14px;margin-top:14px}
+  .result{display:none;margin-top:18px;border-top:1px solid var(--line);padding-top:18px}
+  .result.show{display:block}
+  .qr-stage{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
+  .qr-box{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;display:inline-block}
+  .qr-box canvas{display:block;max-width:100%;height:auto}
+  .qr-meta{flex:1;min-width:220px}
+  .qr-meta h3{font-size:15px;margin-bottom:6px}
+  .payload{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;background:#f8fafc;border:1px solid var(--line);border-radius:9px;padding:10px 12px;word-break:break-all;white-space:pre-wrap;max-height:150px;overflow:auto}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+  .chips button{padding:7px 12px;border:1px solid var(--line);background:#f8fafc;border-radius:999px;font-size:13px;cursor:pointer}
+  .chips button:hover{border-color:var(--accent);color:var(--accent-d)}
+  .recent{margin-top:18px}
+  .recent h3{font-size:14px;color:var(--muted);margin-bottom:8px}
+  .recent-item{display:flex;justify-content:space-between;gap:10px;padding:9px 10px;border:1px solid var(--line);border-radius:9px;margin-bottom:6px;cursor:pointer;font-size:13.5px;background:#fff}
+  .recent-item:hover{border-color:var(--accent)}
+  .recent-item .r-mode{font-weight:700;color:var(--accent-d);white-space:nowrap}
+  .recent-item .r-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}
+  .drop{border:2px dashed var(--line);border-radius:12px;padding:34px 16px;text-align:center;cursor:pointer;background:#fbfdfd}
+  .drop:hover,.drop.over{border-color:var(--accent);background:#f0fdfa}
+  .drop p{color:var(--muted);font-size:14px}
+  .drop strong{font-size:15px}
+  .scan-result{display:none;margin-top:18px;border-top:1px solid var(--line);padding-top:18px}
+  .scan-result.show{display:block}
+  .badge{display:inline-block;background:#ecfdf5;color:#047857;border:1px solid #a7f3d0;border-radius:999px;padding:3px 10px;font-size:12.5px;font-weight:700;margin-bottom:10px}
+  .scan-img{max-width:280px;max-height:280px;border:1px solid var(--line);border-radius:10px;margin-top:12px}
+  .kv{font-size:14px;margin:4px 0}
+  .kv b{color:var(--muted);font-weight:600}
+  footer{margin-top:26px;font-size:12.5px;color:var(--muted);text-align:center}
+  footer a{color:var(--accent-d)}
+  .hidden{display:none!important}
+  @media(max-width:640px){.row,.opts{grid-template-columns:1fr 1fr}header h1{font-size:19px}.qr-stage{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone logo" onerror="this.style.display='none'">
+    <div>
+      <h1>DTZ QR Code Studio</h1>
+      <p>Create QR codes &amp; scan any QR code — free, in your browser, nothing uploaded.</p>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button id="tabCreate" class="active" type="button">Create QR</button>
+    <button id="tabScan" type="button">Scan QR</button>
+  </div>
+
+  <!-- ============ CREATE ============ -->
+  <div class="card" id="panelCreate">
+    <div class="modes" id="modeRow">
+      <button type="button" data-mode="url" class="active">Website</button>
+      <button type="button" data-mode="text">Text</button>
+      <button type="button" data-mode="wifi">WiFi</button>
+      <button type="button" data-mode="whatsapp">WhatsApp</button>
+      <button type="button" data-mode="vcard">Contact</button>
+      <button type="button" data-mode="email">Email</button>
+    </div>
+
+    <div id="fields-url">
+      <label for="inUrl">Website link</label>
+      <input type="url" id="inUrl" placeholder="https://www.darktechzon.site/" autocomplete="off">
+      <p class="hint">Type a full link, or just a domain — https:// is added for you.</p>
+    </div>
+    <div id="fields-text" class="hidden">
+      <label for="inText">Text</label>
+      <textarea id="inText" placeholder="Type anything — a message, a note, a code..."></textarea>
+      <p class="hint">English, Roman Urdu and Urdu script all work.</p>
+    </div>
+    <div id="fields-wifi" class="hidden">
+      <div class="row">
+        <div><label for="inSsid">WiFi network name (SSID)</label><input type="text" id="inSsid" placeholder="MyHomeWiFi" autocomplete="off"></div>
+        <div><label for="inEnc">Security</label>
+          <select id="inEnc"><option value="WPA">WPA / WPA2</option><option value="WEP">WEP</option><option value="nopass">Open (no password)</option></select>
+        </div>
+      </div>
+      <label for="inWifiPass">WiFi password</label>
+      <input type="text" id="inWifiPass" placeholder="Your WiFi password" autocomplete="off">
+      <label class="check"><input type="checkbox" id="inHidden"> Hidden network</label>
+      <p class="hint">Anyone who scans this QR joins your WiFi — only share it with people you trust.</p>
+    </div>
+    <div id="fields-whatsapp" class="hidden">
+      <label for="inWaPhone">WhatsApp number (with country code)</label>
+      <input type="tel" id="inWaPhone" placeholder="923001234567" autocomplete="off">
+      <label for="inWaMsg">Pre-filled message (optional)</label>
+      <input type="text" id="inWaMsg" placeholder="Hello! I found you on Dark Tech Zone" autocomplete="off">
+      <p class="hint">Scanning opens a WhatsApp chat with this number. Example: 92 + your mobile number, no + or spaces needed.</p>
+    </div>
+    <div id="fields-vcard" class="hidden">
+      <div class="row">
+        <div><label for="inFirst">First name</label><input type="text" id="inFirst" placeholder="Ali" autocomplete="off"></div>
+        <div><label for="inLast">Last name</label><input type="text" id="inLast" placeholder="Raza" autocomplete="off"></div>
+      </div>
+      <div class="row">
+        <div><label for="inVcPhone">Phone</label><input type="tel" id="inVcPhone" placeholder="+923001234567" autocomplete="off"></div>
+        <div><label for="inVcEmail">Email</label><input type="email" id="inVcEmail" placeholder="ali@example.com" autocomplete="off"></div>
+      </div>
+      <label for="inOrg">Organisation (optional)</label>
+      <input type="text" id="inOrg" placeholder="Dark Tech Zone" autocomplete="off">
+      <p class="hint">Scanning saves this contact straight into the phone.</p>
+    </div>
+    <div id="fields-email" class="hidden">
+      <label for="inEmail">Email address</label>
+      <input type="email" id="inEmail" placeholder="hi@darktechzon.site" autocomplete="off">
+      <label for="inSubject">Subject (optional)</label>
+      <input type="text" id="inSubject" placeholder="Tool request" autocomplete="off">
+      <label for="inBody">Message (optional)</label>
+      <textarea id="inBody" placeholder="Write your message here..."></textarea>
+    </div>
+
+    <div class="opts">
+      <div><label for="optSize">Image size</label>
+        <select id="optSize"><option value="256">256 px</option><option value="512" selected>512 px</option><option value="1024">1024 px</option></select></div>
+      <div><label for="optEc">Error correction</label>
+        <select id="optEc"><option value="L">L — 7%</option><option value="M" selected>M — 15%</option><option value="Q">Q — 25%</option><option value="H">H — 30%</option></select></div>
+      <div><label for="optFg">QR colour</label><input type="color" id="optFg" value="#0f172a"></div>
+      <div><label for="optBg">Background</label><input type="color" id="optBg" value="#ffffff"></div>
+    </div>
+    <label class="check"><input type="checkbox" id="optLogo"> Add DTZ logo in the centre <span class="hint" style="margin:0">(needs Q or H correction — set automatically)</span></label>
+
+    <div class="btnrow"><button class="btn" id="btnGenerate" type="button">Generate QR Code</button></div>
+    <div class="error" id="errBox"></div>
+
+    <div class="result" id="resultBox">
+      <div class="qr-stage">
+        <div class="qr-box"><canvas id="qrCanvas" width="512" height="512"></canvas></div>
+        <div class="qr-meta">
+          <h3>Your QR code</h3>
+          <div class="payload" id="payloadView"></div>
+          <p class="hint" id="qrMeta"></p>
+          <div class="btnrow">
+            <button class="btn" id="btnPng" type="button">Download PNG</button>
+            <button class="btn ghost" id="btnSvg" type="button">Download SVG</button>
+            <button class="btn ghost" id="btnCopyImg" type="button">Copy Image</button>
+          </div>
+          <p class="hint">Tip: print it, or share the PNG on WhatsApp / Telegram. Test it with your phone camera before printing many copies.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="chips" id="exampleChips">
+      <button type="button" data-chip="url|https://www.darktechzon.site/">darktechzon.site</button>
+      <button type="button" data-chip="url|https://whatsapp.com/channel/0029Vb9oK008V0txIkc3oj3z">WhatsApp channel</button>
+      <button type="button" data-chip="wifi|DTZ-Guest|dtzguest123|WPA">WiFi sample</button>
+      <button type="button" data-chip="vcard|Ali|Raza|+923001234567|ali@darktechzon.site|Dark Tech Zone">Contact sample</button>
+    </div>
+
+    <div class="recent" id="recentWrap" style="display:none">
+      <h3>Recent QR codes</h3>
+      <div id="recentList"></div>
+      <button class="btn ghost" id="btnClearRecent" type="button" style="margin-top:6px;padding:8px 14px;font-size:13px">Clear history</button>
+    </div>
+  </div>
+
+  <!-- ============ SCAN ============ -->
+  <div class="card hidden" id="panelScan">
+    <div class="drop" id="dropZone" tabindex="0" role="button" aria-label="Upload a QR code image">
+      <strong>Drop a QR code image here</strong>
+      <p>or tap to choose a photo — screenshot, poster, or a photo of a printed code.<br>Paste from clipboard works too (Ctrl+V).</p>
+      <input type="file" id="scanFile" accept="image/*" class="hidden">
+    </div>
+    <div class="btnrow">
+      <button class="btn ghost" id="btnSampleScan" type="button">Try a sample QR</button>
+    </div>
+    <div class="error" id="scanErr"></div>
+    <div class="scan-result" id="scanResult">
+      <span class="badge" id="scanType"></span>
+      <div class="payload" id="scanText"></div>
+      <div id="scanParsed" style="margin-top:10px"></div>
+      <div class="btnrow">
+        <button class="btn" id="btnOpenLink" type="button" style="display:none">Open link</button>
+        <button class="btn ghost" id="btnCopyScan" type="button">Copy</button>
+      </div>
+      <img class="scan-img" id="scanImg" alt="Scanned QR code image" style="display:none">
+    </div>
+    <p class="hint" style="margin-top:14px">Decoding happens 100% in your browser — the image is never uploaded anywhere.</p>
+  </div>
+
+  <footer>
+    Built by <a href="https://www.darktechzon.site/" target="_blank" rel="noopener">Dark Tech Zone</a> — free tools, no signup, no key.<br>
+    Join the WhatsApp channel: <a href="https://whatsapp.com/channel/0029Vb9oK008V0txIkc3oj3z" target="_blank" rel="noopener">Dark Tech Zone</a>
+  </footer>
+</div>
+<script>
+(function(){
+'use strict';
+var $ = function(id){ return document.getElementById(id); };
+function show(el){ el.classList.remove('hidden'); }
+function hide(el){ el.classList.add('hidden'); }
+function setErr(box, msg){ if(!msg){ box.style.display='none'; box.textContent=''; } else { box.style.display='block'; box.textContent=msg; } }
+
+/* The QR library's default byte encoder truncates every character to one
+   byte (c & 0xff), which corrupts Urdu script, em-dashes and accents.
+   Switch it to real UTF-8 before generating anything. */
+if (window.qrcode && qrcode.stringToBytesFuncs && qrcode.stringToBytesFuncs['UTF-8']) {
+  qrcode.stringToBytes = qrcode.stringToBytesFuncs['UTF-8'];
+}
+
+var LOGO_URL = 'https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg';
+var logoImg = null, logoTried = false;
+function loadLogo(cb){
+  if (logoTried) return cb(logoImg);
+  logoTried = true;
+  var im = new Image();
+  im.crossOrigin = 'anonymous';
+  im.onload = function(){ logoImg = im; cb(im); };
+  im.onerror = function(){ logoImg = null; cb(null); };
+  im.src = LOGO_URL;
+}
+
+/* ---------- payload builders (same logic as test/test-qr.mjs) ---------- */
+function escWifi(s){ return String(s).replace(/([\\;,":])/g, '\\$1'); }
+function buildPayload(mode){
+  var f = {};
+  if (mode === 'url') {
+    var u = ($('inUrl').value || '').trim();
+    if (!u) return { ok:false, error:'Enter a website link.' };
+    if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(u)) u = 'https://' + u;
+    return { ok:true, payload:u };
+  }
+  if (mode === 'text') {
+    var t = ($('inText').value || '').trim();
+    if (!t) return { ok:false, error:'Enter some text.' };
+    return { ok:true, payload:t };
+  }
+  if (mode === 'wifi') {
+    var ssid = ($('inSsid').value || '').trim();
+    if (!ssid) return { ok:false, error:'Enter the WiFi network name.' };
+    var enc = $('inEnc').value;
+    var p = 'WIFI:T:' + enc + ';S:' + escWifi(ssid) + ';';
+    if (enc !== 'nopass') p += 'P:' + escWifi($('inWifiPass').value || '') + ';';
+    if ($('inHidden').checked) p += 'H:true;';
+    return { ok:true, payload:p + ';' };
+  }
+  if (mode === 'whatsapp') {
+    var digits = ($('inWaPhone').value || '').replace(/\D/g, '');
+    if (digits.length < 7) return { ok:false, error:'Enter a valid WhatsApp number with country code.' };
+    var w = 'https://wa.me/' + digits;
+    var msg = ($('inWaMsg').value || '').trim();
+    if (msg) w += '?text=' + encodeURIComponent(msg);
+    return { ok:true, payload:w };
+  }
+  if (mode === 'vcard') {
+    var first = ($('inFirst').value || '').trim(), last = ($('inLast').value || '').trim();
+    if (!first && !last) return { ok:false, error:'Enter at least a first or last name.' };
+    var lines = ['BEGIN:VCARD','VERSION:3.0','N:' + last + ';' + first + ';;;','FN:' + [first,last].filter(Boolean).join(' ')];
+    if (($('inVcPhone').value || '').trim()) lines.push('TEL:' + $('inVcPhone').value.trim());
+    if (($('inVcEmail').value || '').trim()) lines.push('EMAIL:' + $('inVcEmail').value.trim());
+    if (($('inOrg').value || '').trim()) lines.push('ORG:' + $('inOrg').value.trim());
+    lines.push('END:VCARD');
+    return { ok:true, payload:lines.join('\n') };
+  }
+  if (mode === 'email') {
+    var em = ($('inEmail').value || '').trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) return { ok:false, error:'Enter a valid email address.' };
+    var q = [];
+    if (($('inSubject').value || '').trim()) q.push('subject=' + encodeURIComponent($('inSubject').value.trim()));
+    if (($('inBody').value || '').trim()) q.push('body=' + encodeURIComponent($('inBody').value.trim()));
+    return { ok:true, payload:'mailto:' + em + (q.length ? '?' + q.join('&') : '') };
+  }
+  return { ok:false, error:'Unknown type.' };
+}
+
+/* ---------- QR render ---------- */
+var current = null; // {qr, payload, mode, size, fg, bg, ec}
+function makeQr(payload, ec){
+  var qr = qrcode(0, ec);
+  qr.addData(payload);
+  qr.make();
+  return qr;
+}
+function drawQr(){
+  if (!current) return;
+  var canvas = $('qrCanvas');
+  var n = current.qr.getModuleCount();
+  var quiet = 4;
+  var size = parseInt($('optSize').value, 10);
+  canvas.width = size; canvas.height = size;
+  var cell = size / (n + quiet * 2);
+  var ctx = canvas.getContext('2d');
+  ctx.fillStyle = current.bg; ctx.fillRect(0, 0, size, size);
+  ctx.fillStyle = current.fg;
+  for (var r = 0; r < n; r++) for (var c = 0; c < n; c++) {
+    if (current.qr.isDark(r, c)) ctx.fillRect((c + quiet) * cell, (r + quiet) * cell, Math.ceil(cell), Math.ceil(cell));
+  }
+  if (current.logo) {
+    var lw = size * 0.22;
+    var lx = (size - lw) / 2, ly = (size - lw) / 2;
+    ctx.fillStyle = '#ffffff';
+    roundRect(ctx, lx - 6, ly - 6, lw + 12, lw + 12, 10); ctx.fill();
+    if (logoImg) {
+      ctx.drawImage(logoImg, lx, ly, lw, lw);
+    } else {
+      ctx.fillStyle = '#0d9488';
+      ctx.font = 'bold ' + Math.round(lw * 0.28) + 'px Arial, sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('DTZ', size / 2, size / 2 + 1);
+    }
+  }
+}
+function roundRect(ctx, x, y, w, h, r){
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+function svgFromQr(qr, fg, bg, cellSize){
+  var n = qr.getModuleCount(), m = 4, cs = cellSize || 4;
+  var size = (n + m * 2) * cs;
+  var out = '<svg xmlns="http://www.w3.org/2000/svg" width="' + size + '" height="' + size + '" viewBox="0 0 ' + size + ' ' + size + '">';
+  out += '<rect width="100%" height="100%" fill="' + bg + '"/>';
+  out += '<path fill="' + fg + '" d="';
+  for (var r = 0; r < n; r++) for (var c = 0; c < n; c++) {
+    if (qr.isDark(r, c)) out += 'M' + ((c + m) * cs) + ' ' + ((r + m) * cs) + 'h' + cs + 'v' + cs + 'H' + ((c + m) * cs) + 'z';
+  }
+  return out + '"/></svg>';
+}
+function downloadBlob(blob, name){
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+
+var mode = 'url';
+function setMode(m){
+  mode = m;
+  var btns = $('modeRow').querySelectorAll('button');
+  for (var i = 0; i < btns.length; i++) btns[i].classList.toggle('active', btns[i].getAttribute('data-mode') === m);
+  ['url','text','wifi','whatsapp','vcard','email'].forEach(function(k){
+    if (k === m) show($('fields-' + k)); else hide($('fields-' + k));
+  });
+  setErr($('errBox'), '');
+}
+$('modeRow').addEventListener('click', function(e){
+  var b = e.target.closest('button[data-mode]');
+  if (b) setMode(b.getAttribute('data-mode'));
+});
+
+$('btnGenerate').addEventListener('click', function(){
+  var r = buildPayload(mode);
+  if (!r.ok) { setErr($('errBox'), r.error); return; }
+  setErr($('errBox'), '');
+  var ec = $('optEc').value;
+  var logo = $('optLogo').checked;
+  if (logo && (ec === 'L' || ec === 'M')) { ec = 'Q'; $('optEc').value = 'Q'; }
+  var qr;
+  try { qr = makeQr(r.payload, ec); }
+  catch (err) { setErr($('errBox'), 'That content is too long for a QR code. Shorten it and try again.'); return; }
+  current = { qr: qr, payload: r.payload, mode: mode, fg: $('optFg').value, bg: $('optBg').value, ec: ec, logo: logo };
+  var afterDraw = function(){
+    drawQr();
+    $('payloadView').textContent = r.payload;
+    var n = qr.getModuleCount();
+    var ecPct = { L:'7%', M:'15%', Q:'25%', H:'30%' }[ec];
+    $('qrMeta').textContent = 'Version ' + Math.round((n - 17) / 4) + '  ·  ' + n + '×' + n + ' modules  ·  Error correction ' + ec + ' (' + ecPct + ')  ·  ' + r.payload.length + ' characters' + (logo ? '  ·  Logo in centre' : '');
+    show($('resultBox'));
+    $('resultBox').scrollIntoView({ behavior:'smooth', block:'nearest' });
+    saveRecent(mode, r.payload);
+  };
+  if (logo) loadLogo(function(){ afterDraw(); }); else afterDraw();
+});
+['optSize','optEc','optFg','optBg'].forEach(function(id){
+  $(id).addEventListener('change', function(){ if (current) { current.fg = $('optFg').value; current.bg = $('optBg').value; drawQr(); } });
+});
+$('optLogo').addEventListener('change', function(){ if (current) $('btnGenerate').click(); });
+
+$('btnPng').addEventListener('click', function(){
+  if (!current) return;
+  $('qrCanvas').toBlob(function(b){ if (b) downloadBlob(b, 'dtz-qr-' + current.mode + '.png'); }, 'image/png');
+});
+$('btnSvg').addEventListener('click', function(){
+  if (!current) return;
+  var svg = svgFromQr(current.qr, current.fg, current.bg, 8);
+  downloadBlob(new Blob([svg], { type:'image/svg+xml' }), 'dtz-qr-' + current.mode + '.svg');
+});
+$('btnCopyImg').addEventListener('click', function(){
+  var btn = $('btnCopyImg');
+  if (!current || !navigator.clipboard || !window.ClipboardItem) { btn.textContent = 'Copy not supported in this browser'; return; }
+  $('qrCanvas').toBlob(function(b){
+    if (!b) return;
+    navigator.clipboard.write([new ClipboardItem({ 'image/png': b })]).then(function(){
+      btn.textContent = 'Copied';
+      setTimeout(function(){ btn.textContent = 'Copy Image'; }, 2000);
+    }, function(){ btn.textContent = 'Copy failed — use Download PNG'; });
+  }, 'image/png');
+});
+
+/* ---------- recents ---------- */
+function loadRecents(){
+  try { return JSON.parse(localStorage.getItem('dtzQrRecent') || '[]'); } catch (e) { return []; }
+}
+function saveRecent(m, payload){
+  var list = loadRecents().filter(function(x){ return x.payload !== payload; });
+  list.unshift({ mode:m, payload:payload, at:Date.now() });
+  list = list.slice(0, 8);
+  try { localStorage.setItem('dtzQrRecent', JSON.stringify(list)); } catch (e) {}
+  renderRecents();
+}
+function renderRecents(){
+  var list = loadRecents();
+  $('recentWrap').style.display = list.length ? 'block' : 'none';
+  var html = '';
+  list.forEach(function(x, i){
+    var label = { url:'Website', text:'Text', wifi:'WiFi', whatsapp:'WhatsApp', vcard:'Contact', email:'Email' }[x.mode] || x.mode;
+    html += '<div class="recent-item" data-i="' + i + '"><span class="r-mode">' + label + '</span><span class="r-text">' + escapeHtml(x.payload) + '</span></div>';
+  });
+  $('recentList').innerHTML = html;
+}
+function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+$('recentList').addEventListener('click', function(e){
+  var item = e.target.closest('.recent-item');
+  if (!item) return;
+  var x = loadRecents()[parseInt(item.getAttribute('data-i'), 10)];
+  if (!x) return;
+  setMode(x.mode);
+  fillFieldsFromPayload(x.mode, x.payload);
+  $('btnGenerate').click();
+});
+$('btnClearRecent').addEventListener('click', function(){
+  try { localStorage.removeItem('dtzQrRecent'); } catch (e) {}
+  renderRecents();
+});
+function fillFieldsFromPayload(m, payload){
+  if (m === 'url') $('inUrl').value = payload;
+  else if (m === 'text') $('inText').value = payload;
+  else if (m === 'wifi') {
+    var s = payload.match(/S:((?:\\.|[^;])*);/); if (s) $('inSsid').value = s[1].replace(/\\(.)/g, '$1');
+    var p = payload.match(/P:((?:\\.|[^;])*);/); if (p) $('inWifiPass').value = p[1].replace(/\\(.)/g, '$1');
+    var t = payload.match(/T:([^;]+);/); if (t) $('inEnc').value = t[1];
+    $('inHidden').checked = /H:true/.test(payload);
+  }
+  else if (m === 'whatsapp') {
+    var w = payload.match(/wa\.me\/(\d+)/); if (w) $('inWaPhone').value = w[1];
+    var tm = payload.match(/text=([^&]+)/); if (tm) $('inWaMsg').value = decodeURIComponent(tm[1]);
+  }
+  else if (m === 'vcard') {
+    var fn = payload.match(/FN:(.*)/); if (fn) { var parts = fn[1].trim().split(' '); $('inFirst').value = parts[0] || ''; $('inLast').value = parts.slice(1).join(' '); }
+    var ph = payload.match(/TEL:(.*)/); if (ph) $('inVcPhone').value = ph[1].trim();
+    var em = payload.match(/EMAIL:(.*)/); if (em) $('inVcEmail').value = em[1].trim();
+    var og = payload.match(/ORG:(.*)/); if (og) $('inOrg').value = og[1].trim();
+  }
+  else if (m === 'email') {
+    var mm = payload.match(/mailto:([^?]+)/); if (mm) $('inEmail').value = mm[1];
+    var sj = payload.match(/subject=([^&]+)/); if (sj) $('inSubject').value = decodeURIComponent(sj[1]);
+    var bd = payload.match(/body=(.*)$/); if (bd) $('inBody').value = decodeURIComponent(bd[1]);
+  }
+}
+$('exampleChips').addEventListener('click', function(e){
+  var b = e.target.closest('button[data-chip]');
+  if (!b) return;
+  var parts = b.getAttribute('data-chip').split('|');
+  var m = parts[0];
+  setMode(m);
+  if (m === 'url') $('inUrl').value = parts[1] || '';
+  if (m === 'wifi') { $('inSsid').value = parts[1] || ''; $('inWifiPass').value = parts[2] || ''; $('inEnc').value = parts[3] || 'WPA'; }
+  if (m === 'vcard') { $('inFirst').value = parts[1] || ''; $('inLast').value = parts[2] || ''; $('inVcPhone').value = parts[3] || ''; $('inVcEmail').value = parts[4] || ''; $('inOrg').value = parts[5] || ''; }
+  $('btnGenerate').click();
+});
+
+/* ---------- tabs ---------- */
+$('tabCreate').addEventListener('click', function(){
+  $('tabCreate').classList.add('active'); $('tabScan').classList.remove('active');
+  show($('panelCreate')); hide($('panelScan'));
+});
+$('tabScan').addEventListener('click', function(){
+  $('tabScan').classList.add('active'); $('tabCreate').classList.remove('active');
+  show($('panelScan')); hide($('panelCreate'));
+});
+
+/* ---------- scan ---------- */
+var scanData = '';
+function decodeImage(img, showImg){
+  var c = document.createElement('canvas');
+  var w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
+  var scale = Math.min(1, 1200 / Math.max(w, h));
+  c.width = Math.round(w * scale); c.height = Math.round(h * scale);
+  var ctx = c.getContext('2d');
+  ctx.drawImage(img, 0, 0, c.width, c.height);
+  var data = ctx.getImageData(0, 0, c.width, c.height);
+  var code = null;
+  try { code = jsQR(data.data, data.width, data.height); } catch (e) { code = null; }
+  if (!code) { setErr($('scanErr'), 'No QR code found in this image. Try a clearer photo, closer up, with the code fully in frame.'); hide($('scanResult')); return; }
+  setErr($('scanErr'), '');
+  showScanResult(code.data, showImg ? img.src : null);
+}
+function detectType(text){
+  if (/^WIFI:/i.test(text)) return 'WiFi network';
+  if (/^BEGIN:VCARD/i.test(text)) return 'Contact card';
+  if (/^mailto:/i.test(text)) return 'Email';
+  if (/^https?:\/\//i.test(text)) return /wa\.me\//i.test(text) ? 'WhatsApp chat link' : 'Website link';
+  if (/^tel:/i.test(text)) return 'Phone number';
+  if (/^SMSTO:|^sms:/i.test(text)) return 'SMS';
+  return 'Text';
+}
+function parseWifi(text){
+  var get = function(k){ var m = text.match(new RegExp(k + ':((?:\\\\.|[^;])*)')); return m ? m[1].replace(/\\(.)/g, '$1') : ''; };
+  var ssid = get('S'), pass = get('P'), enc = get('T'), hidden = /H:true/i.test(text);
+  if (!ssid) return '';
+  var html = '<p class="kv"><b>Network:</b> ' + escapeHtml(ssid) + '</p>'
+    + '<p class="kv"><b>Security:</b> ' + escapeHtml(enc || 'WPA') + (hidden ? ' · Hidden network' : '') + '</p>';
+  if (pass) html += '<p class="kv"><b>Password:</b> ' + escapeHtml(pass) + '</p>';
+  return html;
+}
+function showScanResult(text, imgSrc){
+  scanData = text;
+  var type = detectType(text);
+  $('scanType').textContent = type;
+  $('scanText').textContent = text;
+  $('scanParsed').innerHTML = type === 'WiFi network' ? parseWifi(text) : '';
+  var openBtn = $('btnOpenLink');
+  if (/^https?:\/\//i.test(text) || /^mailto:/i.test(text) || /^tel:/i.test(text)) {
+    openBtn.style.display = 'inline-block';
+    openBtn.textContent = /^mailto:/i.test(text) ? 'Compose email' : /^tel:/i.test(text) ? 'Call' : 'Open link';
+  } else openBtn.style.display = 'none';
+  if (imgSrc) { $('scanImg').src = imgSrc; $('scanImg').style.display = 'block'; }
+  else $('scanImg').style.display = 'none';
+  show($('scanResult'));
+}
+$('btnOpenLink').addEventListener('click', function(){ if (scanData) window.open(scanData, '_blank', 'noopener'); });
+$('btnCopyScan').addEventListener('click', function(){
+  var btn = $('btnCopyScan');
+  var done = function(){ btn.textContent = 'Copied'; setTimeout(function(){ btn.textContent = 'Copy'; }, 2000); };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(scanData).then(done, function(){ fallbackCopy(scanData); done(); });
+  else { fallbackCopy(scanData); done(); }
+});
+function fallbackCopy(text){
+  var ta = document.createElement('textarea');
+  ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); } catch (e) {}
+  ta.remove();
+}
+function handleScanFile(file){
+  if (!file || file.type.indexOf('image/') !== 0) { setErr($('scanErr'), 'Please choose an image file.'); return; }
+  var reader = new FileReader();
+  reader.onload = function(){
+    var img = new Image();
+    img.onload = function(){ decodeImage(img, true); };
+    img.onerror = function(){ setErr($('scanErr'), 'That image could not be read. Try another file.'); };
+    img.src = reader.result;
+  };
+  reader.readAsDataURL(file);
+}
+$('dropZone').addEventListener('click', function(){ $('scanFile').click(); });
+$('dropZone').addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $('scanFile').click(); } });
+$('scanFile').addEventListener('change', function(){ handleScanFile(this.files[0]); this.value = ''; });
+$('dropZone').addEventListener('dragover', function(e){ e.preventDefault(); $('dropZone').classList.add('over'); });
+$('dropZone').addEventListener('dragleave', function(){ $('dropZone').classList.remove('over'); });
+$('dropZone').addEventListener('drop', function(e){
+  e.preventDefault(); $('dropZone').classList.remove('over');
+  if (e.dataTransfer.files.length) handleScanFile(e.dataTransfer.files[0]);
+});
+document.addEventListener('paste', function(e){
+  if ($('panelScan').classList.contains('hidden')) return;
+  var items = (e.clipboardData || window.clipboardData).items;
+  for (var i = 0; i < items.length; i++) {
+    if (items[i].type.indexOf('image/') === 0) { handleScanFile(items[i].getAsFile()); e.preventDefault(); return; }
+  }
+});
+$('btnSampleScan').addEventListener('click', function(){
+  if (typeof qrcode === 'undefined') { setErr($('scanErr'), 'QR library did not load — check your connection and reload.'); return; }
+  var qr = qrcode(0, 'M');
+  qr.addData('https://www.darktechzon.site/');
+  qr.make();
+  var n = qr.getModuleCount(), quiet = 4, cell = 8;
+  var size = (n + quiet * 2) * cell;
+  var c = document.createElement('canvas');
+  c.width = size; c.height = size;
+  var ctx = c.getContext('2d');
+  ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, size, size);
+  ctx.fillStyle = '#0f172a';
+  for (var r = 0; r < n; r++) for (var cc = 0; cc < n; cc++) {
+    if (qr.isDark(r, cc)) ctx.fillRect((cc + quiet) * cell, (r + quiet) * cell, cell, cell);
+  }
+  var data = ctx.getImageData(0, 0, size, size);
+  var code = null;
+  try { code = jsQR(data.data, data.width, data.height); } catch (e) { code = null; }
+  if (!code) { setErr($('scanErr'), 'Sample QR could not be decoded in this browser.'); return; }
+  setErr($('scanErr'), '');
+  showScanResult(code.data, c.toDataURL('image/png'));
+});
+
+renderRecents();
+})();
+</script>
+</body>
+</html>
