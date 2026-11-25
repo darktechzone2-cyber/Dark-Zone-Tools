@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTZ Earthquake Tracker — Dark Tech Zone</title>
+<meta name="description" content="Live earthquake tracker with world map, Pakistan region filter, magnitude filters and downloadable reports. Free USGS data, no key, no signup.">
+<link rel="icon" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg">
+<style>
+  :root{--bg:#f4f7f6;--card:#ffffff;--text:#0f172a;--muted:#64748b;--line:#e2e8f0;--accent:#0d9488;--accent-d:#0b7c74;--danger:#dc2626;--radius:14px}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
+  .wrap{max-width:920px;margin:0 auto;padding:20px 16px 48px}
+  header{display:flex;align-items:center;gap:12px;padding:8px 0 4px;flex-wrap:wrap}
+  header img{width:44px;height:44px;border-radius:10px;object-fit:cover}
+  header h1{font-size:22px;line-height:1.2}
+  header p{color:var(--muted);font-size:13px}
+  .pill{margin-left:auto;font-size:12.5px;font-weight:700;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--muted);white-space:nowrap}
+  .pill.on{color:#047857;border-color:#a7f3d0;background:#ecfdf5}
+  .pill.err{color:var(--danger);border-color:#fecaca;background:#fef2f2}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-top:14px}
+  .card h2{font-size:16px;margin-bottom:4px}
+  .card .sub{color:var(--muted);font-size:13px;margin-bottom:12px}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+  label{display:block;font-size:13px;font-weight:600;margin:0 0 5px}
+  select,input[type=text]{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;font-size:15px;font-family:inherit;background:#fff;color:var(--text)}
+  .btn{display:inline-block;padding:11px 18px;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;background:var(--accent);color:#fff}
+  .btn:hover{background:var(--accent-d)}
+  .btn.ghost{background:#fff;color:var(--text);border:1px solid var(--line)}
+  .btn.ghost:hover{background:#f1f5f9}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .btnrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;align-items:center}
+  .check{display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer}
+  .check input{width:18px;height:18px;accent-color:var(--accent)}
+  .hint{font-size:12.5px;color:var(--muted);margin-top:8px}
+  .error{display:none;background:#fef2f2;border:1px solid #fecaca;color:var(--danger);border-radius:9px;padding:10px 12px;font-size:14px;margin-top:14px}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px;text-align:center}
+  .stat b{display:block;font-size:22px;line-height:1.2}
+  .stat span{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+  canvas#map{width:100%;height:auto;display:block;background:#eef6f5;border:1px solid var(--line);border-radius:10px;cursor:pointer}
+  .legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;font-size:12.5px;color:var(--muted)}
+  .legend i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+  .qrow{display:flex;gap:12px;align-items:flex-start;padding:12px 10px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;cursor:pointer;background:#fff}
+  .qrow:hover{border-color:var(--accent)}
+  .qrow.sel{border-color:var(--accent);background:#f0fdfa}
+  .mag{flex:none;width:58px;text-align:center;border-radius:9px;padding:7px 0;color:#fff;font-weight:800;font-size:16px;line-height:1.15}
+  .mag small{display:block;font-size:10px;font-weight:700;opacity:.9}
+  .m1{background:#94a3b8}.m2{background:#16a34a}.m3{background:#d97706}.m4{background:#ea580c}.m5{background:#dc2626}.m6{background:#7f1d1d}
+  .qmeta{flex:1;min-width:0}
+  .qmeta b{font-size:15px}
+  .qmeta .line{color:var(--muted);font-size:13px;margin-top:2px}
+  .tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;margin-left:6px;vertical-align:1px}
+  .tag.tsu{background:#fee2e2;color:#b91c1c}
+  .tag.alert{background:#fef3c7;color:#92400e}
+  .detail{display:none;margin-top:14px;border:1px solid var(--line);border-radius:10px;padding:16px;background:#f8fafc}
+  .detail.show{display:block}
+  .detail h3{font-size:16px;margin-bottom:8px}
+  .detail table{width:100%;border-collapse:collapse;font-size:14px}
+  .detail td{padding:5px 0;border-bottom:1px solid var(--line);vertical-align:top}
+  .detail td:first-child{color:var(--muted);font-weight:600;width:150px}
+  .detail a{color:var(--accent-d);font-weight:600}
+  .empty{color:var(--muted);font-size:14px;padding:10px 0}
+  .recent-item{display:flex;justify-content:space-between;gap:10px;padding:9px 10px;border:1px solid var(--line);border-radius:9px;margin-bottom:6px;cursor:pointer;font-size:13.5px;background:#fff}
+  .recent-item:hover{border-color:var(--accent)}
+  .recent-item .r-mag{font-weight:800;white-space:nowrap}
+  .recent-item .r-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}
+  footer{margin-top:22px;color:var(--muted);font-size:12.5px;text-align:center}
+  footer a{color:var(--accent-d);font-weight:600}
+  @media(max-width:700px){
+    .grid{grid-template-columns:1fr}
+    .grid2{grid-template-columns:1fr}
+    .stats{grid-template-columns:1fr 1fr}
+    header h1{font-size:18px}
+    header p{display:none}
+    .pill{margin-left:0}
+    .detail td:first-child{width:110px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone logo">
+    <div>
+      <h1>DTZ Earthquake Tracker</h1>
+      <p>Live earthquakes worldwide — map, filters and reports</p>
+    </div>
+    <span class="pill" id="statusPill">Loading...</span>
+  </header>
+
+  <div class="card">
+    <h2>Live feed</h2>
+    <p class="sub">Real earthquake data from USGS (free, no key). Times are shown in Pakistan Time (PKT).</p>
+    <div class="grid">
+      <div>
+        <label for="feedSel">Feed</label>
+        <select id="feedSel">
+          <option value="significant_week" selected>Past week — Significant</option>
+          <option value="4.5_day">Past day — Magnitude 4.5+</option>
+          <option value="2.5_day">Past day — Magnitude 2.5+</option>
+          <option value="all_day">Past day — All</option>
+          <option value="2.5_week">Past week — Magnitude 2.5+</option>
+          <option value="significant_month">Past month — Significant</option>
+          <option value="pakistan30">Pakistan &amp; Region — 30 days (M3+)</option>
+        </select>
+      </div>
+      <div>
+        <label for="regionSel">Region filter</label>
+        <select id="regionSel">
+          <option value="all" selected>Worldwide</option>
+          <option value="pakistan">Pakistan &amp; Region</option>
+          <option value="asia">Asia</option>
+          <option value="europe">Europe</option>
+          <option value="americas">Americas</option>
+          <option value="africa">Africa</option>
+          <option value="oceania">Oceania</option>
+        </select>
+      </div>
+      <div>
+        <label for="magSel">Minimum magnitude</label>
+        <select id="magSel">
+          <option value="0" selected>All magnitudes</option>
+          <option value="2.5">2.5+</option>
+          <option value="4">4.0+</option>
+          <option value="4.5">4.5+</option>
+          <option value="5">5.0+</option>
+          <option value="6">6.0+</option>
+        </select>
+      </div>
+    </div>
+    <div class="grid2">
+      <div>
+        <label for="searchIn">Search place</label>
+        <input type="text" id="searchIn" placeholder="e.g. Pakistan, Japan, California">
+      </div>
+      <div>
+        <label for="sortSel">Sort by</label>
+        <select id="sortSel">
+          <option value="newest" selected>Newest first</option>
+          <option value="strongest">Strongest first</option>
+        </select>
+      </div>
+    </div>
+    <div class="btnrow">
+      <button class="btn" id="btnRefresh" type="button">Refresh now</button>
+      <label class="check"><input type="checkbox" id="autoChk"> Auto-refresh every 60 seconds</label>
+    </div>
+    <div class="error" id="errBox"></div>
+    <p class="hint" id="updatedLine">Waiting for first load...</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><b id="stTotal">–</b><span>Earthquakes</span></div>
+    <div class="stat"><b id="stStrong">–</b><span>Strongest</span></div>
+    <div class="stat"><b id="stLatest">–</b><span>Latest</span></div>
+    <div class="stat"><b id="stTsu">–</b><span>Tsunami flags</span></div>
+  </div>
+
+  <div class="card">
+    <h2>World map</h2>
+    <p class="sub">Each dot is one earthquake. Bigger dot = stronger. Tap a dot to see details.</p>
+    <canvas id="map" width="1000" height="500"></canvas>
+    <div class="legend">
+      <span><i style="background:#94a3b8"></i>Under 2.5</span>
+      <span><i style="background:#16a34a"></i>2.5 – 3.9</span>
+      <span><i style="background:#d97706"></i>4.0 – 4.9</span>
+      <span><i style="background:#ea580c"></i>5.0 – 5.9</span>
+      <span><i style="background:#dc2626"></i>6.0 – 6.9</span>
+      <span><i style="background:#7f1d1d"></i>7.0+</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 id="listTitle">Earthquakes</h2>
+    <p class="sub" id="listSub">Tap any earthquake for full details.</p>
+    <div id="listBox"><p class="empty">Loading live data...</p></div>
+    <div class="detail" id="detailBox"></div>
+    <div class="btnrow">
+      <button class="btn" id="btnReport" type="button" disabled>Download report (.txt)</button>
+      <button class="btn ghost" id="btnCopy" type="button" disabled>Copy summary</button>
+    </div>
+  </div>
+
+  <div class="card" id="recentCard" style="display:none">
+    <h2>Recently viewed</h2>
+    <p class="sub">Earthquakes you opened. Stored only in this browser.</p>
+    <div id="recentList"></div>
+    <div class="btnrow"><button class="btn ghost" id="btnClearRecent" type="button">Clear history</button></div>
+  </div>
+
+  <footer>
+    Data: <a href="https://earthquake.usgs.gov" target="_blank" rel="noopener">USGS Earthquake Hazards Program</a> — free public data, no key needed.
+    This tool shows reported earthquakes only; it does not predict earthquakes.
+    <br>Dark Tech Zone — <a href="https://www.darktechzon.site/" target="_blank" rel="noopener">darktechzon.site</a>
+  </footer>
+</div>
+<script>
+"use strict";
+/* DTZ Earthquake Tracker — live USGS data, free, no key.
+   Feeds: https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/<feed>.geojson (CORS *)
+   Pakistan 30-day search: FDSN event query (CORS *). */
+
+var FEED_BASE = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/";
+var FDSN_BASE = "https://earthquake.usgs.gov/fdsnws/event/1/query";
+
+var REGIONS = {
+  all: null,
+  pakistan: { minLat: 23, maxLat: 38, minLon: 60, maxLon: 78 },
+  asia: { minLat: 0, maxLat: 60, minLon: 40, maxLon: 180 },
+  europe: { minLat: 35, maxLat: 72, minLon: -25, maxLon: 45 },
+  americas: { minLat: -60, maxLat: 75, minLon: -170, maxLon: -30 },
+  africa: { minLat: -35, maxLat: 37, minLon: -20, maxLon: 55 },
+  oceania: { minLat: -50, maxLat: 10, minLon: 110, maxLon: 180 }
+};
+
+function feedUrl(feed) {
+  if (feed === "pakistan30") {
+    var end = new Date();
+    var start = new Date(end.getTime() - 30 * 86400000);
+    function d(x) { return x.toISOString().slice(0, 10); }
+    return FDSN_BASE + "?format=geojson&starttime=" + d(start) + "&endtime=" + d(end) +
+      "&minmagnitude=3&minlatitude=23&maxlatitude=38&minlongitude=60&maxlongitude=78&orderby=time&limit=200";
+  }
+  return FEED_BASE + feed + ".geojson";
+}
+
+function parseFeature(f) {
+  if (!f || !f.properties || !f.geometry || !f.geometry.coordinates) return null;
+  var p = f.properties, c = f.geometry.coordinates;
+  if (typeof p.mag !== "number" || typeof c[0] !== "number" || typeof c[1] !== "number") return null;
+  return {
+    id: f.id || "",
+    mag: p.mag,
+    place: p.place || "Unknown location",
+    title: p.title || ("M " + p.mag + " - " + (p.place || "")),
+    time: p.time || 0,
+    updated: p.updated || 0,
+    lat: c[1],
+    lon: c[0],
+    depth: (typeof c[2] === "number" ? c[2] : null),
+    tsunami: p.tsunami === 1,
+    felt: (typeof p.felt === "number" ? p.felt : null),
+    alert: p.alert || null,
+    status: p.status || "",
+    url: p.url || "",
+    magType: p.magType || ""
+  };
+}
+
+function parseFeed(json) {
+  var out = [];
+  if (!json || !Array.isArray(json.features)) return out;
+  for (var i = 0; i < json.features.length; i++) {
+    var q = parseFeature(json.features[i]);
+    if (q) out.push(q);
+  }
+  return out;
+}
+
+function magClass(mag) {
+  if (mag >= 7) return "m6";
+  if (mag >= 6) return "m5";
+  if (mag >= 5) return "m4";
+  if (mag >= 4) return "m3";
+  if (mag >= 2.5) return "m2";
+  return "m1";
+}
+
+function magColor(mag) {
+  if (mag >= 7) return "#7f1d1d";
+  if (mag >= 6) return "#dc2626";
+  if (mag >= 5) return "#ea580c";
+  if (mag >= 4) return "#d97706";
+  if (mag >= 2.5) return "#16a34a";
+  return "#94a3b8";
+}
+
+function inBox(lat, lon, box) {
+  if (!box) return true;
+  return lat >= box.minLat && lat <= box.maxLat && lon >= box.minLon && lon <= box.maxLon;
+}
+
+function filterQuakes(list, region, minMag, search) {
+  var box = REGIONS[region] || null;
+  var q = (search || "").trim().toLowerCase();
+  return list.filter(function (x) {
+    if (x.mag < minMag) return false;
+    if (!inBox(x.lat, x.lon, box)) return false;
+    if (q && x.place.toLowerCase().indexOf(q) === -1 && x.title.toLowerCase().indexOf(q) === -1) return false;
+    return true;
+  });
+}
+
+function sortQuakes(list, mode) {
+  var copy = list.slice();
+  if (mode === "strongest") copy.sort(function (a, b) { return (b.mag - a.mag) || (b.time - a.time); });
+  else copy.sort(function (a, b) { return b.time - a.time; });
+  return copy;
+}
+
+function timeAgo(ts, now) {
+  var s = Math.max(0, Math.floor((now - ts) / 1000));
+  if (s < 60) return "just now";
+  var m = Math.floor(s / 60);
+  if (m < 60) return m + " min ago";
+  var h = Math.floor(m / 60);
+  if (h < 24) return h + (h === 1 ? " hour ago" : " hours ago");
+  var d = Math.floor(h / 24);
+  return d + (d === 1 ? " day ago" : " days ago");
+}
+
+function formatPKT(ts) {
+  try {
+    return new Intl.DateTimeFormat("en-GB", {
+      timeZone: "Asia/Karachi", day: "2-digit", month: "short", year: "numeric",
+      hour: "2-digit", minute: "2-digit", hour12: true
+    }).format(new Date(ts)) + " PKT";
+  } catch (e) {
+    return new Date(ts).toUTCString();
+  }
+}
+
+function strongest(list) {
+  var best = null;
+  for (var i = 0; i < list.length; i++) if (!best || list[i].mag > best.mag) best = list[i];
+  return best;
+}
+
+function latest(list) {
+  var best = null;
+  for (var i = 0; i < list.length; i++) if (!best || list[i].time > best.time) best = list[i];
+  return best;
+}
+
+function buildReport(list, feedLabel, generatedAt) {
+  var lines = [];
+  lines.push("DTZ EARTHQUAKE TRACKER — REPORT");
+  lines.push("Feed: " + feedLabel);
+  lines.push("Generated: " + formatPKT(generatedAt));
+  lines.push("Total earthquakes shown: " + list.length);
+  var s = strongest(list);
+  if (s) lines.push("Strongest: M " + s.mag.toFixed(1) + " — " + s.place + " (" + formatPKT(s.time) + ")");
+  lines.push("Data source: USGS Earthquake Hazards Program (earthquake.usgs.gov)");
+  lines.push("--------------------------------------------------");
+  list.forEach(function (q, i) {
+    lines.push((i + 1) + ". M " + q.mag.toFixed(1) + " — " + q.place);
+    lines.push("   Time: " + formatPKT(q.time) + " (" + timeAgo(q.time, generatedAt) + ")");
+    lines.push("   Location: " + q.lat.toFixed(3) + ", " + q.lon.toFixed(3) +
+      (q.depth !== null ? " | Depth: " + q.depth.toFixed(1) + " km" : ""));
+    if (q.tsunami) lines.push("   Tsunami flag: YES (check official warnings)");
+    if (q.felt) lines.push("   Felt reports: " + q.felt);
+    if (q.url) lines.push("   USGS: " + q.url);
+  });
+  lines.push("--------------------------------------------------");
+  lines.push("Dark Tech Zone — darktechzon.site");
+  return lines.join("\n");
+}
+
+function buildSummary(list, feedLabel, generatedAt) {
+  var s = strongest(list), l = latest(list);
+  var tsu = list.filter(function (q) { return q.tsunami; }).length;
+  var out = "Earthquake update (" + feedLabel + "): " + list.length + " earthquakes.";
+  if (s) out += " Strongest: M " + s.mag.toFixed(1) + " — " + s.place + ".";
+  if (l) out += " Latest: M " + l.mag.toFixed(1) + " — " + l.place + " (" + timeAgo(l.time, generatedAt) + ").";
+  out += " Tsunami flags: " + tsu + ". Source: USGS via Dark Tech Zone.";
+  return out;
+}
+
+/* ---------- UI ---------- */
+var state = { all: [], shown: [], selectedId: null, feedLabel: "", timer: null };
+
+function $(id) { return document.getElementById(id); }
+function esc(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+  });
+}
+
+function setStatus(text, cls) {
+  var p = $("statusPill");
+  p.textContent = text;
+  p.className = "pill" + (cls ? " " + cls : "");
+}
+
+function showError(msg) {
+  var b = $("errBox");
+  if (msg) { b.textContent = msg; b.style.display = "block"; }
+  else { b.textContent = ""; b.style.display = "none"; }
+}
+
+function drawMap() {
+  var cv = $("map"), ctx = cv.getContext("2d");
+  var W = cv.width, H = cv.height;
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = "#eef6f5"; ctx.fillRect(0, 0, W, H);
+  ctx.strokeStyle = "#cbd5e1"; ctx.lineWidth = 1;
+  for (var lon = -180; lon <= 180; lon += 30) {
+    var x = (lon + 180) / 360 * W;
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+  }
+  for (var lat = -60; lat <= 60; lat += 30) {
+    var y = (90 - lat) / 180 * H;
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+  }
+  ctx.strokeStyle = "#94a3b8";
+  ctx.beginPath(); ctx.moveTo(0, H / 2); ctx.lineTo(W, H / 2); ctx.stroke();
+  var box = REGIONS[$("regionSel").value];
+  if (box) {
+    var bx = (box.minLon + 180) / 360 * W, bx2 = (box.maxLon + 180) / 360 * W;
+    var by = (90 - box.maxLat) / 180 * H, by2 = (90 - box.minLat) / 180 * H;
+    ctx.strokeStyle = "#0d9488"; ctx.lineWidth = 2;
+    ctx.strokeRect(bx, by, bx2 - bx, by2 - by);
+  }
+  state.shown.forEach(function (q) {
+    var x = (q.lon + 180) / 360 * W, y = (90 - q.lat) / 180 * H;
+    var r = 3 + Math.max(0, q.mag - 2) * 2.2;
+    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fillStyle = magColor(q.mag); ctx.fill();
+    ctx.strokeStyle = "rgba(15,23,42,.45)"; ctx.lineWidth = 1; ctx.stroke();
+    if (q.id === state.selectedId) {
+      ctx.beginPath(); ctx.arc(x, y, r + 5, 0, Math.PI * 2);
+      ctx.strokeStyle = "#0f172a"; ctx.lineWidth = 2; ctx.stroke();
+    }
+  });
+  ctx.fillStyle = "#64748b"; ctx.font = "13px sans-serif";
+  ctx.fillText("180W", 6, H - 8); ctx.fillText("0", W / 2 - 4, H - 8); ctx.fillText("180E", W - 36, H - 8);
+}
+
+function renderStats() {
+  var list = state.shown;
+  $("stTotal").textContent = list.length;
+  var s = strongest(list), l = latest(list);
+  $("stStrong").textContent = s ? "M " + s.mag.toFixed(1) : "–";
+  $("stLatest").textContent = l ? timeAgo(l.time, Date.now()) : "–";
+  $("stTsu").textContent = list.filter(function (q) { return q.tsunami; }).length;
+}
+
+function renderList() {
+  var box = $("listBox");
+  var list = state.shown;
+  $("listTitle").textContent = "Earthquakes (" + list.length + ")";
+  if (!list.length) {
+    box.innerHTML = '<p class="empty">No earthquakes match these filters. Try a wider feed, lower magnitude, or clear the search.</p>';
+    $("btnReport").disabled = true; $("btnCopy").disabled = true;
+    return;
+  }
+  $("btnReport").disabled = false; $("btnCopy").disabled = false;
+  var now = Date.now();
+  box.innerHTML = list.map(function (q) {
+    var tags = "";
+    if (q.tsunami) tags += '<span class="tag tsu">Tsunami flag</span>';
+    if (q.alert) tags += '<span class="tag alert">Alert: ' + esc(q.alert) + "</span>";
+    return '<div class="qrow' + (q.id === state.selectedId ? " sel" : "") + '" data-id="' + esc(q.id) + '">' +
+      '<div class="mag ' + magClass(q.mag) + '">' + q.mag.toFixed(1) + "<small>MAG</small></div>" +
+      '<div class="qmeta"><b>' + esc(q.place) + "</b>" + tags +
+      '<div class="line">' + esc(formatPKT(q.time)) + " · " + esc(timeAgo(q.time, now)) +
+      (q.depth !== null ? " · Depth " + q.depth.toFixed(1) + " km" : "") +
+      (q.felt ? " · " + q.felt + " felt reports" : "") + "</div></div></div>";
+  }).join("");
+  var rows = box.querySelectorAll(".qrow");
+  rows.forEach(function (r) {
+    r.addEventListener("click", function () { selectQuake(r.getAttribute("data-id"), true); });
+  });
+}
+
+function selectQuake(id, saveRecent) {
+  var q = null;
+  for (var i = 0; i < state.shown.length; i++) if (state.shown[i].id === id) { q = state.shown[i]; break; }
+  if (!q) for (var j = 0; j < state.all.length; j++) if (state.all[j].id === id) { q = state.all[j]; break; }
+  if (!q) return;
+  state.selectedId = id;
+  var d = $("detailBox");
+  var maps = "https://www.google.com/maps?q=" + q.lat + "," + q.lon;
+  d.innerHTML = "<h3>M " + q.mag.toFixed(1) + " — " + esc(q.place) + "</h3><table>" +
+    "<tr><td>Time (PKT)</td><td>" + esc(formatPKT(q.time)) + " (" + esc(timeAgo(q.time, Date.now())) + ")</td></tr>" +
+    "<tr><td>Magnitude</td><td>" + q.mag.toFixed(1) + (q.magType ? " (" + esc(q.magType) + ")" : "") + "</td></tr>" +
+    "<tr><td>Location</td><td>" + q.lat.toFixed(4) + ", " + q.lon.toFixed(4) + "</td></tr>" +
+    "<tr><td>Depth</td><td>" + (q.depth !== null ? q.depth.toFixed(1) + " km" : "Not reported") + "</td></tr>" +
+    "<tr><td>Tsunami flag</td><td>" + (q.tsunami ? "Yes — check official tsunami warnings" : "No") + "</td></tr>" +
+    "<tr><td>Felt reports</td><td>" + (q.felt !== null ? q.felt : "None yet") + "</td></tr>" +
+    "<tr><td>Status</td><td>" + esc(q.status || "—") + "</td></tr>" +
+    "<tr><td>Links</td><td>" + (q.url ? '<a href="' + esc(q.url) + '" target="_blank" rel="noopener">USGS event page</a> · ' : "") +
+    '<a href="' + maps + '" target="_blank" rel="noopener">View on map</a></td></tr></table>';
+  d.classList.add("show");
+  renderList(); drawMap();
+  if (saveRecent) saveRecentQuake(q);
+}
+
+function applyFilters() {
+  var minMag = parseFloat($("magSel").value) || 0;
+  state.shown = sortQuakes(filterQuakes(state.all, $("regionSel").value, minMag, $("searchIn").value), $("sortSel").value);
+  renderStats(); renderList(); drawMap();
+}
+
+function loadFeed() {
+  var feed = $("feedSel").value;
+  state.feedLabel = $("feedSel").options[$("feedSel").selectedIndex].text;
+  setStatus("Loading...", "");
+  showError("");
+  $("btnRefresh").disabled = true;
+  fetch(feedUrl(feed))
+    .then(function (r) { if (!r.ok) throw new Error("USGS returned " + r.status); return r.json(); })
+    .then(function (json) {
+      state.all = parseFeed(json);
+      state.selectedId = null;
+      $("detailBox").classList.remove("show");
+      $("updatedLine").textContent = "Last updated: " + formatPKT(Date.now()) + " · " + state.all.length + " earthquakes in this feed (before filters).";
+      setStatus("Live", "on");
+      applyFilters();
+    })
+    .catch(function () {
+      setStatus("Offline", "err");
+      showError("Could not load live data from USGS. Check your internet connection and tap Refresh now.");
+      if (!state.all.length) $("listBox").innerHTML = '<p class="empty">No data loaded yet.</p>';
+    })
+    .then(function () { $("btnRefresh").disabled = false; });
+}
+
+function saveRecentQuake(q) {
+  var key = "dtz-eq-recent", arr = [];
+  try { arr = JSON.parse(localStorage.getItem(key) || "[]"); } catch (e) { arr = []; }
+  arr = arr.filter(function (x) { return x.id !== q.id; });
+  arr.unshift({ id: q.id, mag: q.mag, place: q.place, time: q.time });
+  arr = arr.slice(0, 8);
+  try { localStorage.setItem(key, JSON.stringify(arr)); } catch (e) {}
+  renderRecent();
+}
+
+function renderRecent() {
+  var key = "dtz-eq-recent", arr = [];
+  try { arr = JSON.parse(localStorage.getItem(key) || "[]"); } catch (e) { arr = []; }
+  var card = $("recentCard");
+  if (!arr.length) { card.style.display = "none"; return; }
+  card.style.display = "block";
+  $("recentList").innerHTML = arr.map(function (x) {
+    return '<div class="recent-item" data-id="' + esc(x.id) + '"><span class="r-mag">M ' + Number(x.mag).toFixed(1) + '</span><span class="r-text">' + esc(x.place) + " · " + esc(timeAgo(x.time, Date.now())) + "</span></div>";
+  }).join("");
+  $("recentList").querySelectorAll(".recent-item").forEach(function (r) {
+    r.addEventListener("click", function () {
+      var id = r.getAttribute("data-id");
+      var found = state.all.some(function (q) { return q.id === id; });
+      if (found) selectQuake(id, false);
+      else showError("That earthquake is not in the current feed. Switch feeds or refresh, then try again.");
+    });
+  });
+}
+
+function downloadText(filename, text) {
+  var blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+}
+
+$("feedSel").addEventListener("change", loadFeed);
+$("regionSel").addEventListener("change", applyFilters);
+$("magSel").addEventListener("change", applyFilters);
+$("sortSel").addEventListener("change", applyFilters);
+$("searchIn").addEventListener("input", applyFilters);
+$("btnRefresh").addEventListener("click", loadFeed);
+$("autoChk").addEventListener("change", function () {
+  if (state.timer) { clearInterval(state.timer); state.timer = null; }
+  if (this.checked) state.timer = setInterval(loadFeed, 60000);
+});
+$("btnReport").addEventListener("click", function () {
+  downloadText("dtz-earthquake-report.txt", buildReport(state.shown, state.feedLabel, Date.now()));
+});
+$("btnCopy").addEventListener("click", function () {
+  var text = buildSummary(state.shown, state.feedLabel, Date.now());
+  var btn = this;
+  function done() { btn.textContent = "Copied"; setTimeout(function () { btn.textContent = "Copy summary"; }, 1600); }
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, done);
+  else done();
+});
+$("btnClearRecent").addEventListener("click", function () {
+  try { localStorage.removeItem("dtz-eq-recent"); } catch (e) {}
+  renderRecent();
+});
+$("map").addEventListener("click", function (ev) {
+  var cv = this, rect = cv.getBoundingClientRect();
+  var x = (ev.clientX - rect.left) / rect.width * cv.width;
+  var y = (ev.clientY - rect.top) / rect.height * cv.height;
+  var best = null, bestD = 1e9;
+  state.shown.forEach(function (q) {
+    var qx = (q.lon + 180) / 360 * cv.width, qy = (90 - q.lat) / 180 * cv.height;
+    var d = Math.hypot(qx - x, qy - y);
+    if (d < bestD) { bestD = d; best = q; }
+  });
+  if (best && bestD < 40) selectQuake(best.id, true);
+});
+
+renderRecent();
+loadFeed();
+</script>
+</body>
+</html>
