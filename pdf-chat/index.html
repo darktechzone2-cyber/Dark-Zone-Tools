@@ -492,5 +492,55 @@ $("btnClearRecent").addEventListener("click", function(){
 checkHealth();
 renderRecent();
 </script>
+<!-- DTZ Splash Intro (added 2026-11-25) -->
+<style>
+#dtz-splash-overlay{position:fixed;inset:0;z-index:2147483647;background:#02040a;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Segoe UI',Arial,sans-serif;opacity:1;transition:opacity .45s ease;cursor:pointer}
+#dtz-splash-overlay.dtz-splash-hide{opacity:0;pointer-events:none}
+.dtz-splash-logo-wrap{position:relative;width:190px;height:190px;margin-bottom:22px}
+.dtz-splash-ring{position:absolute;border-radius:50%;border:3px solid transparent}
+.dtz-splash-ring1{inset:-12px;border-top-color:#00e5ff;border-bottom-color:#00e5ff;animation:dtz-splash-spin 3.2s linear infinite}
+.dtz-splash-ring2{inset:-22px;border-left-color:#ff2e88;border-right-color:#ff2e88;animation:dtz-splash-spin-rev 4.6s linear infinite}
+.dtz-splash-ring3{inset:-32px;border-top-color:#9d4dff;animation:dtz-splash-spin 7s linear infinite;opacity:.7}
+@keyframes dtz-splash-spin{to{transform:rotate(360deg)}}
+@keyframes dtz-splash-spin-rev{to{transform:rotate(-360deg)}}
+.dtz-splash-logo{width:100%;height:100%;border-radius:50%;object-fit:cover;box-shadow:0 0 42px #00e5ff,0 0 90px rgba(157,77,255,.45);animation:dtz-splash-logo-in .8s cubic-bezier(.17,.89,.32,1.28) both}
+@keyframes dtz-splash-logo-in{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+.dtz-splash-title{font-size:30px;font-weight:900;letter-spacing:5px;text-transform:uppercase;color:#fff;text-align:center;animation:dtz-splash-title-in .7s ease .25s both}
+.dtz-splash-title span{color:#00e5ff}
+@keyframes dtz-splash-title-in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.dtz-splash-tagline{margin-top:8px;font-size:14px;letter-spacing:5px;text-transform:uppercase;color:#8be9ff;text-align:center;animation:dtz-splash-title-in .7s ease .45s both}
+.dtz-splash-skip{margin-top:20px;font-size:11px;letter-spacing:2px;color:#5b7186;text-transform:uppercase}
+@media (prefers-reduced-motion:reduce){.dtz-splash-ring,.dtz-splash-logo,.dtz-splash-title,.dtz-splash-tagline{animation:none!important}}
+@media (max-width:480px){.dtz-splash-logo-wrap{width:150px;height:150px}.dtz-splash-title{font-size:22px;letter-spacing:3px}.dtz-splash-tagline{font-size:12px;letter-spacing:3px}}
+</style>
+<div id="dtz-splash-overlay" role="presentation">
+  <div class="dtz-splash-logo-wrap">
+    <div class="dtz-splash-ring dtz-splash-ring1"></div>
+    <div class="dtz-splash-ring dtz-splash-ring2"></div>
+    <div class="dtz-splash-ring dtz-splash-ring3"></div>
+    <img class="dtz-splash-logo" src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone" onerror="this.style.display='none'">
+  </div>
+  <div class="dtz-splash-title">Dark <span>Tech</span> Zone</div>
+  <div class="dtz-splash-tagline">Learn. Build. Secure.</div>
+  <div class="dtz-splash-skip">Tap to skip</div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('dtz-splash-overlay');
+  if(!el)return;
+  var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var done=false;
+  function hide(){
+    if(done)return;done=true;
+    el.classList.add('dtz-splash-hide');
+    setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},500);
+  }
+  el.addEventListener('click',hide);
+  el.addEventListener('touchstart',hide,{passive:true});
+  setTimeout(hide,reduced?350:2500);
+})();
+</script>
+<!-- /DTZ Splash Intro -->
+
 </body>
 </html>
