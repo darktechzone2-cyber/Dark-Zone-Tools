@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTZ Voice to Text — Dark Tech Zone</title>
+<meta name="description" content="Speak and get text instantly in English, Urdu and more languages. Free voice typing in your browser — no key, no signup. Copy or download your transcript as a text file.">
+<link rel="icon" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg">
+<style>
+  :root{--bg:#f4f7f6;--card:#ffffff;--text:#0f172a;--muted:#64748b;--line:#e2e8f0;--accent:#0d9488;--accent-d:#0b7c74;--danger:#dc2626;--radius:14px}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.5}
+  .wrap{max-width:920px;margin:0 auto;padding:20px 16px 48px}
+  header{display:flex;align-items:center;gap:12px;padding:8px 0 4px;flex-wrap:wrap}
+  header img{width:44px;height:44px;border-radius:10px;object-fit:cover}
+  header h1{font-size:22px;line-height:1.2}
+  header p{color:var(--muted);font-size:13px}
+  .pill{margin-left:auto;font-size:12.5px;font-weight:700;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--muted);white-space:nowrap}
+  .pill.on{color:#047857;border-color:#a7f3d0;background:#ecfdf5}
+  .pill.live{color:#b91c1c;border-color:#fecaca;background:#fef2f2}
+  .pill.err{color:var(--danger);border-color:#fecaca;background:#fef2f2}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-top:14px}
+  .card h2{font-size:16px;margin-bottom:4px}
+  .card .sub{color:var(--muted);font-size:13px;margin-bottom:12px}
+  label{display:block;font-size:13px;font-weight:600;margin:0 0 5px}
+  select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:9px;font-size:15px;font-family:inherit;background:#fff;color:var(--text)}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;background:var(--accent);color:#fff;font-family:inherit}
+  .btn:hover{background:var(--accent-d)}
+  .btn.ghost{background:#fff;color:var(--text);border:1px solid var(--line)}
+  .btn.ghost:hover{background:#f1f5f9}
+  .btn.danger{background:var(--danger)}
+  .btn.danger:hover{background:#b91c1c}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .btn svg{flex:none}
+  .btnrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;align-items:center}
+  .hint{font-size:12.5px;color:var(--muted);margin-top:8px}
+  .error{display:none;background:#fef2f2;border:1px solid #fecaca;color:var(--danger);border-radius:9px;padding:10px 12px;font-size:14px;margin-top:14px}
+  .error.show{display:block}
+  .microw{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end}
+  .microw .langbox{flex:1;min-width:220px}
+  .pulse{width:14px;height:14px;border-radius:50%;background:#cbd5e1;flex:none}
+  .pulse.live{background:var(--danger);animation:pulse 1.1s ease-in-out infinite}
+  @keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.35);opacity:.55}}
+  .interim{min-height:24px;color:var(--muted);font-size:15px;font-style:italic;margin-top:12px;word-break:break-word}
+  textarea{width:100%;min-height:180px;padding:12px;border:1px solid var(--line);border-radius:10px;font-size:16px;font-family:inherit;line-height:1.6;background:#fff;color:var(--text);resize:vertical;margin-top:8px}
+  textarea.rtl{direction:rtl;text-align:right}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+  .stat{background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:12px;text-align:center}
+  .stat b{display:block;font-size:20px;line-height:1.2}
+  .stat span{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+  .cmdbox{background:#f0fdfa;border:1px solid #99f6e4;border-radius:10px;padding:12px 14px;margin-top:14px;font-size:13.5px}
+  .cmdbox b{color:var(--accent-d)}
+  .recent-item{display:flex;justify-content:space-between;gap:10px;padding:9px 10px;border:1px solid var(--line);border-radius:9px;margin-bottom:6px;cursor:pointer;font-size:13.5px;background:#fff}
+  .recent-item:hover{border-color:var(--accent)}
+  .recent-item .r-meta{font-weight:700;white-space:nowrap;color:var(--accent-d)}
+  .recent-item .r-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted)}
+  .empty{color:var(--muted);font-size:14px;padding:6px 0}
+  ol.steps{margin:8px 0 0 18px;font-size:14px}
+  ol.steps li{margin-bottom:4px}
+  footer{margin-top:22px;color:var(--muted);font-size:12.5px;text-align:center}
+  footer a{color:var(--accent-d);font-weight:600}
+  @media(max-width:700px){
+    .stats{grid-template-columns:1fr 1fr 1fr}
+    header h1{font-size:18px}
+    header p{display:none}
+    .pill{margin-left:0}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone logo">
+    <div>
+      <h1>DTZ Voice to Text</h1>
+      <p>Speak and get text instantly — English, Urdu and more</p>
+    </div>
+    <span class="pill" id="statusPill">Checking...</span>
+  </header>
+
+  <div class="card">
+    <h2>Voice typing</h2>
+    <p class="sub">Pick your language, press Start listening, allow the microphone, and speak. Your words appear as text below. You can also type or paste text in the box.</p>
+    <div class="microw">
+      <div class="langbox">
+        <label for="langSel">Language</label>
+        <select id="langSel">
+          <option value="en-US" selected>English (US)</option>
+          <option value="en-GB">English (UK)</option>
+          <option value="ur-PK">Urdu (Pakistan)</option>
+          <option value="ur-IN">Urdu (India)</option>
+          <option value="hi-IN">Hindi</option>
+          <option value="pa-IN">Punjabi</option>
+          <option value="bn-IN">Bengali</option>
+          <option value="ar-SA">Arabic</option>
+          <option value="ps-AF">Pashto</option>
+          <option value="tr-TR">Turkish</option>
+          <option value="es-ES">Spanish</option>
+          <option value="fr-FR">French</option>
+          <option value="de-DE">German</option>
+        </select>
+      </div>
+      <button class="btn" id="btnStart" type="button">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"></rect><path d="M5 10a7 7 0 0 0 14 0"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg>
+        <span id="btnStartText">Start listening</span>
+      </button>
+      <span class="pulse" id="pulseDot" aria-hidden="true"></span>
+    </div>
+    <div class="interim" id="interimText" aria-live="polite"></div>
+    <label for="transcript">Your text</label>
+    <textarea id="transcript" placeholder="Your spoken words will appear here. You can edit the text anytime."></textarea>
+    <div class="stats">
+      <div class="stat"><b id="statWords">0</b><span>Words</span></div>
+      <div class="stat"><b id="statChars">0</b><span>Characters</span></div>
+      <div class="stat"><b id="statTime">0:00</b><span>Listening time</span></div>
+    </div>
+    <div class="btnrow">
+      <button class="btn ghost" id="btnCopy" type="button">Copy text</button>
+      <button class="btn ghost" id="btnDownload" type="button">Download .txt</button>
+      <button class="btn ghost" id="btnSave" type="button">Save session</button>
+      <button class="btn ghost" id="btnClear" type="button">Clear</button>
+    </div>
+    <div class="cmdbox">
+      <b>Voice commands (say them while speaking):</b> "new line", "new paragraph", "comma", "full stop", "question mark", "exclamation mark", "colon", "delete last word", "clear all".
+    </div>
+    <div class="error" id="errorBox"></div>
+  </div>
+
+  <div class="card">
+    <h2>Recent sessions</h2>
+    <p class="sub">Saved on this device only. Tap a session to load its text again.</p>
+    <div id="recentList"><p class="empty">No saved sessions yet.</p></div>
+    <div class="btnrow">
+      <button class="btn ghost" id="btnClearRecent" type="button">Clear history</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>How to use</h2>
+    <ol class="steps">
+      <li>Choose the language you will speak.</li>
+      <li>Press <b>Start listening</b> and allow microphone access when the browser asks.</li>
+      <li>Speak clearly. Grey text is live; finished sentences move into the box.</li>
+      <li>Say "new line" or "full stop" for punctuation, or edit the text by hand.</li>
+      <li>Press <b>Stop</b>, then Copy or Download your text file.</li>
+    </ol>
+    <p class="hint">Honest limits: voice typing works in Chrome, Edge and Safari — Firefox does not support it. It needs an internet connection because Chrome and Edge recognise speech on their own servers; this page never records or uploads your audio itself, and your text stays in this tab until you copy or download it. Accuracy depends on your microphone, background noise and the language you pick.</p>
+  </div>
+
+  <footer>
+    Free tool by Dark Tech Zone — <a href="https://www.darktechzon.site/" target="_blank" rel="noopener">darktechzon.site</a>
+    <br>Join the channel: <a href="https://whatsapp.com/channel/0029Vb9oK008V0txIkc3oj3z" target="_blank" rel="noopener">Dark Tech Zone on WhatsApp</a>
+  </footer>
+</div>
+<script>
+"use strict";
+/* DTZ Voice to Text — browser Speech Recognition, free, no key.
+   Pure helpers first (unit-tested in Node), then page wiring. */
+
+var LANGUAGES = [
+  { code: "en-US", label: "English (US)" },
+  { code: "en-GB", label: "English (UK)" },
+  { code: "ur-PK", label: "Urdu (Pakistan)" },
+  { code: "ur-IN", label: "Urdu (India)" },
+  { code: "hi-IN", label: "Hindi" },
+  { code: "pa-IN", label: "Punjabi" },
+  { code: "bn-IN", label: "Bengali" },
+  { code: "ar-SA", label: "Arabic" },
+  { code: "ps-AF", label: "Pashto" },
+  { code: "tr-TR", label: "Turkish" },
+  { code: "es-ES", label: "Spanish" },
+  { code: "fr-FR", label: "French" },
+  { code: "de-DE", label: "German" }
+];
+
+function isRtlLang(code) {
+  var base = String(code || "").split("-")[0].toLowerCase();
+  return base === "ur" || base === "ar" || base === "ps" || base === "fa" || base === "he";
+}
+
+function countWords(text) {
+  var t = String(text || "").trim();
+  if (!t) return 0;
+  return t.split(/\s+/).length;
+}
+
+function applyVoiceCommands(text) {
+  var t = " " + String(text || "") + " ";
+  t = t.replace(/\bnew paragraph\b/gi, "\n\n");
+  t = t.replace(/\bnew line\b/gi, "\n");
+  t = t.replace(/\bfull stop\b/gi, ".");
+  t = t.replace(/\bperiod\b/gi, ".");
+  t = t.replace(/\bcomma\b/gi, ",");
+  t = t.replace(/\bquestion mark\b/gi, "?");
+  t = t.replace(/\bexclamation mark\b/gi, "!");
+  t = t.replace(/\bexclamation point\b/gi, "!");
+  t = t.replace(/\bsemicolon\b/gi, ";");
+  t = t.replace(/\bcolon\b/gi, ":");
+  t = t.replace(/[ \t]+([.,?!;:])/g, "$1");
+  t = t.replace(/[ \t]*\n[ \t]*/g, "\n");
+  t = t.replace(/\n{3,}/g, "\n\n");
+  t = t.replace(/[ \t]{2,}/g, " ");
+  return t.trim();
+}
+
+function classifyCommand(segment) {
+  var s = String(segment || "").trim().toLowerCase().replace(/[.!?]+$/, "");
+  if (s === "delete last word" || s === "delete last") return { type: "delete-word", text: "" };
+  if (s === "clear all" || s === "clear everything") return { type: "clear", text: "" };
+  return { type: "text", text: applyVoiceCommands(segment) };
+}
+
+function deleteLastWord(text) {
+  var t = String(text || "");
+  var trimmed = t.replace(/\s+$/, "");
+  if (!trimmed) return "";
+  var cut = trimmed.replace(/\S+$/, "").replace(/\s+$/, "");
+  return cut ? cut + " " : "";
+}
+
+function appendSegment(current, segment) {
+  var cur = String(current || "");
+  var seg = String(segment || "").trim();
+  if (!seg) return cur;
+  if (!cur) return seg;
+  if (/\n$/.test(cur)) return cur + seg;
+  return cur.replace(/\s+$/, "") + " " + seg;
+}
+
+function makeTitle(text) {
+  var t = String(text || "").trim().replace(/\s+/g, " ");
+  if (!t) return "Untitled session";
+  if (t.length <= 42) return t;
+  return t.slice(0, 42).trim() + "...";
+}
+
+function formatClock(totalSeconds) {
+  var s = Math.max(0, Math.floor(Number(totalSeconds) || 0));
+  var m = Math.floor(s / 60);
+  var r = s % 60;
+  return m + ":" + (r < 10 ? "0" : "") + r;
+}
+
+function buildFileText(text, langLabel, dateText) {
+  var lines = [];
+  lines.push("DTZ Voice to Text — Dark Tech Zone");
+  lines.push("Language: " + (langLabel || "English (US)"));
+  lines.push("Date: " + (dateText || ""));
+  lines.push("Words: " + countWords(text));
+  lines.push("");
+  lines.push(String(text || ""));
+  return lines.join("\n");
+}
+
+function errorMessageFor(code) {
+  switch (String(code || "")) {
+    case "not-allowed":
+    case "service-not-allowed":
+      return "Microphone access was blocked. Allow the microphone in your browser settings, then press Start listening again.";
+    case "audio-capture":
+      return "No microphone was found. Connect a microphone or check your device settings, then try again.";
+    case "network":
+      return "Network problem: speech recognition needs an internet connection. Check your connection and try again.";
+    case "language-not-supported":
+      return "This language is not supported by your browser. Pick another language and try again.";
+    case "no-speech":
+      return "No speech was heard. Speak closer to the microphone and try again.";
+    case "aborted":
+      return "Listening was stopped.";
+    default:
+      return "Speech recognition stopped with an error. Press Start listening to try again.";
+  }
+}
+
+function langLabelFor(code) {
+  for (var i = 0; i < LANGUAGES.length; i++) {
+    if (LANGUAGES[i].code === code) return LANGUAGES[i].label;
+  }
+  return String(code || "");
+}
+</script>
+<script>
+"use strict";
+(function () {
+  function $(id) { return document.getElementById(id); }
+  var pill = $("statusPill"), langSel = $("langSel"), btnStart = $("btnStart"),
+      btnStartText = $("btnStartText"), pulseDot = $("pulseDot"),
+      interimText = $("interimText"), transcript = $("transcript"),
+      statWords = $("statWords"), statChars = $("statChars"), statTime = $("statTime"),
+      errorBox = $("errorBox"), recentList = $("recentList");
+
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+  var recog = null, wantListening = false, listening = false;
+  var listenSeconds = 0, timer = null, fastRestarts = 0, lastStartAt = 0;
+
+  function setPill(text, cls) {
+    pill.textContent = text;
+    pill.className = "pill" + (cls ? " " + cls : "");
+  }
+  function showError(msg) {
+    if (!msg) { errorBox.className = "error"; errorBox.textContent = ""; return; }
+    errorBox.textContent = msg;
+    errorBox.className = "error show";
+  }
+  function updateStats() {
+    var t = transcript.value;
+    statWords.textContent = String(countWords(t));
+    statChars.textContent = String(t.length);
+  }
+  function applyRtl() {
+    if (isRtlLang(langSel.value)) transcript.classList.add("rtl");
+    else transcript.classList.remove("rtl");
+  }
+  function setListeningUI(on) {
+    listening = on;
+    btnStartText.textContent = on ? "Stop" : "Start listening";
+    btnStart.className = on ? "btn danger" : "btn";
+    pulseDot.className = on ? "pulse live" : "pulse";
+    if (on) setPill("Listening", "live");
+    else if (SR) setPill("Ready", "on");
+  }
+  function startTimer() {
+    if (timer) return;
+    timer = setInterval(function () {
+      if (listening) { listenSeconds++; statTime.textContent = formatClock(listenSeconds); }
+    }, 1000);
+  }
+
+  function handleFinal(segment) {
+    var cmd = classifyCommand(segment);
+    if (cmd.type === "delete-word") {
+      transcript.value = deleteLastWord(transcript.value);
+    } else if (cmd.type === "clear") {
+      transcript.value = "";
+    } else if (cmd.text) {
+      transcript.value = appendSegment(transcript.value, cmd.text);
+    }
+    updateStats();
+    transcript.scrollTop = transcript.scrollHeight;
+  }
+
+  function createRecognition() {
+    var r = new SR();
+    r.continuous = true;
+    r.interimResults = true;
+    r.maxAlternatives = 1;
+    r.lang = langSel.value;
+    r.onstart = function () {
+      lastStartAt = Date.now();
+      setListeningUI(true);
+      showError("");
+    };
+    r.onresult = function (ev) {
+      var interim = "";
+      for (var i = ev.resultIndex; i < ev.results.length; i++) {
+        var res = ev.results[i];
+        var txt = res[0] ? res[0].transcript : "";
+        if (res.isFinal) handleFinal(txt);
+        else interim += txt;
+      }
+      interimText.textContent = interim ? interim.trim() : "";
+    };
+    r.onerror = function (ev) {
+      var code = ev && ev.error ? ev.error : "";
+      if (code === "no-speech" || code === "aborted") return;
+      showError(errorMessageFor(code));
+      if (code === "not-allowed" || code === "service-not-allowed" ||
+          code === "audio-capture" || code === "language-not-supported") {
+        wantListening = false;
+      }
+    };
+    r.onend = function () {
+      interimText.textContent = "";
+      if (wantListening) {
+        if (Date.now() - lastStartAt < 800) fastRestarts++; else fastRestarts = 0;
+        if (fastRestarts >= 5) {
+          wantListening = false;
+          setListeningUI(false);
+          showError("Listening keeps stopping. Check your microphone and internet connection, then press Start listening again.");
+          return;
+        }
+        setTimeout(function () {
+          if (!wantListening) return;
+          try { r.lang = langSel.value; r.start(); }
+          catch (e) { setListeningUI(false); }
+        }, 250);
+      } else {
+        setListeningUI(false);
+      }
+    };
+    return r;
+  }
+
+  function startListening() {
+    if (!SR) return;
+    showError("");
+    wantListening = true;
+    fastRestarts = 0;
+    if (!recog) recog = createRecognition();
+    recog.lang = langSel.value;
+    try { recog.start(); startTimer(); }
+    catch (e) { showError("Could not start listening. Wait a second and press Start listening again."); }
+  }
+  function stopListening() {
+    wantListening = false;
+    if (recog) { try { recog.stop(); } catch (e) {} }
+    setListeningUI(false);
+  }
+
+  btnStart.addEventListener("click", function () {
+    if (!SR) return;
+    if (wantListening || listening) stopListening(); else startListening();
+  });
+  langSel.addEventListener("change", function () {
+    applyRtl();
+    if (recog) recog.lang = langSel.value;
+    if (wantListening) { stopListening(); setTimeout(startListening, 350); }
+  });
+  transcript.addEventListener("input", updateStats);
+
+  function flashBtn(btn, doneText, backText) {
+    btn.textContent = doneText;
+    setTimeout(function () { btn.textContent = backText; }, 1600);
+  }
+  $("btnCopy").addEventListener("click", function () {
+    var btn = this;
+    var text = transcript.value;
+    if (!text.trim()) { showError("There is no text to copy yet. Speak or type something first."); return; }
+    showError("");
+    function done() { flashBtn(btn, "Copied", "Copy text"); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, function () {
+        transcript.select();
+        try { document.execCommand("copy"); } catch (e) {}
+        done();
+      });
+    } else {
+      transcript.select();
+      try { document.execCommand("copy"); } catch (e) {}
+      done();
+    }
+  });
+  $("btnDownload").addEventListener("click", function () {
+    var text = transcript.value;
+    if (!text.trim()) { showError("There is no text to download yet. Speak or type something first."); return; }
+    showError("");
+    var now = new Date();
+    var body = buildFileText(text, langLabelFor(langSel.value), now.toLocaleString());
+    var blob = new Blob([body], { type: "text/plain;charset=utf-8" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "dtz-voice-to-text.txt";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+  });
+  $("btnClear").addEventListener("click", function () {
+    transcript.value = "";
+    interimText.textContent = "";
+    listenSeconds = 0;
+    statTime.textContent = formatClock(0);
+    updateStats();
+    showError("");
+  });
+
+  var RECENT_KEY = "dtz-voice-recent";
+  function loadRecent() {
+    try {
+      var raw = localStorage.getItem(RECENT_KEY);
+      var arr = raw ? JSON.parse(raw) : [];
+      return Array.isArray(arr) ? arr : [];
+    } catch (e) { return []; }
+  }
+  function renderRecent() {
+    var items = loadRecent();
+    recentList.innerHTML = "";
+    if (!items.length) {
+      var p = document.createElement("p");
+      p.className = "empty";
+      p.textContent = "No saved sessions yet.";
+      recentList.appendChild(p);
+      return;
+    }
+    items.forEach(function (item, idx) {
+      var row = document.createElement("div");
+      row.className = "recent-item";
+      var left = document.createElement("span");
+      left.className = "r-text";
+      left.textContent = item.title || "Untitled session";
+      var right = document.createElement("span");
+      right.className = "r-meta";
+      right.textContent = (item.words || 0) + " words";
+      row.appendChild(left); row.appendChild(right);
+      row.addEventListener("click", function () {
+        transcript.value = item.text || "";
+        if (item.lang && langLabelFor(item.lang) === item.langLabel) langSel.value = item.lang;
+        else if (item.lang) langSel.value = item.lang;
+        applyRtl();
+        updateStats();
+        showError("");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+      recentList.appendChild(row);
+    });
+  }
+  $("btnSave").addEventListener("click", function () {
+    var text = transcript.value;
+    if (!text.trim()) { showError("There is no text to save yet. Speak or type something first."); return; }
+    showError("");
+    var items = loadRecent();
+    items.unshift({
+      title: makeTitle(text),
+      lang: langSel.value,
+      langLabel: langLabelFor(langSel.value),
+      words: countWords(text),
+      text: text.slice(0, 8000),
+      savedAt: Date.now()
+    });
+    items = items.slice(0, 8);
+    try { localStorage.setItem(RECENT_KEY, JSON.stringify(items)); } catch (e) {}
+    renderRecent();
+    flashBtn(this, "Saved", "Save session");
+  });
+  $("btnClearRecent").addEventListener("click", function () {
+    try { localStorage.removeItem(RECENT_KEY); } catch (e) {}
+    renderRecent();
+  });
+
+  if (!SR) {
+    setPill("Not supported", "err");
+    btnStart.disabled = true;
+    showError("Voice typing is not supported in this browser. Please open this page in Chrome, Edge or Safari. You can still type or paste text in the box and copy or download it.");
+  } else {
+    setPill("Ready", "on");
+  }
+  applyRtl();
+  updateStats();
+  renderRecent();
+})();
+</script>
+<!-- DTZ Splash Intro (added 2026-11-25) -->
+<style>
+#dtz-splash-overlay{position:fixed;inset:0;z-index:2147483647;background:#02040a;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Segoe UI',Arial,sans-serif;opacity:1;transition:opacity .45s ease;cursor:pointer}
+#dtz-splash-overlay.dtz-splash-hide{opacity:0;pointer-events:none}
+.dtz-splash-logo-wrap{position:relative;width:190px;height:190px;margin-bottom:22px}
+.dtz-splash-ring{position:absolute;border-radius:50%;border:3px solid transparent}
+.dtz-splash-ring1{inset:-12px;border-top-color:#00e5ff;border-bottom-color:#00e5ff;animation:dtz-splash-spin 3.2s linear infinite}
+.dtz-splash-ring2{inset:-22px;border-left-color:#ff2e88;border-right-color:#ff2e88;animation:dtz-splash-spin-rev 4.6s linear infinite}
+.dtz-splash-ring3{inset:-32px;border-top-color:#9d4dff;animation:dtz-splash-spin 7s linear infinite;opacity:.7}
+@keyframes dtz-splash-spin{to{transform:rotate(360deg)}}
+@keyframes dtz-splash-spin-rev{to{transform:rotate(-360deg)}}
+.dtz-splash-logo{width:100%;height:100%;border-radius:50%;object-fit:cover;box-shadow:0 0 42px #00e5ff,0 0 90px rgba(157,77,255,.45);animation:dtz-splash-logo-in .8s cubic-bezier(.17,.89,.32,1.28) both}
+@keyframes dtz-splash-logo-in{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+.dtz-splash-title{font-size:30px;font-weight:900;letter-spacing:5px;text-transform:uppercase;color:#fff;text-align:center;animation:dtz-splash-title-in .7s ease .25s both}
+.dtz-splash-title span{color:#00e5ff}
+@keyframes dtz-splash-title-in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.dtz-splash-tagline{margin-top:8px;font-size:14px;letter-spacing:5px;text-transform:uppercase;color:#8be9ff;text-align:center;animation:dtz-splash-title-in .7s ease .45s both}
+.dtz-splash-skip{margin-top:20px;font-size:11px;letter-spacing:2px;color:#5b7186;text-transform:uppercase}
+@media (prefers-reduced-motion:reduce){.dtz-splash-ring,.dtz-splash-logo,.dtz-splash-title,.dtz-splash-tagline{animation:none!important}}
+@media (max-width:480px){.dtz-splash-logo-wrap{width:150px;height:150px}.dtz-splash-title{font-size:22px;letter-spacing:3px}.dtz-splash-tagline{font-size:12px;letter-spacing:3px}}
+</style>
+<div id="dtz-splash-overlay" role="presentation">
+  <div class="dtz-splash-logo-wrap">
+    <div class="dtz-splash-ring dtz-splash-ring1"></div>
+    <div class="dtz-splash-ring dtz-splash-ring2"></div>
+    <div class="dtz-splash-ring dtz-splash-ring3"></div>
+    <img class="dtz-splash-logo" src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone" onerror="this.style.display='none'">
+  </div>
+  <div class="dtz-splash-title">Dark <span>Tech</span> Zone</div>
+  <div class="dtz-splash-tagline">Learn. Build. Secure.</div>
+  <div class="dtz-splash-skip">Tap to skip</div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('dtz-splash-overlay');
+  if(!el)return;
+  var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var done=false;
+  function hide(){
+    if(done)return;done=true;
+    el.classList.add('dtz-splash-hide');
+    setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},500);
+  }
+  el.addEventListener('click',hide);
+  el.addEventListener('touchstart',hide,{passive:true});
+  setTimeout(hide,reduced?350:2500);
+})();
+</script>
+<!-- /DTZ Splash Intro -->
+</body>
+</html>
