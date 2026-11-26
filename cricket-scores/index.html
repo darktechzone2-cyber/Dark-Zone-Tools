@@ -175,10 +175,14 @@ function parseScorepanel(data){
         var t = c.team || {};
         return { name: t.displayName || t.name || "Team", short: t.shortDisplayName || t.abbreviation || "", logo: t.logo || "", score: c.score || "", winner: !!c.winner };
       });
+      var summaryText = (e.status && e.status.summary) || st.detail || "";
+      var effState = st.state || "pre";
+      // ESPN sometimes marks not-yet-started matches as "in" with a "Starts at ..." summary and no scores.
+      if (effState === "in" && /^starts at/i.test(summaryText) && teams.every(function(t){ return !t.score; })) effState = "pre";
       out.push({
         id: e.id, leagueId: lg.id || "", league: lg.name || "Cricket", name: e.name || "",
-        date: e.date || "", state: st.state || "pre", statusText: st.description || st.detail || "",
-        summary: (e.status && e.status.summary) || st.detail || "",
+        date: e.date || "", state: effState, statusText: st.description || st.detail || "",
+        summary: summaryText,
         venue: (comp.venue && comp.venue.fullName) || "",
         teams: teams
       });
