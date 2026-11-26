@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTZ Code Screenshot Studio — Dark Tech Zone</title>
+<meta name="description" content="Turn any code snippet into a beautiful shareable PNG image. Syntax highlighting, themes, gradients, line numbers. Free, no signup, works in your browser.">
+<link rel="icon" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg">
+<link id="hljsTheme" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f4f6fb;--surface:#ffffff;--text:#0f172a;--muted:#64748b;--border:#e2e8f0;--accent:#0891b2;--accent2:#7c3aed}
+body{font-family:'Segoe UI',system-ui,-apple-system,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+header img{width:44px;height:44px;border-radius:50%;object-fit:cover}
+header .brand{font-weight:800;font-size:18px;letter-spacing:.5px}
+header .brand span{color:var(--accent)}
+header nav{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap}
+header nav a{text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;padding:8px 14px;border:1px solid var(--border);border-radius:20px;background:#fff}
+main{max-width:1080px;margin:0 auto;padding:24px 16px 60px}
+.hero{text-align:center;padding:18px 0 8px}
+.hero h1{font-size:30px;font-weight:900}
+.hero h1 span{color:var(--accent)}
+.hero p{color:var(--muted);margin-top:8px;font-size:15px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;margin-top:18px;box-shadow:0 2px 12px rgba(15,23,42,.05)}
+label{display:block;font-weight:700;font-size:13px;margin-bottom:8px;color:var(--text)}
+textarea{width:100%;min-height:170px;padding:14px;border:1px solid var(--border);border-radius:12px;font-family:'Consolas','Courier New',monospace;font-size:14px;line-height:1.55;resize:vertical;background:#f8fafc;color:var(--text)}
+textarea:focus,input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px}
+.row{display:flex;gap:14px;flex-wrap:wrap;margin-top:16px}
+.row>div{flex:1;min-width:160px}
+select,input[type=text]{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-size:14px;background:#fff;color:var(--text)}
+input[type=range]{width:100%}
+.rangeval{font-size:12px;color:var(--muted);font-weight:600}
+.checks{display:flex;gap:18px;flex-wrap:wrap;margin-top:16px}
+.checks label{display:flex;align-items:center;gap:8px;font-weight:600;font-size:14px;cursor:pointer;margin:0}
+.checks input{width:18px;height:18px;accent-color:var(--accent)}
+.swatches{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.swatch{width:44px;height:44px;border-radius:10px;border:2px solid var(--border);cursor:pointer;padding:0}
+.swatch.active{border-color:var(--accent);box-shadow:0 0 0 3px rgba(8,145,178,.25)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.chip{border:1px solid var(--border);background:#f8fafc;color:var(--text);padding:8px 14px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.btnrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.btn{border:none;cursor:pointer;font-weight:700;font-size:15px;padding:13px 22px;border-radius:12px;display:inline-flex;align-items:center;gap:8px}
+.btn svg{width:18px;height:18px;flex:none}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.btn-ghost{background:#fff;color:var(--text);border:1px solid var(--border)}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.status{margin-top:14px;font-size:14px;font-weight:600;min-height:20px}
+.status.ok{color:#15803d}.status.err{color:#dc2626}.status.info{color:var(--muted)}
+#stageWrap{margin-top:20px;overflow-x:auto;background:#e8edf5;border-radius:16px;padding:18px}
+#stage{display:inline-block;padding:48px;border-radius:8px}
+#windowCard{background:#0d1117;border-radius:12px;box-shadow:0 18px 50px rgba(0,0,0,.35);overflow:hidden;min-width:340px;max-width:760px}
+#winBar{display:flex;align-items:center;gap:8px;padding:12px 16px;background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.08)}
+.dot{width:12px;height:12px;border-radius:50%}
+.dot.r{background:#ff5f57}.dot.y{background:#febc2e}.dot.g{background:#28c840}
+#winTitle{margin-left:8px;font-size:13px;color:#9fb3c8;font-family:'Consolas',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#codeArea{display:flex;align-items:stretch}
+#gutter{padding:18px 0 18px 16px;text-align:right;font-family:'Consolas','Courier New',monospace;color:#5b6b7f;user-select:none;white-space:pre}
+pre{flex:1;margin:0}
+pre code{display:block;padding:18px 20px 18px 14px;font-family:'Consolas','Courier New',monospace;line-height:1.6;white-space:pre;overflow:visible;background:transparent!important}
+#wmBar{display:none;padding:10px 16px;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#7dd3fc;background:rgba(255,255,255,.04);border-top:1px solid rgba(255,255,255,.08);text-align:right;font-weight:700}
+.light-win #winBar{background:rgba(0,0,0,.05);border-bottom-color:rgba(0,0,0,.08)}
+.light-win #winTitle{color:#475569}
+.light-win #wmBar{background:rgba(0,0,0,.05);border-top-color:rgba(0,0,0,.08);color:#0369a1}
+.recent{margin-top:16px}
+.recent h3{font-size:14px;margin-bottom:10px}
+.recent-list{display:flex;flex-direction:column;gap:8px}
+.recent-item{display:flex;align-items:center;gap:10px;border:1px solid var(--border);border-radius:10px;padding:10px 12px;background:#f8fafc}
+.recent-item .t{flex:1;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.recent-item button{border:1px solid var(--border);background:#fff;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer}
+footer{text-align:center;color:var(--muted);font-size:13px;padding:26px 16px 40px}
+footer a{color:var(--accent);text-decoration:none;font-weight:600}
+.hidden{display:none!important}
+@media(max-width:640px){.hero h1{font-size:24px}#stage{padding:24px}#windowCard{min-width:280px}}
+</style>
+</head>
+<body>
+<header>
+  <img src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone" onerror="this.style.display='none'">
+  <div class="brand">Dark <span>Tech</span> Zone</div>
+  <nav>
+    <a href="https://www.darktechzon.site/">All Tools</a>
+    <a href="https://whatsapp.com/channel/0029Vb9oK008V0txIkc3oj3z" target="_blank" rel="noopener">WhatsApp Channel</a>
+  </nav>
+</header>
+<main>
+  <div class="hero">
+    <h1>Code Screenshot <span>Studio</span></h1>
+    <p>Paste any code, pick a theme and background, and download a beautiful PNG image — ready to share on WhatsApp, Telegram or X. Free, no signup, nothing is uploaded.</p>
+  </div>
+
+  <div class="card">
+    <label for="codeInput">Your code</label>
+    <textarea id="codeInput" spellcheck="false" placeholder="Paste your code here..."></textarea>
+    <div class="chips" id="exampleChips">
+      <button class="chip" type="button" data-ex="js">JavaScript example</button>
+      <button class="chip" type="button" data-ex="py">Python example</button>
+      <button class="chip" type="button" data-ex="html">HTML example</button>
+      <button class="chip" type="button" data-ex="clear">Clear</button>
+    </div>
+
+    <div class="row">
+      <div>
+        <label for="langSelect">Language</label>
+        <select id="langSelect">
+          <option value="javascript">JavaScript</option>
+          <option value="python">Python</option>
+          <option value="xml">HTML / XML</option>
+          <option value="css">CSS</option>
+          <option value="java">Java</option>
+          <option value="cpp">C / C++</option>
+          <option value="php">PHP</option>
+          <option value="bash">Bash</option>
+          <option value="json">JSON</option>
+          <option value="typescript">TypeScript</option>
+          <option value="plaintext">Plain text</option>
+        </select>
+      </div>
+      <div>
+        <label for="themeSelect">Code theme</label>
+        <select id="themeSelect">
+          <option value="github-dark">GitHub Dark</option>
+          <option value="atom-one-dark">One Dark</option>
+          <option value="monokai">Monokai</option>
+          <option value="vs2015">VS 2015 Dark</option>
+          <option value="github">GitHub Light</option>
+        </select>
+      </div>
+      <div>
+        <label for="titleInput">File name / title</label>
+        <input type="text" id="titleInput" value="main.js" maxlength="60">
+      </div>
+      <div>
+        <label for="scaleSelect">Export size</label>
+        <select id="scaleSelect">
+          <option value="2">2x (Sharp)</option>
+          <option value="3">3x (Ultra sharp)</option>
+          <option value="1">1x (Normal)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label>Background</label>
+        <div class="swatches" id="bgSwatches">
+          <button class="swatch active" type="button" data-bg="linear-gradient(135deg,#0ea5e9,#7c3aed)" style="background:linear-gradient(135deg,#0ea5e9,#7c3aed)" title="DTZ Neon"></button>
+          <button class="swatch" type="button" data-bg="linear-gradient(135deg,#f97316,#ec4899)" style="background:linear-gradient(135deg,#f97316,#ec4899)" title="Sunset"></button>
+          <button class="swatch" type="button" data-bg="linear-gradient(135deg,#06b6d4,#22c55e)" style="background:linear-gradient(135deg,#06b6d4,#22c55e)" title="Ocean"></button>
+          <button class="swatch" type="button" data-bg="linear-gradient(135deg,#1e293b,#0f172a)" style="background:linear-gradient(135deg,#1e293b,#0f172a)" title="Midnight"></button>
+          <button class="swatch" type="button" data-bg="linear-gradient(135deg,#facc15,#f97316)" style="background:linear-gradient(135deg,#facc15,#f97316)" title="Gold"></button>
+          <button class="swatch" type="button" data-bg="transparent" style="background:repeating-conic-gradient(#cbd5e1 0% 25%,#fff 0% 50%) 0 0/14px 14px" title="Transparent"></button>
+        </div>
+      </div>
+      <div>
+        <label for="padRange">Padding <span class="rangeval" id="padVal">48px</span></label>
+        <input type="range" id="padRange" min="0" max="96" step="4" value="48">
+      </div>
+      <div>
+        <label for="fontRange">Font size <span class="rangeval" id="fontVal">15px</span></label>
+        <input type="range" id="fontRange" min="11" max="22" step="1" value="15">
+      </div>
+    </div>
+
+    <div class="checks">
+      <label><input type="checkbox" id="chkLines" checked> Line numbers</label>
+      <label><input type="checkbox" id="chkDots" checked> Window buttons</label>
+      <label><input type="checkbox" id="chkWm" checked> Dark Tech Zone watermark</label>
+    </div>
+
+    <div class="btnrow">
+      <button class="btn btn-primary" id="btnDownload" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download PNG
+      </button>
+      <button class="btn btn-ghost" id="btnCopyImg" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy Image
+      </button>
+      <button class="btn btn-ghost" id="btnCopyCode" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        Copy Code
+      </button>
+    </div>
+    <div class="status info" id="statusMsg">Preview updates live as you type.</div>
+
+    <div id="stageWrap">
+      <div id="stage">
+        <div id="windowCard">
+          <div id="winBar">
+            <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+            <span id="winTitle">main.js</span>
+          </div>
+          <div id="codeArea">
+            <div id="gutter">1</div>
+            <pre><code id="codeOut" class="hljs language-javascript"></code></pre>
+          </div>
+          <div id="wmBar">Dark Tech Zone</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="recent hidden" id="recentWrap">
+      <h3>Recent snippets</h3>
+      <div class="recent-list" id="recentList"></div>
+      <div class="btnrow"><button class="btn btn-ghost" id="btnClearRecent" type="button">Clear history</button></div>
+    </div>
+  </div>
+</main>
+<footer>
+  Made by <a href="https://www.darktechzon.site/">Dark Tech Zone</a> — Learn. Build. Secure. &nbsp;|&nbsp;
+  <a href="https://whatsapp.com/channel/0029Vb9oK008V0txIkc3oj3z" target="_blank" rel="noopener">Join our WhatsApp Channel</a>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+(function(){
+  var codeInput=document.getElementById('codeInput');
+  var codeOut=document.getElementById('codeOut');
+  var gutter=document.getElementById('gutter');
+  var langSelect=document.getElementById('langSelect');
+  var themeSelect=document.getElementById('themeSelect');
+  var hljsTheme=document.getElementById('hljsTheme');
+  var titleInput=document.getElementById('titleInput');
+  var winTitle=document.getElementById('winTitle');
+  var winBar=document.getElementById('winBar');
+  var windowCard=document.getElementById('windowCard');
+  var stage=document.getElementById('stage');
+  var padRange=document.getElementById('padRange');
+  var padVal=document.getElementById('padVal');
+  var fontRange=document.getElementById('fontRange');
+  var fontVal=document.getElementById('fontVal');
+  var chkLines=document.getElementById('chkLines');
+  var chkDots=document.getElementById('chkDots');
+  var chkWm=document.getElementById('chkWm');
+  var wmBar=document.getElementById('wmBar');
+  var scaleSelect=document.getElementById('scaleSelect');
+  var statusMsg=document.getElementById('statusMsg');
+  var btnDownload=document.getElementById('btnDownload');
+  var btnCopyImg=document.getElementById('btnCopyImg');
+  var btnCopyCode=document.getElementById('btnCopyCode');
+  var recentWrap=document.getElementById('recentWrap');
+  var recentList=document.getElementById('recentList');
+  var btnClearRecent=document.getElementById('btnClearRecent');
+  var RECENT_KEY='dtz-code-shot-recent';
+  var currentBg='linear-gradient(135deg,#0ea5e9,#7c3aed)';
+
+  var EXAMPLES={
+    js:{lang:'javascript',title:'main.js',code:'// Dark Tech Zone\nfunction greet(name) {\n  const msg = "Hello, " + name + "!";\n  console.log(msg);\n  return msg;\n}\n\ngreet("World");'},
+    py:{lang:'python',title:'main.py',code:'# Dark Tech Zone\ndef greet(name):\n    msg = f"Hello, {name}!"\n    print(msg)\n    return msg\n\n\ngreet("World")'},
+    html:{lang:'xml',title:'index.html',code:'<!DOCTYPE html>\n<html lang="en">\n<head>\n  <title>Dark Tech Zone</title>\n</head>\n<body>\n  <h1>Hello World</h1>\n</body>\n</html>'}
+  };
+
+  function setStatus(text,cls){statusMsg.textContent=text;statusMsg.className='status '+(cls||'info');}
+
+  function loadRecent(){
+    try{return JSON.parse(localStorage.getItem(RECENT_KEY)||'[]');}catch(e){return[];}
+  }
+  function saveRecent(){
+    var code=codeInput.value.trim();
+    if(!code)return;
+    var list=loadRecent().filter(function(r){return r.code!==code;});
+    list.unshift({code:code,lang:langSelect.value,title:titleInput.value||'code',theme:themeSelect.value});
+    list=list.slice(0,8);
+    try{localStorage.setItem(RECENT_KEY,JSON.stringify(list));}catch(e){}
+    renderRecent();
+  }
+  function renderRecent(){
+    var list=loadRecent();
+    if(!list.length){recentWrap.classList.add('hidden');return;}
+    recentWrap.classList.remove('hidden');
+    recentList.innerHTML='';
+    list.forEach(function(r,idx){
+      var item=document.createElement('div');item.className='recent-item';
+      var t=document.createElement('span');t.className='t';t.textContent=r.title+' — '+r.code.split('\n')[0].slice(0,50);
+      var b=document.createElement('button');b.type='button';b.textContent='Load';
+      b.addEventListener('click',function(){
+        codeInput.value=r.code;langSelect.value=r.lang;titleInput.value=r.title;
+        if(r.theme){themeSelect.value=r.theme;applyTheme();}
+        render();setStatus('Snippet loaded.','ok');
+      });
+      item.appendChild(t);item.appendChild(b);recentList.appendChild(item);
+    });
+  }
+
+  function applyTheme(){
+    var name=themeSelect.value;
+    hljsTheme.href='https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/'+name+'.min.css';
+    var light=(name==='github');
+    windowCard.classList.toggle('light-win',light);
+    windowCard.style.background=light?'#ffffff':'#0d1117';
+    gutter.style.color=light?'#94a3b8':'#5b6b7f';
+  }
+
+  function render(){
+    var code=codeInput.value;
+    var lang=langSelect.value;
+    winTitle.textContent=titleInput.value||'code';
+    stage.style.background=currentBg==='transparent'?'transparent':currentBg;
+    stage.style.padding=padRange.value+'px';
+    padVal.textContent=padRange.value+'px';
+    fontVal.textContent=fontRange.value+'px';
+    codeOut.style.fontSize=fontRange.value+'px';
+    gutter.style.fontSize=fontRange.value+'px';
+    gutter.style.lineHeight='1.6';
+    winBar.style.display=chkDots.checked?'flex':'none';
+    wmBar.style.display=chkWm.checked?'block':'none';
+    gutter.style.display=chkLines.checked?'block':'none';
+    var lines=(code||' ').split('\n').length;
+    var nums=[];for(var i=1;i<=lines;i++)nums.push(i);
+    gutter.textContent=nums.join('\n');
+    codeOut.className='hljs language-'+lang;
+    if(window.hljs){
+      try{
+        var res=(lang==='plaintext')?null:hljs.highlight(code||' ',{language:lang});
+        codeOut.innerHTML=res?res.value:escapeHtml(code||' ');
+      }catch(e){codeOut.textContent=code||' ';}
+    }else{
+      codeOut.textContent=code||' ';
+    }
+  }
+  function escapeHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+  function capture(){
+    if(typeof html2canvas==='undefined'){setStatus('Image engine is still loading. Please wait a second and try again.','err');return Promise.reject(new Error('no engine'));}
+    var scale=parseInt(scaleSelect.value,10)||2;
+    return html2canvas(stage,{scale:scale,useCORS:true,backgroundColor:currentBg==='transparent'?null:'#ffffff',logging:false});
+  }
+
+  btnDownload.addEventListener('click',function(){
+    if(!codeInput.value.trim()){setStatus('Please paste some code first.','err');codeInput.focus();return;}
+    btnDownload.disabled=true;setStatus('Creating your PNG image...','info');
+    capture().then(function(canvas){
+      var a=document.createElement('a');
+      var name=(titleInput.value||'code').replace(/\.[a-z0-9]+$/i,'').replace(/[^a-z0-9-_]+/gi,'-')||'code';
+      a.download='dtz-'+name+'.png';
+      a.href=canvas.toDataURL('image/png');
+      document.body.appendChild(a);a.click();a.remove();
+      saveRecent();
+      setStatus('PNG downloaded. Share it anywhere.','ok');
+    }).catch(function(){setStatus('Could not create the image. Please try again.','err');})
+    .then(function(){btnDownload.disabled=false;});
+  });
+
+  btnCopyImg.addEventListener('click',function(){
+    if(!codeInput.value.trim()){setStatus('Please paste some code first.','err');codeInput.focus();return;}
+    if(!navigator.clipboard||typeof ClipboardItem==='undefined'){setStatus('Copy Image is not supported in this browser. Use Download PNG instead.','err');return;}
+    btnCopyImg.disabled=true;setStatus('Copying image...','info');
+    capture().then(function(canvas){
+      canvas.toBlob(function(blob){
+        if(!blob){setStatus('Could not copy the image. Use Download PNG instead.','err');btnCopyImg.disabled=false;return;}
+        navigator.clipboard.write([new ClipboardItem({'image/png':blob})]).then(function(){
+          saveRecent();setStatus('Image copied. Paste it anywhere.','ok');
+        }).catch(function(){setStatus('Copy was blocked by the browser. Use Download PNG instead.','err');})
+        .then(function(){btnCopyImg.disabled=false;});
+      },'image/png');
+    }).catch(function(){setStatus('Could not create the image. Please try again.','err');btnCopyImg.disabled=false;});
+  });
+
+  btnCopyCode.addEventListener('click',function(){
+    if(!codeInput.value.trim()){setStatus('Nothing to copy yet. Paste some code first.','err');return;}
+    function done(){setStatus('Code copied.','ok');}
+    function fail(){setStatus('Copy was blocked by the browser. Select the code and copy manually.','err');}
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(codeInput.value).then(done).catch(fail);}
+    else{codeInput.select();try{document.execCommand('copy');done();}catch(e){fail();}}
+  });
+
+  document.getElementById('exampleChips').addEventListener('click',function(e){
+    var btn=e.target.closest?e.target.closest('[data-ex]'):null;
+    if(!btn)return;
+    var key=btn.getAttribute('data-ex');
+    if(key==='clear'){codeInput.value='';render();setStatus('Cleared. Paste your code to start.','info');return;}
+    var ex=EXAMPLES[key];if(!ex)return;
+    codeInput.value=ex.code;langSelect.value=ex.lang;titleInput.value=ex.title;render();
+    setStatus('Example loaded. Press Download PNG to save it.','ok');
+  });
+
+  document.getElementById('bgSwatches').addEventListener('click',function(e){
+    var btn=e.target.closest?e.target.closest('[data-bg]'):null;
+    if(!btn)return;
+    currentBg=btn.getAttribute('data-bg');
+    var all=document.querySelectorAll('#bgSwatches .swatch');
+    for(var i=0;i<all.length;i++)all[i].classList.remove('active');
+    btn.classList.add('active');render();
+  });
+
+  [codeInput,titleInput].forEach(function(el){el.addEventListener('input',render);});
+  [langSelect,padRange,fontRange,chkLines,chkDots,chkWm].forEach(function(el){el.addEventListener('input',render);el.addEventListener('change',render);});
+  themeSelect.addEventListener('change',function(){applyTheme();render();});
+  btnClearRecent.addEventListener('click',function(){try{localStorage.removeItem(RECENT_KEY);}catch(e){}renderRecent();setStatus('History cleared.','ok');});
+
+  codeInput.value=EXAMPLES.js.code;
+  applyTheme();render();renderRecent();
+})();
+</script>
+<!-- DTZ Splash Intro (added 2026-11-25) -->
+<style>
+#dtz-splash-overlay{position:fixed;inset:0;z-index:2147483647;background:#02040a;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Segoe UI',Arial,sans-serif;opacity:1;transition:opacity .45s ease;cursor:pointer}
+#dtz-splash-overlay.dtz-splash-hide{opacity:0;pointer-events:none}
+.dtz-splash-logo-wrap{position:relative;width:190px;height:190px;margin-bottom:22px}
+.dtz-splash-ring{position:absolute;border-radius:50%;border:3px solid transparent}
+.dtz-splash-ring1{inset:-12px;border-top-color:#00e5ff;border-bottom-color:#00e5ff;animation:dtz-splash-spin 3.2s linear infinite}
+.dtz-splash-ring2{inset:-22px;border-left-color:#ff2e88;border-right-color:#ff2e88;animation:dtz-splash-spin-rev 4.6s linear infinite}
+.dtz-splash-ring3{inset:-32px;border-top-color:#9d4dff;animation:dtz-splash-spin 7s linear infinite;opacity:.7}
+@keyframes dtz-splash-spin{to{transform:rotate(360deg)}}
+@keyframes dtz-splash-spin-rev{to{transform:rotate(-360deg)}}
+.dtz-splash-logo{width:100%;height:100%;border-radius:50%;object-fit:cover;box-shadow:0 0 42px #00e5ff,0 0 90px rgba(157,77,255,.45);animation:dtz-splash-logo-in .8s cubic-bezier(.17,.89,.32,1.28) both}
+@keyframes dtz-splash-logo-in{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+.dtz-splash-title{font-size:30px;font-weight:900;letter-spacing:5px;text-transform:uppercase;color:#fff;text-align:center;animation:dtz-splash-title-in .7s ease .25s both}
+.dtz-splash-title span{color:#00e5ff}
+@keyframes dtz-splash-title-in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.dtz-splash-tagline{margin-top:8px;font-size:14px;letter-spacing:5px;text-transform:uppercase;color:#8be9ff;text-align:center;animation:dtz-splash-title-in .7s ease .45s both}
+.dtz-splash-skip{margin-top:20px;font-size:11px;letter-spacing:2px;color:#5b7186;text-transform:uppercase}
+@media (prefers-reduced-motion:reduce){.dtz-splash-ring,.dtz-splash-logo,.dtz-splash-title,.dtz-splash-tagline{animation:none!important}}
+@media (max-width:480px){.dtz-splash-logo-wrap{width:150px;height:150px}.dtz-splash-title{font-size:22px;letter-spacing:3px}.dtz-splash-tagline{font-size:12px;letter-spacing:3px}}
+</style>
+<div id="dtz-splash-overlay" role="presentation">
+  <div class="dtz-splash-logo-wrap">
+    <div class="dtz-splash-ring dtz-splash-ring1"></div>
+    <div class="dtz-splash-ring dtz-splash-ring2"></div>
+    <div class="dtz-splash-ring dtz-splash-ring3"></div>
+    <img class="dtz-splash-logo" src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone" onerror="this.style.display='none'">
+  </div>
+  <div class="dtz-splash-title">Dark <span>Tech</span> Zone</div>
+  <div class="dtz-splash-tagline">Learn. Build. Secure.</div>
+  <div class="dtz-splash-skip">Tap to skip</div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('dtz-splash-overlay');
+  if(!el)return;
+  var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var done=false;
+  function hide(){
+    if(done)return;done=true;
+    el.classList.add('dtz-splash-hide');
+    setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},500);
+  }
+  el.addEventListener('click',hide);
+  el.addEventListener('touchstart',hide,{passive:true});
+  setTimeout(hide,reduced?350:2500);
+})();
+</script>
+<!-- /DTZ Splash Intro -->
+
+</body>
+</html>
