@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTZ Live Cricket Scores — Dark Tech Zone</title>
+<meta name="description" content="Live cricket scores from every major league and international match, updated automatically. Full scorecards, results and upcoming matches. Free, no signup.">
+<link rel="icon" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f4f6fb;--surface:#ffffff;--text:#0f172a;--muted:#64748b;--border:#e2e8f0;--accent:#0891b2;--accent2:#7c3aed;--live:#dc2626;--ok:#15803d}
+body{font-family:'Segoe UI',system-ui,-apple-system,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+header img{width:44px;height:44px;border-radius:50%;object-fit:cover}
+header .brand{font-weight:800;font-size:18px;letter-spacing:.5px}
+header .brand span{color:var(--accent)}
+header nav{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap}
+header nav a{text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;padding:8px 14px;border:1px solid var(--border);border-radius:20px;background:#fff}
+main{max-width:1080px;margin:0 auto;padding:24px 16px 60px}
+.hero{text-align:center;padding:18px 0 8px}
+.hero h1{font-size:30px;font-weight:900}
+.hero h1 span{color:var(--accent)}
+.hero p{color:var(--muted);margin-top:8px;font-size:15px}
+.pill{display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:7px 16px;border-radius:20px;border:1px solid var(--border);background:#fff;font-size:13px;font-weight:700}
+.pill .dot{width:9px;height:9px;border-radius:50%;background:#94a3b8}
+.pill.online .dot{background:var(--ok)}
+.pill.offline .dot{background:var(--live)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;margin-top:18px;box-shadow:0 2px 12px rgba(15,23,42,.05)}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tab{border:1px solid var(--border);background:#f8fafc;color:var(--text);padding:9px 18px;border-radius:20px;font-size:14px;font-weight:700;cursor:pointer}
+.tab.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent}
+.tab .count{opacity:.85;font-weight:600}
+.searchrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.searchrow input{flex:1;min-width:200px;padding:11px 14px;border:1px solid var(--border);border-radius:10px;font-size:14px;background:#fff;color:var(--text)}
+.searchrow input:focus{outline:2px solid var(--accent);outline-offset:1px}
+.btn{border:none;cursor:pointer;font-weight:700;font-size:14px;padding:11px 18px;border-radius:10px;display:inline-flex;align-items:center;gap:8px}
+.btn svg{width:16px;height:16px;flex:none}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.btn-ghost{background:#fff;color:var(--text);border:1px solid var(--border)}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.status{margin-top:12px;font-size:14px;font-weight:600;min-height:20px}
+.status.ok{color:var(--ok)}.status.err{color:var(--live)}.status.info{color:var(--muted)}
+.league{margin-top:22px}
+.league h2{font-size:16px;font-weight:800;display:flex;align-items:center;gap:10px}
+.league h2 .lgcount{font-size:12px;color:var(--muted);font-weight:600}
+.matches{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;margin-top:12px}
+.match{border:1px solid var(--border);border-radius:14px;padding:16px;background:#fff;cursor:pointer;transition:border-color .15s,box-shadow .15s}
+.match:hover{border-color:var(--accent);box-shadow:0 4px 16px rgba(8,145,178,.12)}
+.match .top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px}
+.badge{font-size:11px;font-weight:800;letter-spacing:.6px;padding:4px 10px;border-radius:12px;text-transform:uppercase}
+.badge.live{background:#fef2f2;color:var(--live);border:1px solid #fecaca}
+.badge.live::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--live);margin-right:6px;animation:pulse 1.2s infinite}
+@keyframes pulse{0%{opacity:1}50%{opacity:.3}100%{opacity:1}}
+.badge.pre{background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe}
+.badge.post{background:#f0fdf4;color:var(--ok);border:1px solid #bbf7d0}
+.mtime{font-size:12px;color:var(--muted);font-weight:600;text-align:right}
+.team{display:flex;align-items:center;gap:10px;padding:6px 0}
+.team img{width:30px;height:30px;object-fit:contain;flex:none}
+.team .tname{font-weight:700;font-size:15px;flex:1}
+.team .tscore{font-weight:800;font-size:15px;text-align:right}
+.team.winner .tname{color:var(--ok)}
+.msummary{margin-top:10px;font-size:13px;color:var(--muted);font-weight:600}
+.mvenue{margin-top:4px;font-size:12px;color:var(--muted)}
+.detail{margin-top:18px}
+.detail h2{font-size:19px;font-weight:900}
+.detail .dsub{color:var(--muted);font-size:13px;margin-top:4px;font-weight:600}
+table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}
+th,td{padding:7px 8px;border-bottom:1px solid var(--border);text-align:left}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted)}
+td.num,th.num{text-align:right}
+.sc-head{margin-top:18px;font-weight:800;font-size:15px}
+.sc-total{font-size:13px;color:var(--muted);font-weight:600;margin-top:2px}
+.recent{margin-top:8px}
+.recent h3{font-size:14px;font-weight:800;margin-bottom:8px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--border);background:#f8fafc;color:var(--text);padding:7px 13px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.empty{padding:28px;text-align:center;color:var(--muted);font-weight:600}
+.hidden{display:none!important}
+footer{text-align:center;color:var(--muted);font-size:13px;padding:24px 16px 40px}
+footer a{color:var(--accent);text-decoration:none;font-weight:600}
+@media(max-width:560px){.hero h1{font-size:24px}header .brand{font-size:16px}.matches{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <img src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone logo">
+  <div class="brand">DARK <span>TECH</span> ZONE</div>
+  <nav>
+    <a href="https://www.darktechzon.site/">All Tools</a>
+    <a href="https://whatsapp.com/channel/0029Vb9oK008V0txIkc3oj3z" target="_blank" rel="noopener">WhatsApp Channel</a>
+  </nav>
+</header>
+<main>
+  <div class="hero">
+    <h1>Live Cricket <span>Scores</span></h1>
+    <p>Every live match, result and upcoming fixture — with full scorecards. Auto-refreshes every 30 seconds.</p>
+    <div class="pill" id="statusPill"><span class="dot"></span><span id="statusPillText">Connecting…</span></div>
+  </div>
+
+  <div class="card">
+    <div class="tabs" id="tabs">
+      <button class="tab active" data-filter="all">All <span class="count" id="countAll"></span></button>
+      <button class="tab" data-filter="live">Live <span class="count" id="countLive"></span></button>
+      <button class="tab" data-filter="pre">Upcoming <span class="count" id="countPre"></span></button>
+      <button class="tab" data-filter="post">Results <span class="count" id="countPost"></span></button>
+      <button class="tab" data-filter="pakistan">Pakistan <span class="count" id="countPk"></span></button>
+    </div>
+    <div class="searchrow">
+      <input type="text" id="searchBox" placeholder="Search team or league — e.g. Pakistan, PSL, Big Bash">
+      <button class="btn btn-ghost" id="btnRefresh">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-2.6-6.3"/><path d="M21 3v6h-6"/></svg>
+        Refresh
+      </button>
+      <button class="btn btn-ghost" id="btnReport">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 21h16"/></svg>
+        Download Report
+      </button>
+    </div>
+    <div class="status info" id="statusLine">Loading matches…</div>
+    <div class="recent hidden" id="recentWrap">
+      <h3>Recently viewed</h3>
+      <div class="chips" id="recentList"></div>
+    </div>
+  </div>
+
+  <div id="matchList"></div>
+
+  <div class="card detail hidden" id="detailCard">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap">
+      <div>
+        <h2 id="detailTitle"></h2>
+        <div class="dsub" id="detailSub"></div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-ghost" id="btnCopyScore">Copy Score</button>
+        <button class="btn btn-ghost" id="btnCloseDetail">Close</button>
+      </div>
+    </div>
+    <div id="detailBody"></div>
+  </div>
+</main>
+<footer>
+  Scores data: ESPN public scorepanel API (free, no key). Times shown in Pakistan Time (PKT).<br>
+  Made by <a href="https://www.darktechzon.site/">Dark Tech Zone</a> — Learn. Build. Secure.
+</footer>
+<script>
+(function(){
+"use strict";
+var API = "https://site.api.espn.com/apis/site/v2/sports/cricket/scorepanel";
+var SUMMARY = "https://site.api.espn.com/apis/site/v2/sports/cricket/";
+var REFRESH_MS = 30000;
+var state = { matches: [], filter: "all", search: "", lastUpdate: null, timer: null, countdown: 30, current: null };
+
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); }
+function fmtPKT(iso){
+  try{
+    var d = new Date(iso);
+    return d.toLocaleString("en-PK", { timeZone: "Asia/Karachi", day: "numeric", month: "short", hour: "numeric", minute: "2-digit", hour12: true }) + " PKT";
+  }catch(e){ return iso || ""; }
+}
+function isPakistan(m){
+  var hay = (m.league + " " + m.teams.map(function(t){ return t.name; }).join(" ")).toLowerCase();
+  return /pakistan|psl|quaid|karachi kings|lahore qalandars|islamabad united|peshawar zalmi|quetta gladiators|multan sultans/.test(hay);
+}
+function parseScorepanel(data){
+  var out = [];
+  (data.scores || []).forEach(function(g){
+    var lg = (g.leagues && g.leagues[0]) || {};
+    (g.events || []).forEach(function(e){
+      var comp = (e.competitions && e.competitions[0]) || {};
+      var st = (e.status && e.status.type) || {};
+      var teams = (comp.competitors || []).map(function(c){
+        var t = c.team || {};
+        return { name: t.displayName || t.name || "Team", short: t.shortDisplayName || t.abbreviation || "", logo: t.logo || "", score: c.score || "", winner: !!c.winner };
+      });
+      out.push({
+        id: e.id, leagueId: lg.id || "", league: lg.name || "Cricket", name: e.name || "",
+        date: e.date || "", state: st.state || "pre", statusText: st.description || st.detail || "",
+        summary: (e.status && e.status.summary) || st.detail || "",
+        venue: (comp.venue && comp.venue.fullName) || "",
+        teams: teams
+      });
+    });
+  });
+  return out;
+}
+function badgeFor(m){
+  if (m.state === "in") return '<span class="badge live">Live</span>';
+  if (m.state === "post") return '<span class="badge post">Result</span>';
+  return '<span class="badge pre">Upcoming</span>';
+}
+function filtered(){
+  return state.matches.filter(function(m){
+    if (state.filter === "live" && m.state !== "in") return false;
+    if (state.filter === "pre" && m.state !== "pre") return false;
+    if (state.filter === "post" && m.state !== "post") return false;
+    if (state.filter === "pakistan" && !isPakistan(m)) return false;
+    if (state.search){
+      var hay = (m.league + " " + m.name + " " + m.teams.map(function(t){ return t.name; }).join(" ")).toLowerCase();
+      if (hay.indexOf(state.search) === -1) return false;
+    }
+    return true;
+  });
+}
+function renderCounts(){
+  var all = state.matches;
+  $("countAll").textContent = "(" + all.length + ")";
+  $("countLive").textContent = "(" + all.filter(function(m){ return m.state === "in"; }).length + ")";
+  $("countPre").textContent = "(" + all.filter(function(m){ return m.state === "pre"; }).length + ")";
+  $("countPost").textContent = "(" + all.filter(function(m){ return m.state === "post"; }).length + ")";
+  $("countPk").textContent = "(" + all.filter(isPakistan).length + ")";
+}
+function render(){
+  renderCounts();
+  var list = filtered();
+  var wrap = $("matchList");
+  if (!list.length){
+    wrap.innerHTML = '<div class="card empty">No matches found for this filter right now. Try another tab or clear the search.</div>';
+    return;
+  }
+  var groups = {}, order = [];
+  list.forEach(function(m){
+    if (!groups[m.league]){ groups[m.league] = []; order.push(m.league); }
+    groups[m.league].push(m);
+  });
+  var html = "";
+  order.forEach(function(lg){
+    html += '<div class="league"><h2>' + esc(lg) + ' <span class="lgcount">' + groups[lg].length + ' match(es)</span></h2><div class="matches">';
+    groups[lg].forEach(function(m){
+      html += '<div class="match" data-id="' + esc(m.id) + '" data-league="' + esc(m.leagueId) + '">';
+      html += '<div class="top">' + badgeFor(m) + '<span class="mtime">' + esc(m.state === "pre" ? fmtPKT(m.date) : (m.statusText || "")) + '</span></div>';
+      m.teams.forEach(function(t){
+        html += '<div class="team' + (t.winner ? " winner" : "") + '">';
+        if (t.logo) html += '<img src="' + esc(t.logo) + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">';
+        html += '<span class="tname">' + esc(t.name) + '</span><span class="tscore">' + esc(t.score || (m.state === "pre" ? "—" : "")) + '</span></div>';
+      });
+      if (m.summary) html += '<div class="msummary">' + esc(m.summary) + '</div>';
+      if (m.venue) html += '<div class="mvenue">' + esc(m.venue) + '</div>';
+      html += '</div>';
+    });
+    html += '</div></div>';
+  });
+  wrap.innerHTML = html;
+  Array.prototype.forEach.call(wrap.querySelectorAll(".match"), function(el){
+    el.addEventListener("click", function(){ openDetail(el.getAttribute("data-league"), el.getAttribute("data-id")); });
+  });
+}
+function setStatus(msg, kind){ var s = $("statusLine"); s.textContent = msg; s.className = "status " + (kind || "info"); }
+function setPill(online, text){
+  var p = $("statusPill");
+  p.className = "pill " + (online ? "online" : "offline");
+  $("statusPillText").textContent = text;
+}
+function loadScores(){
+  $("btnRefresh").disabled = true;
+  fetch(API).then(function(r){
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    return r.json();
+  }).then(function(data){
+    state.matches = parseScorepanel(data);
+    state.lastUpdate = new Date();
+    state.countdown = REFRESH_MS / 1000;
+    var live = state.matches.filter(function(m){ return m.state === "in"; }).length;
+    setPill(true, "Live data • " + state.matches.length + " matches • " + live + " live");
+    setStatus("Updated " + state.lastUpdate.toLocaleTimeString("en-PK", { timeZone: "Asia/Karachi", hour: "numeric", minute: "2-digit", second: "2-digit", hour12: true }) + " PKT • auto-refresh in " + state.countdown + "s • tap any match for the full scorecard", "ok");
+    render();
+  }).catch(function(err){
+    setPill(false, "Scores service unreachable");
+    setStatus("Could not load scores right now (" + err.message + "). Check your connection and tap Refresh.", "err");
+  }).then(function(){ $("btnRefresh").disabled = false; });
+}
+function scorecardHtml(summary){
+  var cards = summary.matchcards || [];
+  if (!cards.length) return '<p class="sc-total" style="margin-top:14px">Full scorecard is not available for this match yet.</p>';
+  var html = "";
+  cards.forEach(function(card){
+    var isBat = (card.headline || "").toLowerCase() === "batting";
+    html += '<div class="sc-head">' + esc(card.teamName || "") + " — " + esc(card.headline || "") + (card.inningsNumber ? " (Innings " + esc(card.inningsNumber) + ")" : "") + "</div>";
+    if (card.total) html += '<div class="sc-total">Total: ' + esc(card.total) + (card.extras ? " • Extras: " + esc(card.extras) : "") + "</div>";
+    html += "<table><tr><th>Player</th>" + (isBat ? '<th>Dismissal</th><th class="num">R</th><th class="num">B</th><th class="num">4s</th><th class="num">6s</th>' : '<th class="num">O</th><th class="num">M</th><th class="num">Runs</th><th class="num">W</th><th class="num">Econ</th>') + "</tr>";
+    (card.playerDetails || []).forEach(function(p){
+      if (isBat){
+        html += "<tr><td>" + esc(p.playerName) + "</td><td>" + esc(p.dismissal || "") + '</td><td class="num">' + esc(p.runs || "0") + '</td><td class="num">' + esc(p.ballsFaced || "0") + '</td><td class="num">' + esc(p.fours || "0") + '</td><td class="num">' + esc(p.sixes || "0") + "</td></tr>";
+      } else {
+        html += "<tr><td>" + esc(p.playerName) + '</td><td class="num">' + esc(p.overs || "0") + '</td><td class="num">' + esc(p.maidens || "0") + '</td><td class="num">' + esc(p.conceded || "0") + '</td><td class="num">' + esc(p.wickets || "0") + '</td><td class="num">' + esc(p.economyRate || "") + "</td></tr>";
+      }
+    });
+    html += "</table>";
+  });
+  return html;
+}
+function saveRecent(m){
+  try{
+    var key = "dtz-cricket-recent";
+    var arr = JSON.parse(localStorage.getItem(key) || "[]");
+    arr = arr.filter(function(x){ return x.id !== m.id; });
+    arr.unshift({ id: m.id, leagueId: m.leagueId, label: m.teams.map(function(t){ return t.short || t.name; }).join(" v ") });
+    localStorage.setItem(key, JSON.stringify(arr.slice(0, 8)));
+    renderRecent();
+  }catch(e){}
+}
+function renderRecent(){
+  try{
+    var arr = JSON.parse(localStorage.getItem("dtz-cricket-recent") || "[]");
+    if (!arr.length){ $("recentWrap").classList.add("hidden"); return; }
+    $("recentWrap").classList.remove("hidden");
+    $("recentList").innerHTML = arr.map(function(x){
+      return '<button class="chip" data-league="' + esc(x.leagueId) + '" data-id="' + esc(x.id) + '">' + esc(x.label) + "</button>";
+    }).join("");
+    Array.prototype.forEach.call($("recentList").querySelectorAll(".chip"), function(el){
+      el.addEventListener("click", function(){ openDetail(el.getAttribute("data-league"), el.getAttribute("data-id")); });
+    });
+  }catch(e){}
+}
+function openDetail(leagueId, eventId){
+  var m = state.matches.filter(function(x){ return String(x.id) === String(eventId); })[0];
+  state.current = m || { id: eventId, leagueId: leagueId, name: "Match", teams: [] };
+  $("detailCard").classList.remove("hidden");
+  $("detailTitle").textContent = (state.current.teams.length ? state.current.teams.map(function(t){ return t.name; }).join(" vs ") : "Match Scorecard");
+  $("detailSub").textContent = [state.current.league, state.current.venue, state.current.summary].filter(Boolean).join(" • ");
+  $("detailBody").innerHTML = '<p class="sc-total" style="margin-top:14px">Loading scorecard…</p>';
+  $("detailCard").scrollIntoView({ behavior: "smooth", block: "start" });
+  if (m) saveRecent(m);
+  fetch(SUMMARY + leagueId + "/summary?event=" + eventId).then(function(r){
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    return r.json();
+  }).then(function(data){
+    $("detailBody").innerHTML = scorecardHtml(data);
+  }).catch(function(err){
+    $("detailBody").innerHTML = '<p class="sc-total" style="margin-top:14px">Scorecard could not be loaded (' + esc(err.message) + '). The match score above is still live.</p>';
+  });
+}
+function copyText(text, btn){
+  function done(){ var old = btn.textContent; btn.textContent = "Copied"; setTimeout(function(){ btn.textContent = old; }, 1600); }
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done).catch(function(){ fallback(); });
+  } else fallback();
+  function fallback(){
+    var ta = document.createElement("textarea");
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    try{ document.execCommand("copy"); done(); }catch(e){}
+    document.body.removeChild(ta);
+  }
+}
+function downloadReport(){
+  var lines = ["DTZ Live Cricket Scores — " + new Date().toLocaleString("en-PK", { timeZone: "Asia/Karachi" }) + " PKT", ""];
+  filtered().forEach(function(m){
+    lines.push("[" + m.league + "] " + (m.state === "in" ? "LIVE" : m.state === "post" ? "RESULT" : "UPCOMING " + fmtPKT(m.date)));
+    m.teams.forEach(function(t){ lines.push("  " + t.name + (t.score ? ": " + t.score : "")); });
+    if (m.summary) lines.push("  " + m.summary);
+    lines.push("");
+  });
+  lines.push("Made by Dark Tech Zone — https://www.darktechzon.site/");
+  var blob = new Blob([lines.join("\n")], { type: "text/plain" });
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "dtz-cricket-scores.txt";
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setStatus("Report downloaded (" + filtered().length + " matches).", "ok");
+}
+$("tabs").addEventListener("click", function(ev){
+  var btn = ev.target.closest(".tab");
+  if (!btn) return;
+  Array.prototype.forEach.call(document.querySelectorAll(".tab"), function(t){ t.classList.remove("active"); });
+  btn.classList.add("active");
+  state.filter = btn.getAttribute("data-filter");
+  render();
+});
+$("searchBox").addEventListener("input", function(){ state.search = this.value.trim().toLowerCase(); render(); });
+$("btnRefresh").addEventListener("click", loadScores);
+$("btnReport").addEventListener("click", downloadReport);
+$("btnCloseDetail").addEventListener("click", function(){ $("detailCard").classList.add("hidden"); });
+$("btnCopyScore").addEventListener("click", function(){
+  var m = state.current; if (!m) return;
+  var text = m.teams.map(function(t){ return t.name + (t.score ? " " + t.score : ""); }).join(" vs ") + (m.summary ? " — " + m.summary : "") + " (" + m.league + ") via DTZ Live Cricket Scores";
+  copyText(text, this);
+});
+setInterval(function(){
+  if (document.hidden) return;
+  state.countdown -= 1;
+  if (state.countdown <= 0){ loadScores(); return; }
+  if (state.lastUpdate){
+    setStatus("Updated " + state.lastUpdate.toLocaleTimeString("en-PK", { timeZone: "Asia/Karachi", hour: "numeric", minute: "2-digit", second: "2-digit", hour12: true }) + " PKT • auto-refresh in " + state.countdown + "s • tap any match for the full scorecard", "ok");
+  }
+}, 1000);
+renderRecent();
+loadScores();
+})();
+</script>
+<!-- DTZ Splash Intro (added 2026-11-25) -->
+<style>
+#dtz-splash-overlay{position:fixed;inset:0;z-index:2147483647;background:#02040a;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Segoe UI',Arial,sans-serif;opacity:1;transition:opacity .45s ease;cursor:pointer}
+#dtz-splash-overlay.dtz-splash-hide{opacity:0;pointer-events:none}
+.dtz-splash-logo-wrap{position:relative;width:190px;height:190px;margin-bottom:22px}
+.dtz-splash-ring{position:absolute;border-radius:50%;border:3px solid transparent}
+.dtz-splash-ring1{inset:-12px;border-top-color:#00e5ff;border-bottom-color:#00e5ff;animation:dtz-splash-spin 3.2s linear infinite}
+.dtz-splash-ring2{inset:-22px;border-left-color:#ff2e88;border-right-color:#ff2e88;animation:dtz-splash-spin-rev 4.6s linear infinite}
+.dtz-splash-ring3{inset:-32px;border-top-color:#9d4dff;animation:dtz-splash-spin 7s linear infinite;opacity:.7}
+@keyframes dtz-splash-spin{to{transform:rotate(360deg)}}
+@keyframes dtz-splash-spin-rev{to{transform:rotate(-360deg)}}
+.dtz-splash-logo{width:100%;height:100%;border-radius:50%;object-fit:cover;box-shadow:0 0 42px #00e5ff,0 0 90px rgba(157,77,255,.45);animation:dtz-splash-logo-in .8s cubic-bezier(.17,.89,.32,1.28) both}
+@keyframes dtz-splash-logo-in{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+.dtz-splash-title{font-size:30px;font-weight:900;letter-spacing:5px;text-transform:uppercase;color:#fff;text-align:center;animation:dtz-splash-title-in .7s ease .25s both}
+.dtz-splash-title span{color:#00e5ff}
+@keyframes dtz-splash-title-in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.dtz-splash-tagline{margin-top:8px;font-size:14px;letter-spacing:5px;text-transform:uppercase;color:#8be9ff;text-align:center;animation:dtz-splash-title-in .7s ease .45s both}
+.dtz-splash-skip{margin-top:20px;font-size:11px;letter-spacing:2px;color:#5b7186;text-transform:uppercase}
+@media (prefers-reduced-motion:reduce){.dtz-splash-ring,.dtz-splash-logo,.dtz-splash-title,.dtz-splash-tagline{animation:none!important}}
+@media (max-width:480px){.dtz-splash-logo-wrap{width:150px;height:150px}.dtz-splash-title{font-size:22px;letter-spacing:3px}.dtz-splash-tagline{font-size:12px;letter-spacing:3px}}
+</style>
+<div id="dtz-splash-overlay" role="presentation">
+  <div class="dtz-splash-logo-wrap">
+    <div class="dtz-splash-ring dtz-splash-ring1"></div>
+    <div class="dtz-splash-ring dtz-splash-ring2"></div>
+    <div class="dtz-splash-ring dtz-splash-ring3"></div>
+    <img class="dtz-splash-logo" src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone" onerror="this.style.display='none'">
+  </div>
+  <div class="dtz-splash-title">Dark <span>Tech</span> Zone</div>
+  <div class="dtz-splash-tagline">Learn. Build. Secure.</div>
+  <div class="dtz-splash-skip">Tap to skip</div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('dtz-splash-overlay');
+  if(!el)return;
+  var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var done=false;
+  function hide(){
+    if(done)return;done=true;
+    el.classList.add('dtz-splash-hide');
+    setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},500);
+  }
+  el.addEventListener('click',hide);
+  el.addEventListener('touchstart',hide,{passive:true});
+  setTimeout(hide,reduced?350:2500);
+})();
+</script>
+<!-- /DTZ Splash Intro -->
+
+</body>
+</html>
