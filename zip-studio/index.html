@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTZ ZIP Archive Studio — Dark Tech Zone</title>
+<meta name="description" content="Free ZIP viewer and creator in your browser: open a ZIP file, see every file inside, preview text and images, extract single files, or build a new ZIP. 100% on-device, nothing uploaded.">
+<link rel="icon" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f4f6fb;--surface:#ffffff;--text:#0f172a;--muted:#64748b;--border:#e2e8f0;--accent:#0891b2;--accent2:#7c3aed;--ok:#15803d;--bad:#dc2626;--warn:#d97706}
+body{font-family:'Segoe UI',system-ui,-apple-system,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+header img{width:44px;height:44px;border-radius:50%;object-fit:cover}
+header .brand{font-weight:800;font-size:18px;letter-spacing:.5px}
+header .brand span{color:var(--accent)}
+header nav{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap}
+header nav a{text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;padding:8px 14px;border:1px solid var(--border);border-radius:20px;background:#fff}
+main{max-width:960px;margin:0 auto;padding:24px 16px 60px}
+.hero{text-align:center;padding:18px 0 8px}
+.hero h1{font-size:30px;font-weight:900}
+.hero h1 span{color:var(--accent)}
+.hero p{color:var(--muted);margin-top:8px;font-size:15px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;margin-top:18px;box-shadow:0 2px 12px rgba(15,23,42,.05)}
+.card h2{font-size:17px;font-weight:800;margin-bottom:12px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.label{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;min-width:88px}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg button{border:1px solid var(--border);background:#f8fafc;color:var(--text);padding:9px 16px;border-radius:20px;font-size:14px;font-weight:700;cursor:pointer}
+.seg button.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent}
+.btn{border:none;cursor:pointer;font-weight:700;font-size:14px;padding:11px 18px;border-radius:10px;display:inline-flex;align-items:center;gap:8px}
+.btn svg{width:16px;height:16px;flex:none}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.btn-ghost{background:#fff;border:1px solid var(--border);color:var(--text)}
+.btn-small{padding:7px 12px;font-size:13px;border-radius:8px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+input[type=text],select{font:inherit;font-size:15px;padding:11px 14px;border:1px solid var(--border);border-radius:10px;background:#fff;color:var(--text)}
+input[type=text]{flex:1;min-width:200px}
+.dropzone{border:2px dashed var(--border);border-radius:16px;padding:34px 18px;text-align:center;background:#f8fafc;cursor:pointer;transition:border-color .15s,background .15s}
+.dropzone:hover,.dropzone.drag{border-color:var(--accent);background:#ecfeff}
+.dropzone svg{width:44px;height:44px;color:var(--accent)}
+.dropzone .dz-title{font-weight:800;font-size:16px;margin-top:10px}
+.dropzone .dz-sub{color:var(--muted);font-size:13px;margin-top:4px}
+.msg{margin-top:12px;font-size:14px;padding:12px 14px;border-radius:10px;display:none}
+.msg.show{display:block}
+.msg.err{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
+.msg.ok{background:#f0fdf4;color:#166534;border:1px solid #bbf7d0}
+.msg.info{background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe}
+.statsgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:6px}
+.statbox{border:1px solid var(--border);border-radius:12px;padding:12px 14px;background:#f8fafc}
+.statbox .sv{font-size:18px;font-weight:900}
+.statbox .sl{font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.file-row{display:flex;gap:12px;align-items:center;border:1px solid var(--border);border-radius:14px;padding:11px 14px;margin-top:10px;background:#fff}
+.file-row .fcheck{width:18px;height:18px;accent-color:var(--accent);flex:none}
+.f-icon{width:42px;height:42px;border-radius:10px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;flex:none;color:var(--accent)}
+.f-icon svg{width:22px;height:22px}
+.f-info{flex:1;min-width:160px}
+.f-name{font-weight:800;font-size:14px;line-height:1.3;word-break:break-all}
+.f-meta{font-size:12px;color:var(--muted);margin-top:2px}
+.f-actions{display:flex;gap:8px;align-items:center;flex:none}
+.badge{display:inline-block;font-size:11px;font-weight:800;padding:2px 8px;border-radius:10px;vertical-align:middle;margin-left:6px;background:#e0e7ff;color:#3730a3}
+.statsline{font-size:13px;color:var(--muted);margin-top:12px;font-weight:600}
+.empty{border:1px dashed var(--border);border-radius:14px;padding:28px 16px;text-align:center;color:var(--muted);margin-top:12px;background:#f8fafc}
+.preview-body{margin-top:10px}
+.preview-body pre{background:#0f172a;color:#e2e8f0;border-radius:12px;padding:14px;font-size:13px;line-height:1.55;overflow:auto;max-height:420px;white-space:pre-wrap;word-break:break-word}
+.preview-body img{max-width:100%;border-radius:12px;border:1px solid var(--border)}
+.progress{height:10px;background:#e2e8f0;border-radius:6px;overflow:hidden;margin-top:12px;display:none}
+.progress.show{display:block}
+.progress .bar{height:100%;width:0;background:linear-gradient(135deg,var(--accent),var(--accent2));transition:width .2s}
+.recent-chip{display:flex;gap:10px;align-items:center;border:1px solid var(--border);border-radius:12px;padding:10px 14px;margin-top:8px;background:#fff;font-size:13px}
+.recent-chip .rn{font-weight:800;flex:1;word-break:break-all}
+.recent-chip .rm{color:var(--muted)}
+footer{text-align:center;color:var(--muted);font-size:13px;padding:26px 16px 40px}
+@media (max-width:560px){.hero h1{font-size:25px}.file-row{flex-wrap:wrap}.f-actions{margin-left:auto}}
+</style>
+</head>
+<body>
+<header>
+<img src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone">
+<div class="brand">Dark <span>Tech</span> Zone</div>
+<nav>
+<a href="https://www.darktechzon.site/">All Tools</a>
+<a href="https://whatsapp.com/channel/0029Vb9oK008V0txIkc3oj3z" target="_blank" rel="noopener">WhatsApp Channel</a>
+</nav>
+</header>
+<main>
+<div class="hero">
+<h1>DTZ ZIP <span>Archive Studio</span></h1>
+<p>Open any ZIP file in your browser — see every file inside, preview text and images, extract what you need, or build a new ZIP. 100% on-device, nothing is uploaded.</p>
+</div>
+
+<div class="card">
+<div class="seg" role="tablist">
+<button id="tabOpen" class="active" type="button">Open ZIP</button>
+<button id="tabCreate" type="button">Create ZIP</button>
+</div>
+
+<div id="panelOpen">
+<div class="dropzone" id="dropZone" style="margin-top:16px">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/></svg>
+<div class="dz-title">Drop a ZIP file here, or tap to choose</div>
+<div class="dz-sub">ZIP files up to 100 MB. Your file never leaves this device.</div>
+</div>
+<input type="file" id="fileInput" accept=".zip,application/zip" hidden>
+<div class="row" style="margin-top:12px">
+<button class="btn btn-ghost" id="btnSample" type="button">Try sample ZIP</button>
+</div>
+<div class="msg" id="openMsg"></div>
+</div>
+
+<div id="panelCreate" hidden>
+<div class="dropzone" id="createDrop" style="margin-top:16px">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 8l5-5 5 5"/><path d="M12 3v12"/></svg>
+<div class="dz-title">Drop files here, or tap to add files</div>
+<div class="dz-sub">Add up to 100 MB total. Files stay on this device.</div>
+</div>
+<input type="file" id="createInput" multiple hidden>
+<div id="createList"></div>
+<div class="statsline" id="createStats"></div>
+<div class="row" style="margin-top:14px">
+<span class="label">ZIP name</span>
+<input type="text" id="zipNameInput" value="dark-tech-zone-files" maxlength="60">
+</div>
+<div class="row" style="margin-top:10px">
+<span class="label">Compression</span>
+<select id="compSelect">
+<option value="best">Best (smallest file)</option>
+<option value="fast">Fast</option>
+<option value="store">Store (no compression)</option>
+</select>
+</div>
+<div class="row" style="margin-top:14px">
+<button class="btn btn-primary" id="btnCreate" type="button">Create &amp; Download ZIP</button>
+</div>
+<div class="progress" id="createProgress"><div class="bar" id="createBar"></div></div>
+<div class="msg" id="createMsg"></div>
+</div>
+</div>
+
+<div class="card" id="summaryCard" hidden>
+<h2 id="sumName">Archive</h2>
+<div class="statsgrid" id="sumStats"></div>
+<div class="row" style="margin-top:14px">
+<input type="text" id="searchInput" placeholder="Search files inside this ZIP...">
+<select id="sortSelect">
+<option value="name">Sort: Name A-Z</option>
+<option value="size-desc">Sort: Largest first</option>
+<option value="size-asc">Sort: Smallest first</option>
+<option value="type">Sort: File type</option>
+</select>
+</div>
+<div class="row" style="margin-top:12px">
+<button class="btn btn-ghost btn-small" id="btnSelZip" type="button">Download selected as ZIP</button>
+<button class="btn btn-ghost btn-small" id="btnCopyList" type="button">Copy file list</button>
+<button class="btn btn-ghost btn-small" id="btnReport" type="button">Download report (.txt)</button>
+</div>
+<div class="statsline" id="listStats"></div>
+<div id="fileList"></div>
+</div>
+
+<div class="card" id="previewCard" hidden>
+<div class="row">
+<h2 id="previewTitle" style="flex:1;margin:0">Preview</h2>
+<button class="btn btn-ghost btn-small" id="btnClosePreview" type="button">Close</button>
+</div>
+<div class="preview-body" id="previewBody"></div>
+</div>
+
+<div class="card" id="recentCard" hidden>
+<div class="row">
+<h2 style="flex:1;margin:0">Recent archives</h2>
+<button class="btn btn-ghost btn-small" id="btnClearRecent" type="button">Clear</button>
+</div>
+<p style="color:var(--muted);font-size:13px;margin-top:6px">Only names and sizes are remembered on this device — file contents are never stored.</p>
+<div id="recentList"></div>
+</div>
+</main>
+<footer>Dark Tech Zone — Learn. Build. Secure. All ZIP work happens on your device; no file is uploaded anywhere.</footer>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script>
+/* HELPERS START */
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function formatBytes(n){
+  if(n==null||isNaN(n))return '—';
+  var units=['B','KB','MB','GB'];var v=Number(n);var i=0;
+  while(v>=1024&&i<units.length-1){v=v/1024;i++;}
+  return (i===0?String(Math.round(v)):v.toFixed(v>=100?0:1))+' '+units[i];
+}
+function fileExt(path){
+  var p=String(path||'');var base=p.split('/').pop();
+  var idx=base.lastIndexOf('.');
+  return idx>0?base.slice(idx+1).toLowerCase():'';
+}
+function baseName(path){
+  var p=String(path||'').replace(/\/+$/,'');
+  var parts=p.split('/');
+  return parts[parts.length-1]||p;
+}
+var TEXT_EXTS=['txt','md','json','js','ts','jsx','tsx','html','htm','css','xml','csv','log','py','java','c','cpp','h','php','rb','go','rs','sh','bat','yml','yaml','ini','cfg','conf','env','gitignore','srt','vtt'];
+var IMAGE_EXTS=['png','jpg','jpeg','gif','webp','bmp','svg','avif','ico'];
+function previewKind(path){
+  var e=fileExt(path);
+  if(TEXT_EXTS.indexOf(e)>=0)return 'text';
+  if(IMAGE_EXTS.indexOf(e)>=0)return 'image';
+  return null;
+}
+function typeLabel(path){
+  var e=fileExt(path);
+  if(!e)return 'File';
+  return e.toUpperCase();
+}
+function sanitizeZipName(name){
+  var n=String(name||'').trim().replace(/[\\/:*?"<>|]+/g,'-').replace(/\s+/g,' ').slice(0,60);
+  if(!n)n='dark-tech-zone-files';
+  if(!/\.zip$/i.test(n))n+='.zip';
+  return n;
+}
+function entriesFromZip(zip){
+  var out=[];
+  var files=zip&&zip.files?zip.files:{};
+  Object.keys(files).forEach(function(p){
+    var f=files[p];
+    var size=null;
+    if(f&&f._data&&typeof f._data.uncompressedSize==='number')size=f._data.uncompressedSize;
+    out.push({path:p,name:baseName(p),dir:!!(f&&f.dir),size:size,date:f&&f.date?f.date:null});
+  });
+  return out;
+}
+function summarize(entries,archiveSize){
+  var files=0,folders=0,total=0;
+  (entries||[]).forEach(function(e){
+    if(e.dir)folders++;else{files++;if(typeof e.size==='number')total+=e.size;}
+  });
+  var ratio=null;
+  if(total>0&&typeof archiveSize==='number'&&archiveSize>0)ratio=Math.round((1-archiveSize/total)*100);
+  return {files:files,folders:folders,totalSize:total,ratio:ratio};
+}
+function filterEntries(entries,q){
+  var needle=String(q||'').trim().toLowerCase();
+  if(!needle)return (entries||[]).slice();
+  return (entries||[]).filter(function(e){return e.path.toLowerCase().indexOf(needle)>=0;});
+}
+function sortEntries(entries,mode){
+  var arr=(entries||[]).slice();
+  if(mode==='size-desc')arr.sort(function(a,b){return (b.size||0)-(a.size||0);});
+  else if(mode==='size-asc')arr.sort(function(a,b){return (a.size||0)-(b.size||0);});
+  else if(mode==='type')arr.sort(function(a,b){var x=fileExt(a.path),y=fileExt(b.path);return x<y?-1:x>y?1:(a.path<b.path?-1:1);});
+  else arr.sort(function(a,b){return a.path<b.path?-1:a.path>b.path?1:0;});
+  return arr;
+}
+function buildReport(archiveName,entries,archiveSize){
+  var s=summarize(entries,archiveSize);
+  var lines=[];
+  lines.push('DTZ ZIP Archive Studio — Report');
+  lines.push('Archive: '+archiveName);
+  lines.push('Archive size: '+formatBytes(archiveSize));
+  lines.push('Files: '+s.files+' | Folders: '+s.folders+' | Total uncompressed: '+formatBytes(s.totalSize));
+  if(s.ratio!==null)lines.push('Space saved by compression: '+s.ratio+'%');
+  lines.push('');
+  lines.push('Contents:');
+  sortEntries(entries,'name').forEach(function(e){
+    lines.push((e.dir?'[folder] ':'')+e.path+(e.dir?'':' ('+formatBytes(e.size)+')'));
+  });
+  lines.push('');
+  lines.push('Generated on-device by Dark Tech Zone. No file was uploaded.');
+  return lines.join('\n');
+}
+/* HELPERS END */
+
+(function(){
+var MAX_BYTES=100*1024*1024;
+var MAX_ROWS=500;
+var PREVIEW_TEXT_CAP=200*1024;
+var state={zip:null,entries:[],archiveName:'',archiveSize:0,selected:{},createFiles:[],previewUrl:null};
+
+function $(id){return document.getElementById(id);}
+function showMsg(id,text,kind){var el=$(id);el.textContent=text;el.className='msg show '+(kind||'info');}
+function hideMsg(id){var el=$(id);el.className='msg';el.textContent='';}
+function jszipReady(){return typeof JSZip!=='undefined';}
+function downloadBlob(blob,name){
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;a.download=name;
+  document.body.appendChild(a);a.click();
+  setTimeout(function(){URL.revokeObjectURL(url);a.remove();},400);
+}
+function iconSvg(path){
+  var k=previewKind(path);var e=fileExt(path);
+  if(k==='image')return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>';
+  if(['zip','rar','7z','tar','gz'].indexOf(e)>=0)return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 8v13H3V8"/><path d="M1 3h22v5H1z"/><path d="M10 12h4"/></svg>';
+  if(['mp3','wav','ogg','m4a','aac','flac'].indexOf(e)>=0)return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>';
+  if(['mp4','mkv','mov','webm','avi'].indexOf(e)>=0)return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M10 9l5 3-5 3z"/></svg>';
+  if(e==='pdf')return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>';
+  if(k==='text')return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h5"/></svg>';
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M13 2v7h7"/></svg>';
+}
+
+/* Tabs */
+$('tabOpen').addEventListener('click',function(){
+  $('tabOpen').classList.add('active');$('tabCreate').classList.remove('active');
+  $('panelOpen').hidden=false;$('panelCreate').hidden=true;
+});
+$('tabCreate').addEventListener('click',function(){
+  $('tabCreate').classList.add('active');$('tabOpen').classList.remove('active');
+  $('panelCreate').hidden=false;$('panelOpen').hidden=true;
+});
+
+/* Recent */
+function loadRecent(){
+  try{return JSON.parse(localStorage.getItem('dtz_zip_recent')||'[]');}catch(e){return [];}
+}
+function saveRecent(name,size,count){
+  var list=loadRecent().filter(function(r){return r.name!==name;});
+  list.unshift({name:name,size:size,count:count,when:new Date().toISOString().slice(0,10)});
+  list=list.slice(0,8);
+  try{localStorage.setItem('dtz_zip_recent',JSON.stringify(list));}catch(e){}
+  renderRecent();
+}
+function renderRecent(){
+  var list=loadRecent();
+  var card=$('recentCard');var box=$('recentList');
+  if(!list.length){card.hidden=true;box.innerHTML='';return;}
+  card.hidden=false;
+  box.innerHTML=list.map(function(r){
+    return '<div class="recent-chip"><span class="rn">'+esc(r.name)+'</span><span class="rm">'+esc(formatBytes(r.size))+' · '+esc(String(r.count))+' files · '+esc(r.when)+'</span></div>';
+  }).join('');
+}
+$('btnClearRecent').addEventListener('click',function(){
+  try{localStorage.removeItem('dtz_zip_recent');}catch(e){}
+  renderRecent();
+});
+
+/* Open ZIP */
+function openArchive(file){
+  hideMsg('openMsg');
+  if(!jszipReady()){showMsg('openMsg','The ZIP engine could not load. Check your connection and reload this page.','err');return;}
+  if(!file)return;
+  if(file.size>MAX_BYTES){showMsg('openMsg','This file is '+formatBytes(file.size)+'. The limit is 100 MB so your device stays fast.','err');return;}
+  showMsg('openMsg','Opening '+file.name+' ...','info');
+  JSZip.loadAsync(file).then(function(zip){
+    state.zip=zip;
+    state.entries=entriesFromZip(zip);
+    state.archiveName=file.name;
+    state.archiveSize=file.size;
+    state.selected={};
+    var s=summarize(state.entries,state.archiveSize);
+    if(s.files===0&&s.folders===0){showMsg('openMsg','This ZIP is empty — there are no files inside it.','err');return;}
+    showMsg('openMsg','Opened '+file.name+': '+s.files+' files inside. Tap Preview on a text or image file, or Download to extract it.','ok');
+    renderSummary();
+    renderList();
+    saveRecent(file.name,file.size,s.files);
+  }).catch(function(){
+    showMsg('openMsg','This ZIP could not be opened. It may be damaged or protected. Try another ZIP file.','err');
+  });
+}
+function renderSummary(){
+  var s=summarize(state.entries,state.archiveSize);
+  $('sumName').textContent=state.archiveName;
+  var boxes=[
+    [formatBytes(state.archiveSize),'Archive size'],
+    [String(s.files),'Files'],
+    [String(s.folders),'Folders'],
+    [formatBytes(s.totalSize),'Uncompressed total']
+  ];
+  if(s.ratio!==null)boxes.push([s.ratio+'%','Space saved']);
+  $('sumStats').innerHTML=boxes.map(function(b){
+    return '<div class="statbox"><div class="sv">'+esc(b[0])+'</div><div class="sl">'+esc(b[1])+'</div></div>';
+  }).join('');
+  $('summaryCard').hidden=false;
+}
+function visibleEntries(){
+  return sortEntries(filterEntries(state.entries,$('searchInput').value),$('sortSelect').value);
+}
+function renderList(){
+  var all=visibleEntries();
+  var shown=all.slice(0,MAX_ROWS);
+  var box=$('fileList');
+  if(!all.length){box.innerHTML='<div class="empty">No files match your search.</div>';}
+  else{
+    box.innerHTML=shown.map(function(e){
+      var kind=previewKind(e.path);
+      var checked=state.selected[e.path]?' checked':'';
+      var meta=e.dir?'Folder':(formatBytes(e.size)+(e.date?' · '+e.date.toISOString().slice(0,10):''));
+      var actions='';
+      if(!e.dir){
+        if(kind)actions+='<button class="btn btn-ghost btn-small" data-act="preview" data-path="'+esc(e.path)+'">Preview</button>';
+        actions+='<button class="btn btn-ghost btn-small" data-act="download" data-path="'+esc(e.path)+'">Download</button>';
+      }
+      return '<div class="file-row">'
+        +(e.dir?'<span class="fcheck" style="visibility:hidden"></span>':'<input type="checkbox" class="fcheck" data-path="'+esc(e.path)+'"'+checked+'>')
+        +'<div class="f-icon">'+iconSvg(e.path)+'</div>'
+        +'<div class="f-info"><div class="f-name">'+esc(e.name)+'<span class="badge">'+esc(e.dir?'FOLDER':typeLabel(e.path))+'</span></div>'
+        +'<div class="f-meta">'+esc(e.path)+' · '+esc(meta)+'</div></div>'
+        +'<div class="f-actions">'+actions+'</div></div>';
+    }).join('');
+  }
+  var selCount=Object.keys(state.selected).filter(function(k){return state.selected[k];}).length;
+  $('listStats').textContent='Showing '+shown.length+' of '+all.length+' entries'+(all.length>MAX_ROWS?' (first '+MAX_ROWS+')':'')+(selCount?' · '+selCount+' selected':'');
+}
+$('fileList').addEventListener('change',function(ev){
+  var t=ev.target;
+  if(t&&t.classList&&t.classList.contains('fcheck')&&t.dataset&&t.dataset.path){
+    state.selected[t.dataset.path]=t.checked;
+    renderListStatsOnly();
+  }
+});
+function renderListStatsOnly(){
+  var all=visibleEntries();
+  var selCount=Object.keys(state.selected).filter(function(k){return state.selected[k];}).length;
+  $('listStats').textContent='Showing '+Math.min(all.length,MAX_ROWS)+' of '+all.length+' entries'+(selCount?' · '+selCount+' selected':'');
+}
+$('fileList').addEventListener('click',function(ev){
+  var btn=ev.target.closest?ev.target.closest('button[data-act]'):null;
+  if(!btn)return;
+  var path=btn.getAttribute('data-path');
+  if(btn.getAttribute('data-act')==='download')downloadEntry(path);
+  else previewEntry(path);
+});
+$('searchInput').addEventListener('input',renderList);
+$('sortSelect').addEventListener('change',renderList);
+
+function downloadEntry(path){
+  if(!state.zip)return;
+  var f=state.zip.files[path];
+  if(!f)return;
+  f.async('blob').then(function(blob){downloadBlob(blob,baseName(path));})
+  .catch(function(){showMsg('openMsg','Could not extract '+baseName(path)+'. The file inside may be damaged.','err');});
+}
+function previewEntry(path){
+  if(!state.zip)return;
+  var f=state.zip.files[path];
+  if(!f)return;
+  var kind=previewKind(path);
+  var entry=null;
+  state.entries.forEach(function(e){if(e.path===path)entry=e;});
+  $('previewTitle').textContent=baseName(path);
+  var body=$('previewBody');
+  if(state.previewUrl){URL.revokeObjectURL(state.previewUrl);state.previewUrl=null;}
+  if(kind==='text'){
+    if(entry&&typeof entry.size==='number'&&entry.size>PREVIEW_TEXT_CAP){
+      body.innerHTML='<p style="color:var(--muted)">This text file is '+esc(formatBytes(entry.size))+' — too large to preview here. Use Download to save it.</p>';
+      $('previewCard').hidden=false;return;
+    }
+    f.async('string').then(function(text){
+      var pre=document.createElement('pre');
+      pre.textContent=text.slice(0,PREVIEW_TEXT_CAP);
+      body.innerHTML='';body.appendChild(pre);
+      $('previewCard').hidden=false;
+    }).catch(function(){body.innerHTML='<p style="color:var(--muted)">Preview failed. Use Download instead.</p>';$('previewCard').hidden=false;});
+  }else if(kind==='image'){
+    f.async('blob').then(function(blob){
+      state.previewUrl=URL.createObjectURL(blob);
+      var img=document.createElement('img');
+      img.src=state.previewUrl;img.alt=baseName(path);
+      body.innerHTML='';body.appendChild(img);
+      $('previewCard').hidden=false;
+    }).catch(function(){body.innerHTML='<p style="color:var(--muted)">Preview failed. Use Download instead.</p>';$('previewCard').hidden=false;});
+  }
+}
+$('btnClosePreview').addEventListener('click',function(){
+  $('previewCard').hidden=true;
+  if(state.previewUrl){URL.revokeObjectURL(state.previewUrl);state.previewUrl=null;}
+});
+$('btnSelZip').addEventListener('click',function(){
+  if(!state.zip||!jszipReady())return;
+  var paths=Object.keys(state.selected).filter(function(k){return state.selected[k]&&state.zip.files[k];});
+  if(!paths.length){showMsg('openMsg','Tick at least one file first, then download the selected files as a new ZIP.','err');return;}
+  var out=new JSZip();
+  var jobs=paths.map(function(p){
+    return state.zip.files[p].async('blob').then(function(b){out.file(p,b);});
+  });
+  Promise.all(jobs).then(function(){
+    return out.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:6}});
+  }).then(function(blob){
+    downloadBlob(blob,sanitizeZipName(state.archiveName.replace(/\.zip$/i,'')+'-selected'));
+    showMsg('openMsg','Selected files packed into a new ZIP and downloaded.','ok');
+  }).catch(function(){showMsg('openMsg','Could not build the selected-files ZIP. Try fewer files.','err');});
+});
+$('btnCopyList').addEventListener('click',function(){
+  var text=sortEntries(state.entries,'name').map(function(e){return e.path;}).join('\n');
+  function done(){showMsg('openMsg','File list copied.','ok');}
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done).catch(function(){fallbackCopy(text);done();});}
+  else{fallbackCopy(text);done();}
+});
+function fallbackCopy(text){
+  var ta=document.createElement('textarea');
+  ta.value=text;document.body.appendChild(ta);ta.select();
+  try{document.execCommand('copy');}catch(e){}
+  ta.remove();
+}
+$('btnReport').addEventListener('click',function(){
+  var text=buildReport(state.archiveName,state.entries,state.archiveSize);
+  downloadBlob(new Blob([text],{type:'text/plain'}),'dtz-zip-report.txt');
+});
+
+var dz=$('dropZone');
+dz.addEventListener('click',function(){$('fileInput').click();});
+$('fileInput').addEventListener('change',function(){if(this.files&&this.files[0])openArchive(this.files[0]);this.value='';});
+['dragenter','dragover'].forEach(function(ev){dz.addEventListener(ev,function(e){e.preventDefault();dz.classList.add('drag');});});
+['dragleave','drop'].forEach(function(ev){dz.addEventListener(ev,function(e){e.preventDefault();dz.classList.remove('drag');});});
+dz.addEventListener('drop',function(e){
+  var files=e.dataTransfer&&e.dataTransfer.files;
+  if(files&&files[0])openArchive(files[0]);
+});
+
+$('btnSample').addEventListener('click',function(){
+  if(!jszipReady()){showMsg('openMsg','The ZIP engine could not load. Check your connection and reload this page.','err');return;}
+  var z=new JSZip();
+  z.file('readme.txt','Welcome to DTZ ZIP Archive Studio.\n\nThis sample ZIP was created in your browser.\nTry Preview on the text files and the image,\nthen tick some files and download them as a new ZIP.\n\nDark Tech Zone — Learn. Build. Secure.');
+  z.file('notes/todo.txt','1. Open a real ZIP from your phone\n2. Preview a photo inside it\n3. Extract one file\n4. Create your own ZIP in the Create ZIP tab');
+  z.file('data/info.json',JSON.stringify({tool:'DTZ ZIP Archive Studio',brand:'Dark Tech Zone',onDevice:true,files:4},null,2));
+  z.file('code/hello.js',"console.log('Hello from Dark Tech Zone');\n");
+  var canvas=document.createElement('canvas');canvas.width=320;canvas.height=180;
+  var ctx=canvas.getContext('2d');
+  var grad=ctx.createLinearGradient(0,0,320,180);
+  grad.addColorStop(0,'#0891b2');grad.addColorStop(1,'#7c3aed');
+  ctx.fillStyle=grad;ctx.fillRect(0,0,320,180);
+  ctx.fillStyle='#ffffff';ctx.font='bold 28px Arial';ctx.textAlign='center';
+  ctx.fillText('DARK TECH ZONE',160,92);
+  ctx.font='14px Arial';ctx.fillText('Sample image inside a ZIP',160,120);
+  canvas.toBlob(function(blob){
+    if(blob)z.file('images/dtz-sample.png',blob);
+    z.generateAsync({type:'blob',compression:'DEFLATE',compressionOptions:{level:6}}).then(function(b){
+      var f=new File([b],'dtz-sample.zip',{type:'application/zip'});
+      openArchive(f);
+    }).catch(function(){showMsg('openMsg','Sample ZIP could not be created on this device.','err');});
+  },'image/png');
+});
+
+/* Create ZIP */
+function renderCreateList(){
+  var box=$('createList');
+  if(!state.createFiles.length){box.innerHTML='';$('createStats').textContent='No files added yet.';return;}
+  box.innerHTML=state.createFiles.map(function(f,i){
+    return '<div class="file-row"><div class="f-icon">'+iconSvg(f.name)+'</div>'
+      +'<div class="f-info"><div class="f-name">'+esc(f.name)+'</div><div class="f-meta">'+esc(formatBytes(f.size))+'</div></div>'
+      +'<div class="f-actions"><button class="btn btn-ghost btn-small" data-remove="'+i+'">Remove</button></div></div>';
+  }).join('');
+  var total=state.createFiles.reduce(function(a,f){return a+f.size;},0);
+  $('createStats').textContent=state.createFiles.length+' files · '+formatBytes(total)+' total';
+}
+function addCreateFiles(fileList){
+  hideMsg('createMsg');
+  var total=state.createFiles.reduce(function(a,f){return a+f.size;},0);
+  Array.prototype.forEach.call(fileList||[],function(f){
+    if(total+f.size>MAX_BYTES){showMsg('createMsg','Skipped '+f.name+' — the 100 MB total limit would be exceeded.','err');return;}
+    state.createFiles.push(f);total+=f.size;
+  });
+  renderCreateList();
+}
+$('createList').addEventListener('click',function(ev){
+  var btn=ev.target.closest?ev.target.closest('button[data-remove]'):null;
+  if(!btn)return;
+  state.createFiles.splice(Number(btn.getAttribute('data-remove')),1);
+  renderCreateList();
+});
+var cdz=$('createDrop');
+cdz.addEventListener('click',function(){$('createInput').click();});
+$('createInput').addEventListener('change',function(){addCreateFiles(this.files);this.value='';});
+['dragenter','dragover'].forEach(function(ev){cdz.addEventListener(ev,function(e){e.preventDefault();cdz.classList.add('drag');});});
+['dragleave','drop'].forEach(function(ev){cdz.addEventListener(ev,function(e){e.preventDefault();cdz.classList.remove('drag');});});
+cdz.addEventListener('drop',function(e){addCreateFiles(e.dataTransfer&&e.dataTransfer.files);});
+
+$('btnCreate').addEventListener('click',function(){
+  hideMsg('createMsg');
+  if(!jszipReady()){showMsg('createMsg','The ZIP engine could not load. Check your connection and reload this page.','err');return;}
+  if(!state.createFiles.length){showMsg('createMsg','Add at least one file first.','err');return;}
+  var mode=$('compSelect').value;
+  var opts={type:'blob'};
+  if(mode==='store')opts.compression='STORE';
+  else if(mode==='fast'){opts.compression='DEFLATE';opts.compressionOptions={level:1};}
+  else{opts.compression='DEFLATE';opts.compressionOptions={level:9};}
+  var z=new JSZip();
+  state.createFiles.forEach(function(f){z.file(f.name,f);});
+  var bar=$('createBar');var wrap=$('createProgress');
+  wrap.classList.add('show');bar.style.width='0%';
+  $('btnCreate').disabled=true;
+  z.generateAsync(opts,function(meta){bar.style.width=Math.round(meta.percent)+'%';})
+  .then(function(blob){
+    var name=sanitizeZipName($('zipNameInput').value);
+    downloadBlob(blob,name);
+    showMsg('createMsg','Created '+name+' ('+formatBytes(blob.size)+') and started the download.','ok');
+  }).catch(function(){
+    showMsg('createMsg','ZIP creation failed. Try fewer or smaller files.','err');
+  }).finally(function(){
+    $('btnCreate').disabled=false;
+    setTimeout(function(){wrap.classList.remove('show');},600);
+  });
+});
+
+renderRecent();
+renderCreateList();
+})();
+</script>
+<!-- DTZ Splash Intro (added 2026-11-25) -->
+<style>
+#dtz-splash-overlay{position:fixed;inset:0;z-index:2147483647;background:#02040a;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Segoe UI',Arial,sans-serif;opacity:1;transition:opacity .45s ease;cursor:pointer}
+#dtz-splash-overlay.dtz-splash-hide{opacity:0;pointer-events:none}
+.dtz-splash-logo-wrap{position:relative;width:190px;height:190px;margin-bottom:22px}
+.dtz-splash-ring{position:absolute;border-radius:50%;border:3px solid transparent}
+.dtz-splash-ring1{inset:-12px;border-top-color:#00e5ff;border-bottom-color:#00e5ff;animation:dtz-splash-spin 3.2s linear infinite}
+.dtz-splash-ring2{inset:-22px;border-left-color:#ff2e88;border-right-color:#ff2e88;animation:dtz-splash-spin-rev 4.6s linear infinite}
+.dtz-splash-ring3{inset:-32px;border-top-color:#9d4dff;animation:dtz-splash-spin 7s linear infinite;opacity:.7}
+@keyframes dtz-splash-spin{to{transform:rotate(360deg)}}
+@keyframes dtz-splash-spin-rev{to{transform:rotate(-360deg)}}
+.dtz-splash-logo{width:100%;height:100%;border-radius:50%;object-fit:cover;box-shadow:0 0 42px #00e5ff,0 0 90px rgba(157,77,255,.45);animation:dtz-splash-logo-in .8s cubic-bezier(.17,.89,.32,1.28) both}
+@keyframes dtz-splash-logo-in{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+.dtz-splash-title{font-size:30px;font-weight:900;letter-spacing:5px;text-transform:uppercase;color:#fff;text-align:center;animation:dtz-splash-title-in .7s ease .25s both}
+.dtz-splash-title span{color:#00e5ff}
+@keyframes dtz-splash-title-in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.dtz-splash-tagline{margin-top:8px;font-size:14px;letter-spacing:5px;text-transform:uppercase;color:#8be9ff;text-align:center;animation:dtz-splash-title-in .7s ease .45s both}
+.dtz-splash-skip{margin-top:20px;font-size:11px;letter-spacing:2px;color:#5b7186;text-transform:uppercase}
+@media (prefers-reduced-motion:reduce){.dtz-splash-ring,.dtz-splash-logo,.dtz-splash-title,.dtz-splash-tagline{animation:none!important}}
+@media (max-width:480px){.dtz-splash-logo-wrap{width:150px;height:150px}.dtz-splash-title{font-size:22px;letter-spacing:3px}.dtz-splash-tagline{font-size:12px;letter-spacing:3px}}
+</style>
+<div id="dtz-splash-overlay" role="presentation">
+  <div class="dtz-splash-logo-wrap">
+    <div class="dtz-splash-ring dtz-splash-ring1"></div>
+    <div class="dtz-splash-ring dtz-splash-ring2"></div>
+    <div class="dtz-splash-ring dtz-splash-ring3"></div>
+    <img class="dtz-splash-logo" src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone" onerror="this.style.display='none'">
+  </div>
+  <div class="dtz-splash-title">Dark <span>Tech</span> Zone</div>
+  <div class="dtz-splash-tagline">Learn. Build. Secure.</div>
+  <div class="dtz-splash-skip">Tap to skip</div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('dtz-splash-overlay');
+  if(!el)return;
+  var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var done=false;
+  function hide(){
+    if(done)return;done=true;
+    el.classList.add('dtz-splash-hide');
+    setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},500);
+  }
+  el.addEventListener('click',hide);
+  el.addEventListener('touchstart',hide,{passive:true});
+  setTimeout(hide,reduced?350:2500);
+})();
+</script>
+<!-- /DTZ Splash Intro -->
+</body>
+</html>
