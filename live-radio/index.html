@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTZ Live Radio — Dark Tech Zone</title>
+<meta name="description" content="Free live radio player: listen to radio stations from Pakistan and around the world in your browser. No app, no signup. Search, favorites, sleep timer.">
+<link rel="icon" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f4f6fb;--surface:#ffffff;--text:#0f172a;--muted:#64748b;--border:#e2e8f0;--accent:#0891b2;--accent2:#7c3aed;--ok:#15803d;--bad:#dc2626;--warn:#d97706}
+body{font-family:'Segoe UI',system-ui,-apple-system,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+header img{width:44px;height:44px;border-radius:50%;object-fit:cover}
+header .brand{font-weight:800;font-size:18px;letter-spacing:.5px}
+header .brand span{color:var(--accent)}
+header nav{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap}
+header nav a{text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;padding:8px 14px;border:1px solid var(--border);border-radius:20px;background:#fff}
+main{max-width:960px;margin:0 auto;padding:24px 16px 60px}
+.hero{text-align:center;padding:18px 0 8px}
+.hero h1{font-size:30px;font-weight:900}
+.hero h1 span{color:var(--accent)}
+.hero p{color:var(--muted);margin-top:8px;font-size:15px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;margin-top:18px;box-shadow:0 2px 12px rgba(15,23,42,.05)}
+.card h2{font-size:17px;font-weight:800;margin-bottom:12px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.label{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;min-width:88px}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg button{border:1px solid var(--border);background:#f8fafc;color:var(--text);padding:9px 16px;border-radius:20px;font-size:14px;font-weight:700;cursor:pointer}
+.seg button.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent}
+.btn{border:none;cursor:pointer;font-weight:700;font-size:14px;padding:11px 18px;border-radius:10px;display:inline-flex;align-items:center;gap:8px}
+.btn svg{width:16px;height:16px;flex:none}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.btn-ghost{background:#fff;border:1px solid var(--border);color:var(--text)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+input[type=text],select{font:inherit;font-size:15px;padding:11px 14px;border:1px solid var(--border);border-radius:10px;background:#fff;color:var(--text)}
+input[type=text]{flex:1;min-width:200px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.chip{border:1px solid var(--border);background:#f8fafc;color:var(--text);padding:7px 13px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer}
+.chip.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent}
+.toggle{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;cursor:pointer}
+.toggle input{width:18px;height:18px;accent-color:var(--accent)}
+.nowbar{position:sticky;top:0;z-index:50;background:linear-gradient(135deg,#0e7490,#6d28d9);color:#fff;border-radius:16px;padding:16px 18px;margin-top:18px;box-shadow:0 8px 24px rgba(15,23,42,.25)}
+.nowbar .np-top{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.np-icon{width:52px;height:52px;border-radius:12px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;flex:none;overflow:hidden}
+.np-icon img{width:100%;height:100%;object-fit:cover}
+.np-icon svg{width:26px;height:26px}
+.np-info{flex:1;min-width:180px}
+.np-name{font-size:17px;font-weight:800;line-height:1.25}
+.np-meta{font-size:13px;opacity:.85;margin-top:2px}
+.np-status{font-size:13px;font-weight:700;margin-top:4px}
+.playbtn{width:58px;height:58px;border-radius:50%;border:none;background:#fff;color:#0e7490;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.playbtn svg{width:26px;height:26px}
+.playbtn:disabled{opacity:.5;cursor:not-allowed}
+.np-controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.np-controls .btn{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.35);padding:8px 13px;font-size:13px}
+.np-controls select{padding:8px 10px;font-size:13px;border:none}
+.np-controls input[type=range]{accent-color:#fff;width:110px}
+.eq{display:none;align-items:flex-end;gap:3px;height:18px}
+.eq span{width:4px;background:#fff;border-radius:2px;animation:eqbounce 1s ease-in-out infinite}
+.eq span:nth-child(2){animation-delay:.15s}.eq span:nth-child(3){animation-delay:.3s}.eq span:nth-child(4){animation-delay:.45s}
+@keyframes eqbounce{0%,100%{height:6px}50%{height:18px}}
+.eq.on{display:inline-flex}
+@media (prefers-reduced-motion:reduce){.eq span{animation:none;height:12px}}
+.station{display:flex;gap:12px;align-items:center;border:1px solid var(--border);border-radius:14px;padding:12px 14px;margin-top:10px;background:#fff}
+.station.playing{border-color:var(--accent);box-shadow:0 0 0 2px rgba(8,145,178,.18)}
+.st-icon{width:48px;height:48px;border-radius:10px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;flex:none;overflow:hidden;color:var(--accent)}
+.st-icon img{width:100%;height:100%;object-fit:cover}
+.st-icon svg{width:24px;height:24px}
+.st-info{flex:1;min-width:160px}
+.st-name{font-weight:800;font-size:15px;line-height:1.3}
+.st-meta{font-size:13px;color:var(--muted);margin-top:2px}
+.st-tags{font-size:12px;color:var(--muted);margin-top:2px}
+.badge{display:inline-block;font-size:11px;font-weight:800;padding:2px 8px;border-radius:10px;vertical-align:middle;margin-left:6px}
+.badge-http{background:#fef3c7;color:#92400e}
+.badge-hls{background:#e0e7ff;color:#3730a3}
+.badge-live{background:#dcfce7;color:#166534}
+.st-actions{display:flex;gap:8px;align-items:center;flex:none}
+.iconbtn{width:40px;height:40px;border-radius:50%;border:1px solid var(--border);background:#fff;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center}
+.iconbtn svg{width:18px;height:18px}
+.iconbtn.fav{color:#d97706;border-color:#fde68a;background:#fffbeb}
+.st-play{width:46px;height:46px;border-radius:50%;border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none}
+.st-play svg{width:20px;height:20px}
+.msg{margin-top:12px;font-size:14px;padding:12px 14px;border-radius:10px;display:none}
+.msg.show{display:block}
+.msg.err{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
+.msg.ok{background:#f0fdf4;color:#166534;border:1px solid #bbf7d0}
+.msg.info{background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe}
+.statsline{font-size:13px;color:var(--muted);margin-top:12px;font-weight:600}
+.empty{border:1px dashed var(--border);border-radius:14px;padding:28px 16px;text-align:center;color:var(--muted);margin-top:12px;background:#f8fafc}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+footer{text-align:center;color:var(--muted);font-size:13px;padding:26px 16px 40px}
+@media (max-width:560px){.hero h1{font-size:25px}.station{flex-wrap:wrap}.st-actions{margin-left:auto}}
+</style>
+</head>
+<body>
+<header>
+<img src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone">
+<div class="brand">Dark <span>Tech</span> Zone</div>
+<nav>
+<a href="https://www.darktechzon.site/">All Tools</a>
+<a href="https://whatsapp.com/channel/0029Vb9oK008V0txIkc3oj3z" target="_blank" rel="noopener">WhatsApp Channel</a>
+</nav>
+</header>
+<main>
+<div class="hero">
+<h1>DTZ Live <span>Radio</span></h1>
+<p>Listen to live radio stations from Pakistan and around the world — free, no app, no signup. Pick a station and press play.</p>
+</div>
+
+<div class="nowbar" id="nowBar">
+<div class="np-top">
+<div class="np-icon" id="npIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4.9 19.1a10 10 0 0 1 0-14.2"/><path d="M7.8 16.2a6 6 0 0 1 0-8.4"/><circle cx="12" cy="12" r="2"/><path d="M16.2 7.8a6 6 0 0 1 0 8.4"/><path d="M19.1 4.9a10 10 0 0 1 0 14.2"/></svg></div>
+<div class="np-info">
+<div class="np-name" id="npName">No station selected</div>
+<div class="np-meta" id="npMeta">Choose a station below to start listening</div>
+<div class="np-status" id="npStatus"></div>
+</div>
+<div class="eq" id="eqBars"><span></span><span></span><span></span><span></span></div>
+<button id="btnPlayPause" class="playbtn" type="button" aria-label="Play or pause" disabled><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+</div>
+<div class="np-controls">
+<button id="btnFavNow" class="btn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>Favorite</button>
+<button id="btnCopyStream" class="btn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Copy Stream Link</button>
+<button id="btnOpenStream" class="btn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg>Open Stream</button>
+<label style="font-size:13px;font-weight:700">Volume <input id="volRange" type="range" min="0" max="100" value="90"></label>
+<label style="font-size:13px;font-weight:700">Sleep timer
+<select id="sleepSel"><option value="0">Off</option><option value="15">15 min</option><option value="30">30 min</option><option value="60">60 min</option></select></label>
+</div>
+</div>
+
+<div class="card">
+<h2>Find a station</h2>
+<div class="row" style="margin-bottom:12px"><span class="label">Browse</span>
+<div id="tabSeg" class="seg">
+<button type="button" data-tab="pakistan" class="active">Pakistan</button>
+<button type="button" data-tab="top">Top Worldwide</button>
+<button type="button" data-tab="favorites">Favorites</button>
+<button type="button" data-tab="recent">Recently Played</button>
+</div></div>
+<div class="row">
+<input id="searchInput" type="text" placeholder="Search stations — try: FM 100, Radio Pakistan, BBC, news..." aria-label="Search stations">
+<button id="btnSearch" class="btn btn-primary" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Search</button>
+<button id="btnRandom" class="btn btn-ghost" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3h5v5"/><path d="M4 20L21 3"/><path d="M21 16v5h-5"/><path d="M15 15l6 6"/><path d="M4 4l5 5"/></svg>Surprise Me</button>
+</div>
+<div class="row" style="margin-top:12px">
+<span class="label">Country</span>
+<select id="countrySel" aria-label="Country"><option value="Pakistan">Pakistan</option></select>
+<span class="label" style="min-width:52px">Sort</span>
+<select id="sortSel" aria-label="Sort stations"><option value="votes">Most popular</option><option value="name">Name A–Z</option><option value="bitrate">Highest quality</option></select>
+<label class="toggle"><input id="httpsOnly" type="checkbox" checked> Only stations that play on this page</label>
+</div>
+<div class="chips" id="genreChips">
+<button type="button" class="chip genre-chip" data-tag="news">News</button>
+<button type="button" class="chip genre-chip" data-tag="music">Music</button>
+<button type="button" class="chip genre-chip" data-tag="pop">Pop</button>
+<button type="button" class="chip genre-chip" data-tag="rock">Rock</button>
+<button type="button" class="chip genre-chip" data-tag="talk">Talk</button>
+<button type="button" class="chip genre-chip" data-tag="islamic">Islamic</button>
+<button type="button" class="chip genre-chip" data-tag="urdu">Urdu</button>
+<button type="button" class="chip genre-chip" data-tag="sports">Sports</button>
+<button type="button" class="chip genre-chip" data-tag="jazz">Jazz</button>
+<button type="button" class="chip genre-chip" data-tag="classical">Classical</button>
+</div>
+<div id="loadMsg" class="msg info"></div>
+<div class="statsline" id="statsLine"></div>
+<div id="stationList"></div>
+<div class="row" style="margin-top:16px">
+<button id="btnMore" class="btn btn-ghost" type="button" style="display:none">Load more stations</button>
+<button id="btnDownloadList" class="btn btn-ghost" type="button" style="display:none"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>Download Station List (.txt)</button>
+</div>
+<div id="listMsg" class="msg"></div>
+</div>
+
+<div class="card">
+<h2>How it works</h2>
+<p style="font-size:14px;color:var(--muted);line-height:1.6">Stations come from the free public Radio Browser directory (50,000+ stations worldwide). Press play and the live stream plays right here — nothing is downloaded or recorded. Some stations broadcast on plain HTTP streams, which secure pages cannot play; those are hidden by the &ldquo;Only stations that play on this page&rdquo; switch. Turn it off to see them, then use <b>Open Stream</b> to listen in a new tab. Favorites and recently played stations are saved only in your browser.</p>
+</div>
+</main>
+<footer>Dark Tech Zone — Learn. Build. Secure.</footer>
+<audio id="player" preload="none"></audio>
+<script>
+/*__DTZ_HELPERS_START__*/
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function cleanName(s){return String(s==null?'':s).replace(/\s+/g,' ').trim();}
+function streamUrl(st){if(!st)return '';return String(st.url_resolved||st.url||'').trim();}
+function isHttpsStream(st){return streamUrl(st).toLowerCase().indexOf('https://')===0;}
+function isHlsStream(st){if(!st)return false;if(Number(st.hls)===1)return true;return /\.m3u8($|\?)/i.test(streamUrl(st));}
+function parseTags(st){var t=String((st&&st.tags)||'');if(!t)return [];return t.split(',').map(function(x){return x.trim().toLowerCase();}).filter(function(x){return x.length>0;});}
+function formatVotes(n){var v=Number(n)||0;if(v>=1000)return (v/1000).toFixed(v>=10000?0:1).replace(/\.0$/,'')+'k';return String(v);}
+function stationMetaLine(st){var parts=[];if(st&&st.country)parts.push(st.country);if(st&&st.language)parts.push(String(st.language).split(',')[0].trim());var q=[];if(st&&st.codec)q.push(String(st.codec).toUpperCase());if(st&&Number(st.bitrate)>0)q.push(Number(st.bitrate)+' kbps');if(q.length)parts.push(q.join(' '));if(st&&Number(st.votes)>0)parts.push(formatVotes(st.votes)+' votes');return parts.join(' · ');}
+function dedupeStations(list){var seen={};var out=[];(list||[]).forEach(function(st){if(!st)return;var id=String(st.stationuuid||streamUrl(st)||cleanName(st.name));if(!id||seen[id])return;seen[id]=true;out.push(st);});return out;}
+function filterStations(list,opts){opts=opts||{};var out=(list||[]).slice();if(opts.httpsOnly)out=out.filter(isHttpsStream);if(opts.query){var q=String(opts.query).toLowerCase();out=out.filter(function(st){var hay=(cleanName(st.name)+' '+(st.country||'')+' '+(st.tags||'')+' '+(st.language||'')).toLowerCase();return hay.indexOf(q)>=0;});}if(opts.tag){var tg=String(opts.tag).toLowerCase();out=out.filter(function(st){return parseTags(st).indexOf(tg)>=0;});}return out;}
+function sortStations(list,mode){var out=(list||[]).slice();if(mode==='name'){out.sort(function(a,b){return cleanName(a.name).localeCompare(cleanName(b.name));});}else if(mode==='bitrate'){out.sort(function(a,b){return (Number(b.bitrate)||0)-(Number(a.bitrate)||0)||(Number(b.votes)||0)-(Number(a.votes)||0);});}else{out.sort(function(a,b){return (Number(b.votes)||0)-(Number(a.votes)||0);});}return out;}
+function buildStationListText(list,title){var lines=[];lines.push('DTZ Live Radio — '+(title||'Station list'));lines.push('');(list||[]).forEach(function(st,i){lines.push((i+1)+'. '+cleanName(st.name)+' ('+(st.country||'Unknown')+')');lines.push('   '+stationMetaLine(st));lines.push('   Stream: '+streamUrl(st));});lines.push('');lines.push('Dark Tech Zone — darktechzon.site/live-radio/');return lines.join('\n');}
+function pickRandom(list,rand){if(!list||!list.length)return null;var r=(typeof rand==='number')?rand:Math.random();var idx=Math.floor(r*list.length);if(idx<0)idx=0;if(idx>=list.length)idx=list.length-1;return list[idx];}
+function favKey(st){return String((st&&st.stationuuid)||streamUrl(st)||cleanName(st&&st.name));}
+function slimStation(st){return{stationuuid:String(st.stationuuid||''),name:cleanName(st.name),country:String(st.country||''),language:String(st.language||''),codec:String(st.codec||''),bitrate:Number(st.bitrate)||0,votes:Number(st.votes)||0,tags:String(st.tags||''),favicon:String(st.favicon||''),url:String(st.url||''),url_resolved:streamUrl(st),hls:Number(st.hls)||0};}
+/*__DTZ_HELPERS_END__*/
+(function(){
+var API_BASES=['https://de1.api.radio-browser.info','https://de2.api.radio-browser.info','https://nl1.api.radio-browser.info'];
+var PAGE_SIZE=30;
+var player=document.getElementById('player');
+var els={};
+['nowBar','npIcon','npName','npMeta','npStatus','eqBars','btnPlayPause','btnFavNow','btnCopyStream','btnOpenStream','volRange','sleepSel','tabSeg','searchInput','btnSearch','btnRandom','countrySel','sortSel','httpsOnly','genreChips','loadMsg','statsLine','stationList','btnMore','btnDownloadList','listMsg'].forEach(function(id){els[id]=document.getElementById(id);});
+var state={tab:'pakistan',country:'Pakistan',tag:'',query:'',stations:[],shown:0,current:null,playing:false,sleepTimer:null,listTitle:'Pakistan stations'};
+var FAV_KEY='dtz-radio-favs',RECENT_KEY='dtz-radio-recent',VOL_KEY='dtz-radio-vol';
+function loadJson(key,fallback){try{var v=localStorage.getItem(key);return v?JSON.parse(v):fallback;}catch(e){return fallback;}}
+function saveJson(key,val){try{localStorage.setItem(key,JSON.stringify(val));}catch(e){}}
+function getFavs(){return loadJson(FAV_KEY,[]);}
+function isFav(st){var k=favKey(st);return getFavs().some(function(f){return favKey(f)===k;});}
+function toggleFav(st){var favs=getFavs();var k=favKey(st);var i=-1;favs.forEach(function(f,j){if(favKey(f)===k)i=j;});if(i>=0){favs.splice(i,1);}else{favs.unshift(slimStation(st));if(favs.length>100)favs=favs.slice(0,100);}saveJson(FAV_KEY,favs);return i<0;}
+function pushRecent(st){var rec=loadJson(RECENT_KEY,[]);var k=favKey(st);rec=rec.filter(function(r){return favKey(r)!==k;});rec.unshift(slimStation(st));if(rec.length>12)rec=rec.slice(0,12);saveJson(RECENT_KEY,rec);}
+function showMsg(el,text,kind){el.textContent=text;el.className='msg show '+(kind||'info');}
+function hideMsg(el){el.className='msg';el.textContent='';}
+function apiFetch(path){var chain=Promise.reject(new Error('start'));API_BASES.forEach(function(base){chain=chain.catch(function(){return fetch(base+path,{headers:{'Accept':'application/json'}}).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();});});});return chain;}
+var ICON_PLAY='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+var ICON_PAUSE='<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>';
+var ICON_STAR='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8z"/></svg>';
+var ICON_RADIO='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4.9 19.1a10 10 0 0 1 0-14.2"/><path d="M7.8 16.2a6 6 0 0 1 0-8.4"/><circle cx="12" cy="12" r="2"/><path d="M16.2 7.8a6 6 0 0 1 0 8.4"/><path d="M19.1 4.9a10 10 0 0 1 0 14.2"/></svg>';
+function iconHtml(st){var f=String((st&&st.favicon)||'').trim();if(f&&/^https?:\/\//i.test(f))return '<img src="'+esc(f)+'" alt="" loading="lazy" onerror="this.parentNode.innerHTML=window.__dtzRadioIcon">';return ICON_RADIO;}
+window.__dtzRadioIcon=ICON_RADIO;
+function badges(st){var b='';if(!isHttpsStream(st))b+='<span class="badge badge-http">HTTP stream</span>';if(isHlsStream(st))b+='<span class="badge badge-hls">HLS</span>';if(state.current&&favKey(state.current)===favKey(st)&&state.playing)b+='<span class="badge badge-live">Now playing</span>';return b;}
+function renderList(){var list=state.stations;var slice=list.slice(0,state.shown);els.stationList.innerHTML='';if(!list.length){els.stationList.innerHTML='<div class="empty">No stations found. Try another country, genre, or turn off &ldquo;Only stations that play on this page&rdquo;.</div>';}slice.forEach(function(st){var div=document.createElement('div');div.className='station'+((state.current&&favKey(state.current)===favKey(st))?' playing':'');var tags=parseTags(st).slice(0,5).join(', ');div.innerHTML='<div class="st-icon">'+iconHtml(st)+'</div><div class="st-info"><div class="st-name">'+esc(cleanName(st.name))+badges(st)+'</div><div class="st-meta">'+esc(stationMetaLine(st))+'</div>'+(tags?'<div class="st-tags">'+esc(tags)+'</div>':'')+'</div><div class="st-actions"><button type="button" class="iconbtn fav-btn'+(isFav(st)?' fav':'')+'" aria-label="Toggle favorite">'+ICON_STAR+'</button><button type="button" class="st-play" aria-label="Play station">'+((state.current&&favKey(state.current)===favKey(st)&&state.playing)?ICON_PAUSE:ICON_PLAY)+'</button></div>';div.querySelector('.st-play').addEventListener('click',function(){if(state.current&&favKey(state.current)===favKey(st)){togglePlayPause();}else{playStation(st);}});div.querySelector('.fav-btn').addEventListener('click',function(){var added=toggleFav(st);showMsg(els.listMsg,added?'Added to favorites: '+cleanName(st.name):'Removed from favorites: '+cleanName(st.name),'ok');if(state.tab==='favorites'){applyLocalTab();}else{renderList();}});els.stationList.appendChild(div);});els.statsLine.textContent=list.length?('Showing '+slice.length+' of '+list.length+' stations — '+state.listTitle):'';els.btnMore.style.display=(state.shown<list.length)?'inline-flex':'none';els.btnDownloadList.style.display=list.length?'inline-flex':'none';}
+function setStations(list,title){state.stations=sortStations(dedupeStations(filterStations(list,{httpsOnly:els.httpsOnly.checked})),els.sortSel.value);state.shown=Math.min(PAGE_SIZE,state.stations.length);state.listTitle=title;renderList();}
+function setLoading(on,text){if(on){showMsg(els.loadMsg,text||'Loading stations...','info');}else{hideMsg(els.loadMsg);}}
+function loadRemote(path,title){setLoading(true,'Loading stations...');hideMsg(els.listMsg);apiFetch(path).then(function(data){setLoading(false);setStations(Array.isArray(data)?data:[],title);if(!state.stations.length)showMsg(els.listMsg,'No playable stations in this list. Turn off "Only stations that play on this page" to see every station.','info');}).catch(function(){setLoading(false);showMsg(els.listMsg,'Could not load stations. Check your connection and try again.','err');});}
+function applyLocalTab(){if(state.tab==='favorites'){setStations(getFavs(),'Your favorites');}else if(state.tab==='recent'){setStations(loadJson(RECENT_KEY,[]),'Recently played');}}
+function loadCurrentView(){if(state.tab==='favorites'||state.tab==='recent'){applyLocalTab();return;}if(state.query){loadRemote('/json/stations/search?name='+encodeURIComponent(state.query)+'&limit=200&hidebroken=true&order=votes&reverse=true','Search: '+state.query);return;}if(state.tag){loadRemote('/json/stations/bytag/'+encodeURIComponent(state.tag)+'?hidebroken=true&order=votes&reverse=true&limit=200','Genre: '+state.tag);return;}if(state.tab==='top'){loadRemote('/json/stations/topvote/200?hidebroken=true','Top stations worldwide');return;}loadRemote('/json/stations/bycountry/'+encodeURIComponent(state.country)+'?hidebroken=true&order=votes&reverse=true',state.country+' stations');}
+function loadCountries(){apiFetch('/json/countries').then(function(data){if(!Array.isArray(data))return;data.sort(function(a,b){return String(a.name).localeCompare(String(b.name));});els.countrySel.innerHTML='';data.forEach(function(c){var o=document.createElement('option');o.value=c.name;o.textContent=c.name+' ('+c.stationcount+')';els.countrySel.appendChild(o);});els.countrySel.value=state.country;}).catch(function(){});}
+function setPlayIcon() {els.btnPlayPause.innerHTML=state.playing?ICON_PAUSE:ICON_PLAY;els.eqBars.className='eq'+(state.playing?' on':'');}
+function updateNowBar(){var st=state.current;if(!st){els.npName.textContent='No station selected';els.npMeta.textContent='Choose a station below to start listening';els.npStatus.textContent='';els.btnPlayPause.disabled=true;setPlayIcon();return;}els.npName.textContent=cleanName(st.name);els.npMeta.textContent=stationMetaLine(st);els.npIcon.innerHTML=iconHtml(st);els.btnPlayPause.disabled=false;setPlayIcon();}
+function playStation(st){var url=streamUrl(st);if(!url){showMsg(els.listMsg,'This station has no stream link.','err');return;}state.current=st;pushRecent(st);els.npStatus.textContent='Connecting...';player.src=url;player.play().then(function(){state.playing=true;els.npStatus.textContent='Live now';updateNowBar();renderList();try{if('mediaSession' in navigator){navigator.mediaSession.metadata=new MediaMetadata({title:cleanName(st.name),artist:'DTZ Live Radio — '+(st.country||'')});}}catch(e){}}).catch(function(){state.playing=false;els.npStatus.textContent='Could not play here';updateNowBar();renderList();var hint=isHttpsStream(st)?'The stream may be offline right now. Try Open Stream or another station.':'This is an HTTP stream, which secure pages cannot play. Use Open Stream to listen in a new tab.';showMsg(els.listMsg,'Could not play "'+cleanName(st.name)+'". '+hint,'err');});updateNowBar();renderList();}
+function togglePlayPause(){if(!state.current)return;if(state.playing){player.pause();state.playing=false;els.npStatus.textContent='Paused';}else{els.npStatus.textContent='Connecting...';player.play().then(function(){state.playing=true;els.npStatus.textContent='Live now';updateNowBar();renderList();}).catch(function(){state.playing=false;els.npStatus.textContent='Could not play here';updateNowBar();renderList();});}updateNowBar();renderList();}
+player.addEventListener('error',function(){if(!state.current)return;state.playing=false;els.npStatus.textContent='Stream error';updateNowBar();renderList();showMsg(els.listMsg,'Stream error for "'+cleanName(state.current.name)+'". The station may be offline. Try Open Stream or pick another station.','err');});
+player.addEventListener('waiting',function(){if(state.current)els.npStatus.textContent='Buffering...';});
+player.addEventListener('playing',function(){state.playing=true;els.npStatus.textContent='Live now';updateNowBar();renderList();});
+els.btnPlayPause.addEventListener('click',togglePlayPause);
+els.btnFavNow.addEventListener('click',function(){if(!state.current){showMsg(els.listMsg,'Play a station first, then save it as a favorite.','info');return;}var added=toggleFav(state.current);showMsg(els.listMsg,added?'Added to favorites: '+cleanName(state.current.name):'Removed from favorites: '+cleanName(state.current.name),'ok');renderList();});
+function copyText(text,okMsg){function done(){showMsg(els.listMsg,okMsg,'ok');}function fail(){showMsg(els.listMsg,'Copy failed. Long-press or right-click to copy manually: '+text,'err');}if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done).catch(function(){fallbackCopy(text)?done():fail();});}else{fallbackCopy(text)?done():fail();}}
+function fallbackCopy(text){try{var ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();var ok=document.execCommand('copy');document.body.removeChild(ta);return ok;}catch(e){return false;}}
+els.btnCopyStream.addEventListener('click',function(){if(!state.current){showMsg(els.listMsg,'Play a station first to copy its stream link.','info');return;}copyText(streamUrl(state.current),'Stream link copied for '+cleanName(state.current.name)+'.');});
+els.btnOpenStream.addEventListener('click',function(){if(!state.current){showMsg(els.listMsg,'Play a station first, or pick one from the list.','info');return;}window.open(streamUrl(state.current),'_blank','noopener');});
+var savedVol=Number(loadJson(VOL_KEY,90));if(isNaN(savedVol))savedVol=90;els.volRange.value=savedVol;player.volume=Math.max(0,Math.min(1,savedVol/100));
+els.volRange.addEventListener('input',function(){player.volume=Number(els.volRange.value)/100;saveJson(VOL_KEY,Number(els.volRange.value));});
+els.sleepSel.addEventListener('change',function(){if(state.sleepTimer){clearTimeout(state.sleepTimer);state.sleepTimer=null;}var mins=Number(els.sleepSel.value);if(mins>0){state.sleepTimer=setTimeout(function(){player.pause();state.playing=false;els.npStatus.textContent='Sleep timer stopped playback';els.sleepSel.value='0';updateNowBar();renderList();},mins*60*1000);showMsg(els.listMsg,'Sleep timer set: playback will stop in '+mins+' minutes.','ok');}});
+els.tabSeg.addEventListener('click',function(e){var b=e.target.closest('button[data-tab]');if(!b)return;els.tabSeg.querySelectorAll('button').forEach(function(x){x.classList.remove('active');});b.classList.add('active');state.tab=b.getAttribute('data-tab');state.query='';els.searchInput.value='';state.tag='';els.genreChips.querySelectorAll('.genre-chip').forEach(function(x){x.classList.remove('active');});loadCurrentView();});
+function doSearch(){state.query=els.searchInput.value.trim();if(!state.query){showMsg(els.listMsg,'Type a station name first — for example: FM 100, BBC, Radio Pakistan.','info');return;}state.tag='';els.genreChips.querySelectorAll('.genre-chip').forEach(function(x){x.classList.remove('active');});if(state.tab==='favorites'||state.tab==='recent'){state.tab='pakistan';els.tabSeg.querySelectorAll('button').forEach(function(x){x.classList.toggle('active',x.getAttribute('data-tab')==='pakistan');});}loadCurrentView();}
+els.btnSearch.addEventListener('click',doSearch);
+els.searchInput.addEventListener('keydown',function(e){if(e.key==='Enter')doSearch();});
+els.countrySel.addEventListener('change',function(){state.country=els.countrySel.value;state.query='';els.searchInput.value='';state.tag='';els.genreChips.querySelectorAll('.genre-chip').forEach(function(x){x.classList.remove('active');});if(state.tab!=='pakistan'){state.tab='pakistan';els.tabSeg.querySelectorAll('button').forEach(function(x){x.classList.toggle('active',x.getAttribute('data-tab')==='pakistan');});}loadCurrentView();});
+els.sortSel.addEventListener('change',function(){state.stations=sortStations(state.stations,els.sortSel.value);renderList();});
+els.httpsOnly.addEventListener('change',loadCurrentView);
+els.genreChips.addEventListener('click',function(e){var b=e.target.closest('.genre-chip');if(!b)return;var was=b.classList.contains('active');els.genreChips.querySelectorAll('.genre-chip').forEach(function(x){x.classList.remove('active');});state.tag=was?'':b.getAttribute('data-tag');if(state.tag)b.classList.add('active');state.query='';els.searchInput.value='';loadCurrentView();});
+els.btnMore.addEventListener('click',function(){state.shown=Math.min(state.shown+PAGE_SIZE,state.stations.length);renderList();});
+els.btnRandom.addEventListener('click',function(){var pool=filterStations(state.stations,{httpsOnly:true});var st=pickRandom(pool.length?pool:state.stations);if(!st){showMsg(els.listMsg,'No stations loaded yet. Wait for the list, then try again.','info');return;}playStation(st);window.scrollTo({top:0,behavior:'smooth'});});
+els.btnDownloadList.addEventListener('click',function(){if(!state.stations.length)return;var text=buildStationListText(state.stations,state.listTitle);var blob=new Blob([text],{type:'text/plain;charset=utf-8'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='dtz-live-radio-stations.txt';document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},500);showMsg(els.listMsg,'Station list downloaded ('+state.stations.length+' stations).','ok');});
+updateNowBar();
+loadCountries();
+loadCurrentView();
+})();
+</script>
+<!-- DTZ Splash Intro (added 2026-11-25) -->
+<style>
+#dtz-splash-overlay{position:fixed;inset:0;z-index:2147483647;background:#02040a;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Segoe UI',Arial,sans-serif;opacity:1;transition:opacity .45s ease;cursor:pointer}
+#dtz-splash-overlay.dtz-splash-hide{opacity:0;pointer-events:none}
+.dtz-splash-logo-wrap{position:relative;width:190px;height:190px;margin-bottom:22px}
+.dtz-splash-ring{position:absolute;border-radius:50%;border:3px solid transparent}
+.dtz-splash-ring1{inset:-12px;border-top-color:#00e5ff;border-bottom-color:#00e5ff;animation:dtz-splash-spin 3.2s linear infinite}
+.dtz-splash-ring2{inset:-22px;border-left-color:#ff2e88;border-right-color:#ff2e88;animation:dtz-splash-spin-rev 4.6s linear infinite}
+.dtz-splash-ring3{inset:-32px;border-top-color:#9d4dff;animation:dtz-splash-spin 7s linear infinite;opacity:.7}
+@keyframes dtz-splash-spin{to{transform:rotate(360deg)}}
+@keyframes dtz-splash-spin-rev{to{transform:rotate(-360deg)}}
+.dtz-splash-logo{width:100%;height:100%;border-radius:50%;object-fit:cover;box-shadow:0 0 42px #00e5ff,0 0 90px rgba(157,77,255,.45);animation:dtz-splash-logo-in .8s cubic-bezier(.17,.89,.32,1.28) both}
+@keyframes dtz-splash-logo-in{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+.dtz-splash-title{font-size:30px;font-weight:900;letter-spacing:5px;text-transform:uppercase;color:#fff;text-align:center;animation:dtz-splash-title-in .7s ease .25s both}
+.dtz-splash-title span{color:#00e5ff}
+@keyframes dtz-splash-title-in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.dtz-splash-tagline{margin-top:8px;font-size:14px;letter-spacing:5px;text-transform:uppercase;color:#8be9ff;text-align:center;animation:dtz-splash-title-in .7s ease .45s both}
+.dtz-splash-skip{margin-top:20px;font-size:11px;letter-spacing:2px;color:#5b7186;text-transform:uppercase}
+@media (prefers-reduced-motion:reduce){.dtz-splash-ring,.dtz-splash-logo,.dtz-splash-title,.dtz-splash-tagline{animation:none!important}}
+@media (max-width:480px){.dtz-splash-logo-wrap{width:150px;height:150px}.dtz-splash-title{font-size:22px;letter-spacing:3px}.dtz-splash-tagline{font-size:12px;letter-spacing:3px}}
+</style>
+<div id="dtz-splash-overlay" role="presentation">
+  <div class="dtz-splash-logo-wrap">
+    <div class="dtz-splash-ring dtz-splash-ring1"></div>
+    <div class="dtz-splash-ring dtz-splash-ring2"></div>
+    <div class="dtz-splash-ring dtz-splash-ring3"></div>
+    <img class="dtz-splash-logo" src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone" onerror="this.style.display='none'">
+  </div>
+  <div class="dtz-splash-title">Dark <span>Tech</span> Zone</div>
+  <div class="dtz-splash-tagline">Learn. Build. Secure.</div>
+  <div class="dtz-splash-skip">Tap to skip</div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('dtz-splash-overlay');
+  if(!el)return;
+  var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var done=false;
+  function hide(){
+    if(done)return;done=true;
+    el.classList.add('dtz-splash-hide');
+    setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},500);
+  }
+  el.addEventListener('click',hide);
+  el.addEventListener('touchstart',hide,{passive:true});
+  setTimeout(hide,reduced?350:2500);
+})();
+</script>
+<!-- /DTZ Splash Intro -->
+
+</body>
+</html>
