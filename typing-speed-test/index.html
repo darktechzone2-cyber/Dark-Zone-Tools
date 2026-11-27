@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTZ Typing Speed Test — Dark Tech Zone</title>
+<meta name="description" content="Free typing speed test. Measure your words per minute and accuracy in 1, 2 or 5 minutes. Download your result certificate. No signup.">
+<link rel="icon" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f4f6fb;--surface:#ffffff;--text:#0f172a;--muted:#64748b;--border:#e2e8f0;--accent:#0891b2;--accent2:#7c3aed;--ok:#15803d;--bad:#dc2626;--warn:#d97706}
+body{font-family:'Segoe UI',system-ui,-apple-system,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+header img{width:44px;height:44px;border-radius:50%;object-fit:cover}
+header .brand{font-weight:800;font-size:18px;letter-spacing:.5px}
+header .brand span{color:var(--accent)}
+header nav{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap}
+header nav a{text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;padding:8px 14px;border:1px solid var(--border);border-radius:20px;background:#fff}
+main{max-width:960px;margin:0 auto;padding:24px 16px 60px}
+.hero{text-align:center;padding:18px 0 8px}
+.hero h1{font-size:30px;font-weight:900}
+.hero h1 span{color:var(--accent)}
+.hero p{color:var(--muted);margin-top:8px;font-size:15px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;margin-top:18px;box-shadow:0 2px 12px rgba(15,23,42,.05)}
+.card h2{font-size:17px;font-weight:800;margin-bottom:12px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.label{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;min-width:88px}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg button{border:1px solid var(--border);background:#f8fafc;color:var(--text);padding:9px 16px;border-radius:20px;font-size:14px;font-weight:700;cursor:pointer}
+.seg button.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent}
+.btn{border:none;cursor:pointer;font-weight:700;font-size:14px;padding:11px 18px;border-radius:10px;display:inline-flex;align-items:center;gap:8px}
+.btn svg{width:16px;height:16px;flex:none}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.btn-ghost{background:#fff;border:1px solid var(--border);color:var(--text)}
+.btn-danger{background:#fff;border:1px solid #fecaca;color:var(--bad)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:16px}
+.stat{background:#f8fafc;border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center}
+.stat .v{font-size:24px;font-weight:900}
+.stat .k{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.progresswrap{height:10px;background:#e8edf5;border-radius:6px;margin-top:14px;overflow:hidden}
+.progressbar{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:6px;transition:width .3s linear}
+.textbox{margin-top:16px;background:#fbfdff;border:1px solid var(--border);border-radius:12px;padding:18px;font-size:20px;line-height:1.9;font-family:Consolas,'Courier New',monospace;letter-spacing:.5px;min-height:150px;user-select:none}
+.textbox .ch{color:#94a3b8;border-radius:3px}
+.textbox .ch.ok{color:var(--ok)}
+.textbox .ch.bad{color:#fff;background:var(--bad)}
+.textbox .ch.cur{background:#cffafe;outline:2px solid var(--accent)}
+.typeinput{width:100%;margin-top:12px;padding:14px;border:2px solid var(--border);border-radius:12px;font-size:17px;font-family:Consolas,'Courier New',monospace;background:#fff;color:var(--text)}
+.typeinput:focus{outline:none;border-color:var(--accent)}
+.typeinput:disabled{background:#f1f5f9;color:var(--muted)}
+.hint{color:var(--muted);font-size:13px;margin-top:8px}
+.resultgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+.gradebadge{display:inline-block;padding:6px 16px;border-radius:20px;font-weight:800;font-size:14px;color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent2))}
+.bigwpm{font-size:52px;font-weight:900;line-height:1}
+.histitem{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:10px 12px;border:1px solid var(--border);border-radius:10px;margin-top:8px;background:#fbfdff;font-size:14px}
+.histitem b{font-size:16px}
+.besttag{background:#fef9c3;border:1px solid #fde68a;color:#854d0e;font-size:11px;font-weight:800;padding:2px 8px;border-radius:12px}
+footer{text-align:center;color:var(--muted);font-size:13px;padding:24px 16px 40px}
+footer a{color:var(--accent);text-decoration:none;font-weight:600}
+.status{margin-top:12px;font-size:14px;font-weight:600;min-height:20px}
+.status.ok{color:var(--ok)}
+.status.err{color:var(--bad)}
+@media(max-width:640px){.stats{grid-template-columns:repeat(2,1fr)}.resultgrid{grid-template-columns:repeat(2,1fr)}.textbox{font-size:17px}.hero h1{font-size:24px}.label{min-width:auto;width:100%}}
+</style>
+</head>
+<body>
+<header>
+<img src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone">
+<div class="brand">Dark <span>Tech</span> Zone</div>
+<nav>
+<a href="https://www.darktechzon.site/" target="_blank" rel="noopener">All Tools</a>
+<a href="https://whatsapp.com/channel/0029Vb9oK008V0txIkc3oj3z" target="_blank" rel="noopener">WhatsApp Channel</a>
+</nav>
+</header>
+<main>
+<div class="hero">
+<h1>Typing Speed <span>Test</span></h1>
+<p>How fast can you type? Pick a time and difficulty, then type the text exactly as shown. Your speed and accuracy are measured live.</p>
+</div>
+
+<div class="card">
+<h2>Test settings</h2>
+<div class="row" style="margin-bottom:12px">
+<span class="label">Duration</span>
+<div class="seg" id="durSeg">
+<button type="button" data-dur="60" class="active">1 minute</button>
+<button type="button" data-dur="120">2 minutes</button>
+<button type="button" data-dur="300">5 minutes</button>
+</div>
+</div>
+<div class="row" style="margin-bottom:16px">
+<span class="label">Difficulty</span>
+<div class="seg" id="diffSeg">
+<button type="button" data-diff="easy" class="active">Easy</button>
+<button type="button" data-diff="medium">Medium</button>
+<button type="button" data-diff="hard">Hard</button>
+</div>
+</div>
+<div class="row">
+<button class="btn btn-primary" id="btnStart" type="button">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="6 3 20 12 6 21 6 3" fill="currentColor" stroke="none"></polygon></svg>
+Start test
+</button>
+<button class="btn btn-ghost" id="btnRestart" type="button">New text</button>
+<button class="btn btn-danger" id="btnStop" type="button" disabled>Stop</button>
+</div>
+<div class="stats">
+<div class="stat"><div class="v" id="stTime">1:00</div><div class="k">Time left</div></div>
+<div class="stat"><div class="v" id="stWpm">0</div><div class="k">WPM</div></div>
+<div class="stat"><div class="v" id="stAcc">100%</div><div class="k">Accuracy</div></div>
+<div class="stat"><div class="v" id="stOk" style="color:var(--ok)">0</div><div class="k">Correct</div></div>
+<div class="stat"><div class="v" id="stBad" style="color:var(--bad)">0</div><div class="k">Wrong</div></div>
+</div>
+<div class="progresswrap"><div class="progressbar" id="progressBar"></div></div>
+<div class="textbox" id="textBox">Press Start test, then type the text that appears here.</div>
+<input class="typeinput" id="typeInput" type="text" placeholder="Start typing here..." autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" disabled>
+<p class="hint">The timer starts on your first keystroke. Green letters are correct, red letters are wrong. Backspace works — fix your mistakes to protect your accuracy.</p>
+<div class="status" id="statusMsg"></div>
+</div>
+
+<div class="card" id="resultCard" style="display:none">
+<h2>Your result</h2>
+<div class="row" style="align-items:flex-end;gap:18px">
+<div><div class="bigwpm"><span id="resWpm">0</span> <span style="font-size:20px;color:var(--muted)">WPM</span></div></div>
+<span class="gradebadge" id="resGrade">Beginner</span>
+</div>
+<div class="resultgrid">
+<div class="stat"><div class="v" id="resAcc">0%</div><div class="k">Accuracy</div></div>
+<div class="stat"><div class="v" id="resCpm">0</div><div class="k">Chars / min</div></div>
+<div class="stat"><div class="v" id="resOk">0</div><div class="k">Correct chars</div></div>
+<div class="stat"><div class="v" id="resBad">0</div><div class="k">Wrong chars</div></div>
+</div>
+<p class="hint" id="resNote" style="margin-top:12px"></p>
+<div class="row" style="margin-top:14px">
+<button class="btn btn-primary" id="btnCert" type="button">Download certificate PNG</button>
+<button class="btn btn-ghost" id="btnCopy" type="button">Copy result</button>
+<button class="btn btn-ghost" id="btnReport" type="button">Download report .txt</button>
+<button class="btn btn-ghost" id="btnAgain" type="button">Try again</button>
+</div>
+</div>
+
+<div class="card">
+<h2>Recent results</h2>
+<div id="historyList"><p class="hint">No results yet. Finish a test and your last 8 results will appear here, saved on this device only.</p></div>
+<div class="row" style="margin-top:12px">
+<button class="btn btn-ghost" id="btnClearHist" type="button">Clear history</button>
+</div>
+</div>
+
+<div class="card">
+<h2>How the score works</h2>
+<p class="hint" style="font-size:14px;line-height:1.7;color:var(--text)">WPM (words per minute) = correct characters divided by 5, divided by the minutes you typed. One standard word counts as 5 characters, so long and short words are scored fairly. Accuracy = correct characters divided by all characters typed. Grades: under 20 WPM Beginner, 20–34 Average, 35–49 Good, 50–64 Fast, 65–79 Very Fast, 80 and above Expert. Everything runs in your browser — nothing is uploaded.</p>
+</div>
+</main>
+<footer>Dark Tech Zone — Learn. Build. Secure. · <a href="https://www.darktechzon.site/" target="_blank" rel="noopener">darktechzon.site</a></footer>
+
+<script>
+"use strict";
+var WORDS = {
+easy: ["the","and","you","that","was","for","are","with","his","they","this","have","from","one","had","word","what","were","your","can","all","there","when","use","each","which","she","how","their","will","other","about","out","many","then","them","these","two","more","write","like","see","him","has","look","day","did","get","come","made","may","part","over","new","sound","take","only","little","work","know","place","year","live","me","back","give","most","very","after","thing","our","just","name","good","man","think","say","great","where","help","line","much","before","move","right","boy","old","too","same","tell","does","set","three","want","air","well","also","play","small","end","put","home","read","hand","port","large","spell","add","even","land","here","must","big","high","such","follow","act","why","ask","men","change","went","light","kind","off","need","house","picture","try","us","again","animal","point","mother","world","near","build","self","earth","father"],
+medium: ["people","should","because","between","however","without","through","example","important","different","education","available","community","development","government","information","experience","knowledge","environment","technology","computer","internet","software","hardware","network","security","password","download","upload","website","browser","keyboard","monitor","printer","scanner","mobile","camera","battery","charger","speaker","microphone","headphone","laptop","tablet","android","windows","google","youtube","facebook","whatsapp","telegram","instagram","channel","video","music","photo","image","message","contact","number","address","country","language","english","urdu","learn","build","secure","future","success","practice","daily","simple","useful","powerful","modern","digital","online","offline","free","premium","service","support","customer","business","market","online","payment","account","balance","deposit","withdraw","transfer","bank","cash","card","wallet","price","offer","discount","quality","original","genuine","trusted","verified","official","update","version","feature","setting","option","button","screen","display","touch","voice","call","chat","group","member","admin","owner","public","private","search","result","report","download","install","setup","guide","tutorial","lesson","course","student","teacher","school","college","office","work","job","skill","talent","career","growth","progress","target","goal","plan","idea","project","team","leader","manager","company","brand","product","design","style","color","theme","logo","banner","poster","status","story","reel","short","viral","trend","follow","share","like","comment","subscribe","watch","listen","create","edit","save","delete","copy","paste","send","receive","forward","reply","check","test","live","real","fast","easy","best","top","pro","ultra","max","plus","new","latest","weekly","monthly","yearly","morning","evening","night","today","tomorrow","yesterday","always","never","often","sometimes","usually","already","still","just","also","only","even","very","really","quite","rather","almost","nearly","mostly","mainly","simply","quickly","slowly","carefully","easily","finally","recently","currently","previously","originally","generally","actually","basically","exactly","probably","certainly","definitely","possibly","perhaps","maybe","instead","otherwise","therefore","however","moreover","furthermore","meanwhile","otherwise","besides","finally","firstly","secondly","lastly","overall","together","alone","apart","ahead","behind","inside","outside","above","below","under","over","across","through","along","around","between","among","within","without","against","towards","upon","onto","into","from","with","about","after","before","during","since","until","while","when","where","which","whose","whom","what","whatever","whenever","wherever","however","whoever","whichever","whomever"],
+hard: ["extraordinary","responsibility","communication","understanding","environmental","international","developmental","representative","administration","infrastructure","characteristic","circumstance","entertainment","establishment","investigation","interpretation","recommendation","accommodation","concentration","determination","imagination","appreciation","consideration","organization","participation","presentation","qualification","registration","transformation","transportation","advertisement","announcement","achievement","arrangement","assignment","assistance","attendance","authority","available","background","behavior","biography","boundary","brilliant","businessman","candidate","capability","celebration","certificate","challenge","championship","circumstance","civilization","combination","commercial","commission","committee","commodity","comparison","competition","complaint","completely","component","composition","comprehension","compromise","concentration","conclusion","condition","confidence","configuration","confirmation","congratulation","connection","consequence","conservation","considerable","consistent","constitution","construction","consultant","consumption","contamination","contemporary","contentment","continuation","contradiction","contribution","controversy","convenience","conversation","conversion","cooperation","coordination","corporation","correction","correspondence","counterpart","creativity","credibility","criticism","curiosity","curriculum","customer","customization","declaration","decoration","dedication","definition","demonstration","department","dependence","deployment","depression","description","desperation","destination","destruction","determination","development","dictionary","difference","difficulty","dimension","direction","disability","disadvantage","disagreement","disappearance","disappointment","discipline","disclosure","discomfort","discovery","discrimination","discussion","disease","disguise","disgust","dishonest","dismissal","disorder","displacement","display","disposal","disposition","dispute","disruption","dissatisfaction","dissemination","dissolution","distance","distinction","distraction","distribution","disturbance","diversity","division","documentation","domination","donation","downtown","dramatic","drawing","dressing","drifting","drilling","drinking","driving","dropping","drowning","drumming","dryness","duality","duckling","dullness","dumping","dungeon","duplicate","durability","duration","dustbin","dutiful","dwelling","dynamic","dynamite","dynasty","eagerness","eagle","earlier","earliest","earmarked","earmuff","earnings","earphone","earring","earthquake","earthworm","earwax","easel","easement","easier","easiest","easily","easiness","easing","easter","eastern","eastward","eatable","eatery","eating","eavesdrop","ebony","eccentric","ecclesiastical","echelon","echoing","eclipse","ecological","ecology","economic","economical","economics","economist","economize","economy","ecosystem","ecstasy","ecstatic","ecumenical","eczema","edamame","eddy","edelweiss","edema","eden","edge","edged","edgeless","edger","edges","edging","edgy","edible","edict","edification","edifice","edified","edify","edifying","edile","edinburgh","edison","edit","editable","edited","editing","edition","editor","editorial","editorials","editorship","editors","educable","educate","educated","educates","educating","education","educational","educationally","educative","educator","educators","educe","educible","edward","edwardian","edwards","edwin","eerie","eerily","eeriness","eeyore","efface","effaceable","effaced","effacement","effacer","effacing","effect","effected","effecting","effective","effectively","effectiveness","effects","effectual","effectually","effectuate","effectuated","effectuates","effectuating","effectuation","effeminacy","effeminate","effeminately","effeminateness","effendi","efferent","effervesce","effervescence","effervescent","effervescing","effete","effeteness","efficacious","efficaciously","efficaciousness","efficacy","efficiency","efficient","efficiently","efficientness","effigy","effing","effloresce","efflorescence","efflorescent","effluent","effluvium","efflux","effort","effortful","effortfully","effortless","effortlessly","effortlessness","efforts","effrontery","effulgence","effulgent","effuse","effused","effusing","effusion","effusive","effusively","effusiveness","eft","eftsoon","egad","egalitarian","egalitarianism","egalite","egest","egesta","egestion","egg","eggbeater","eggcup","egged","egger","egghead","egging","eggnog","eggplant","eggs","eggshell","eggy","egilops","eglantine","egocentric","egocentricity","egocentrism","egoism","egoist","egoistic","egoistical","egoistically","egomania","egomaniac","egotism","egotist","egotistic","egotistical","egotistically","egregious","egregiously","egregiousness","egress","egression","egressive","egret","egypt","egyptian","egyptians","egyptology","eh","eider","eiderdown","eidetic","eidolon","eiffel","eigenfunction","eigenvalue","eigenvector","eight","eighteen","eighteenth","eighth","eighthly","eighths","eighties","eightieth","eighty","eightysomething","eigne","eikon","einkorn","einstein","einsteinium","eire","eisenhower","eisegesis","eisegesis","eisegesis","eisenhower","eisegesis","eisenhower"]
+};
+
+function shuffle(arr, rand){
+  var a = arr.slice();
+  var r = rand || Math.random;
+  for (var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(r() * (i + 1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+function pickWords(bank, count, rand){
+  if (!bank || !bank.length) return [];
+  var out = [];
+  while (out.length < count) {
+    var s = shuffle(bank, rand);
+    for (var i = 0; i < s.length && out.length < count; i++) out.push(s[i]);
+  }
+  return out;
+}
+function buildText(diff, count, rand){
+  var bank = WORDS[diff] || WORDS.easy;
+  return pickWords(bank, count || 120, rand).join(" ");
+}
+function calcStats(typed, target, elapsedSec){
+  var correct = 0, wrong = 0;
+  var n = Math.min(typed.length, target.length);
+  for (var i = 0; i < n; i++) {
+    if (typed.charAt(i) === target.charAt(i)) correct++; else wrong++;
+  }
+  if (typed.length > target.length) wrong += (typed.length - target.length);
+  var total = correct + wrong;
+  var accuracy = total > 0 ? (correct / total) * 100 : 100;
+  var minutes = elapsedSec > 0 ? elapsedSec / 60 : 0;
+  var wpm = minutes > 0 ? (correct / 5) / minutes : 0;
+  var cpm = minutes > 0 ? correct / minutes : 0;
+  return { correct: correct, wrong: wrong, total: total, accuracy: accuracy, wpm: wpm, cpm: cpm };
+}
+function gradeFor(wpm){
+  if (wpm < 20) return "Beginner";
+  if (wpm < 35) return "Average";
+  if (wpm < 50) return "Good";
+  if (wpm < 65) return "Fast";
+  if (wpm < 80) return "Very Fast";
+  return "Expert";
+}
+function formatTime(sec){
+  sec = Math.max(0, Math.ceil(sec));
+  var m = Math.floor(sec / 60), s = sec % 60;
+  return m + ":" + (s < 10 ? "0" : "") + s;
+}
+function buildReport(r){
+  var lines = [];
+  lines.push("DTZ Typing Speed Test — Result");
+  lines.push("Dark Tech Zone (darktechzon.site)");
+  lines.push("--------------------------------");
+  lines.push("Date: " + r.dateStr);
+  lines.push("Duration: " + r.durationLabel);
+  lines.push("Difficulty: " + r.difficulty);
+  lines.push("Speed: " + Math.round(r.wpm) + " WPM (" + r.grade + ")");
+  lines.push("Accuracy: " + r.accuracy.toFixed(1) + "%");
+  lines.push("Characters per minute: " + Math.round(r.cpm));
+  lines.push("Correct characters: " + r.correct);
+  lines.push("Wrong characters: " + r.wrong);
+  lines.push("Time typed: " + r.elapsedSec.toFixed(1) + " seconds");
+  return lines.join("\n");
+}
+function esc(s){
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+var LS_KEY = "dtz-typing-history";
+var durationSec = 60, difficulty = "easy";
+var targetText = "", running = false, startTime = 0, timerId = null, elapsedSec = 0, lastResult = null;
+
+function $(id){ return document.getElementById(id); }
+function setStatus(msg, kind){
+  var el = $("statusMsg");
+  el.textContent = msg || "";
+  el.className = "status" + (kind ? " " + kind : "");
+}
+function renderText(typed){
+  var box = $("textBox");
+  if (!targetText) { box.textContent = "Press Start test, then type the text that appears here."; return; }
+  var html = "";
+  for (var i = 0; i < targetText.length; i++) {
+    var cls = "ch";
+    if (i < typed.length) cls += (typed.charAt(i) === targetText.charAt(i) ? " ok" : " bad");
+    else if (i === typed.length && running) cls += " cur";
+    html += '<span class="' + cls + '">' + esc(targetText.charAt(i)) + "</span>";
+  }
+  box.innerHTML = html;
+}
+function updateStats(){
+  var typed = $("typeInput").value;
+  var st = calcStats(typed, targetText, elapsedSec);
+  $("stWpm").textContent = String(Math.round(st.wpm));
+  $("stAcc").textContent = st.accuracy.toFixed(0) + "%";
+  $("stOk").textContent = String(st.correct);
+  $("stBad").textContent = String(st.wrong);
+  var left = Math.max(0, durationSec - elapsedSec);
+  $("stTime").textContent = formatTime(left);
+  var pct = durationSec > 0 ? Math.min(100, (elapsedSec / durationSec) * 100) : 0;
+  $("progressBar").style.width = pct + "%";
+  return st;
+}
+function newText(){
+  targetText = buildText(difficulty, 120);
+  $("typeInput").value = "";
+  elapsedSec = 0;
+  renderText("");
+  updateStats();
+}
+function startTest(){
+  stopTimer();
+  newText();
+  running = false;
+  startTime = 0;
+  $("typeInput").disabled = false;
+  $("btnStop").disabled = false;
+  $("resultCard").style.display = "none";
+  setStatus("Timer starts on your first keystroke. Type the text above.", "ok");
+  $("typeInput").focus();
+}
+function stopTimer(){
+  if (timerId) { clearInterval(timerId); timerId = null; }
+}
+function tick(){
+  elapsedSec = (Date.now() - startTime) / 1000;
+  updateStats();
+  if (elapsedSec >= durationSec) finishTest(false);
+}
+function finishTest(stoppedEarly){
+  if (!running && elapsedSec === 0 && $("typeInput").value.length === 0) {
+    setStatus("Type something first, then finish.", "err");
+    return;
+  }
+  stopTimer();
+  running = false;
+  $("typeInput").disabled = true;
+  $("btnStop").disabled = true;
+  var typed = $("typeInput").value;
+  var st = calcStats(typed, targetText, elapsedSec);
+  var grade = gradeFor(st.wpm);
+  var durLabel = durationSec === 60 ? "1 minute" : (durationSec === 120 ? "2 minutes" : "5 minutes");
+  lastResult = {
+    wpm: st.wpm, accuracy: st.accuracy, cpm: st.cpm, correct: st.correct, wrong: st.wrong,
+    grade: grade, difficulty: difficulty, durationLabel: durLabel,
+    elapsedSec: elapsedSec, dateStr: new Date().toLocaleString("en-GB"),
+    stoppedEarly: !!stoppedEarly
+  };
+  $("resWpm").textContent = String(Math.round(st.wpm));
+  $("resGrade").textContent = grade;
+  $("resAcc").textContent = st.accuracy.toFixed(1) + "%";
+  $("resCpm").textContent = String(Math.round(st.cpm));
+  $("resOk").textContent = String(st.correct);
+  $("resBad").textContent = String(st.wrong);
+  $("resNote").textContent = stoppedEarly
+    ? "Test stopped early after " + elapsedSec.toFixed(1) + " seconds. Your score is based on the time you actually typed."
+    : "Full " + durLabel + " test completed on " + difficulty + " difficulty.";
+  $("resultCard").style.display = "block";
+  $("resultCard").scrollIntoView({ behavior: "smooth", block: "nearest" });
+  saveHistory(lastResult);
+  setStatus("Test finished. Download your certificate or try again to beat your score.", "ok");
+}
+function loadHistory(){
+  try {
+    var raw = localStorage.getItem(LS_KEY);
+    var arr = raw ? JSON.parse(raw) : [];
+    return Array.isArray(arr) ? arr : [];
+  } catch (e) { return []; }
+}
+function saveHistory(r){
+  var arr = loadHistory();
+  arr.unshift({
+    wpm: Math.round(r.wpm), accuracy: Math.round(r.accuracy * 10) / 10, grade: r.grade,
+    difficulty: r.difficulty, durationLabel: r.durationLabel, dateStr: r.dateStr
+  });
+  arr = arr.slice(0, 8);
+  try { localStorage.setItem(LS_KEY, JSON.stringify(arr)); } catch (e) {}
+  renderHistory();
+}
+function renderHistory(){
+  var arr = loadHistory();
+  var box = $("historyList");
+  if (!arr.length) {
+    box.innerHTML = '<p class="hint">No results yet. Finish a test and your last 8 results will appear here, saved on this device only.</p>';
+    return;
+  }
+  var best = 0;
+  arr.forEach(function(h){ if (h.wpm > best) best = h.wpm; });
+  var html = "";
+  arr.forEach(function(h){
+    html += '<div class="histitem"><b>' + esc(String(h.wpm)) + ' WPM</b>'
+      + '<span>' + esc(h.grade) + '</span>'
+      + '<span>' + esc(String(h.accuracy)) + '% accuracy</span>'
+      + '<span style="color:var(--muted)">' + esc(h.difficulty) + ' · ' + esc(h.durationLabel) + ' · ' + esc(h.dateStr) + '</span>'
+      + (h.wpm === best && best > 0 ? '<span class="besttag">BEST</span>' : '')
+      + '</div>';
+  });
+  box.innerHTML = html;
+}
+function downloadBlob(blob, name){
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+}
+function drawCertificate(r){
+  var c = document.createElement("canvas");
+  c.width = 1200; c.height = 630;
+  var x = c.getContext("2d");
+  var g = x.createLinearGradient(0, 0, 1200, 630);
+  g.addColorStop(0, "#0b1226"); g.addColorStop(1, "#1e1b4b");
+  x.fillStyle = g; x.fillRect(0, 0, 1200, 630);
+  x.strokeStyle = "#00e5ff"; x.lineWidth = 6; x.strokeRect(24, 24, 1152, 582);
+  x.fillStyle = "#00e5ff"; x.font = "900 34px Arial"; x.textAlign = "center";
+  x.fillText("DARK TECH ZONE", 600, 95);
+  x.fillStyle = "#ffffff"; x.font = "700 40px Arial";
+  x.fillText("Typing Speed Test Certificate", 600, 165);
+  x.font = "900 150px Arial"; x.fillStyle = "#ffffff";
+  x.fillText(Math.round(r.wpm) + " WPM", 600, 330);
+  x.font = "700 34px Arial"; x.fillStyle = "#f0abfc";
+  x.fillText(r.grade + "  ·  " + r.accuracy.toFixed(1) + "% accuracy", 600, 395);
+  x.font = "400 26px Arial"; x.fillStyle = "#cbd5e1";
+  x.fillText(r.difficulty + " difficulty · " + r.durationLabel + " · " + Math.round(r.cpm) + " chars/min", 600, 450);
+  x.font = "400 22px Arial"; x.fillStyle = "#94a3b8";
+  x.fillText(r.dateStr + "  ·  darktechzon.site", 600, 520);
+  x.font = "700 20px Arial"; x.fillStyle = "#00e5ff";
+  x.fillText("Learn. Build. Secure.", 600, 565);
+  return c;
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+  $("durSeg").addEventListener("click", function(e){
+    var b = e.target.closest("button[data-dur]"); if (!b) return;
+    durationSec = parseInt(b.getAttribute("data-dur"), 10);
+    Array.prototype.forEach.call($("durSeg").querySelectorAll("button"), function(x){ x.classList.remove("active"); });
+    b.classList.add("active");
+    $("stTime").textContent = formatTime(durationSec);
+  });
+  $("diffSeg").addEventListener("click", function(e){
+    var b = e.target.closest("button[data-diff]"); if (!b) return;
+    difficulty = b.getAttribute("data-diff");
+    Array.prototype.forEach.call($("diffSeg").querySelectorAll("button"), function(x){ x.classList.remove("active"); });
+    b.classList.add("active");
+  });
+  $("btnStart").addEventListener("click", startTest);
+  $("btnRestart").addEventListener("click", function(){
+    stopTimer(); running = false;
+    $("typeInput").disabled = true; $("btnStop").disabled = true;
+    newText();
+    setStatus("New text ready. Press Start test to begin.", "");
+  });
+  $("btnStop").addEventListener("click", function(){ finishTest(true); });
+  $("btnAgain").addEventListener("click", startTest);
+  $("typeInput").addEventListener("input", function(){
+    if (!running) {
+      running = true; startTime = Date.now(); elapsedSec = 0;
+      stopTimer(); timerId = setInterval(tick, 200);
+      setStatus("Test running...", "");
+    }
+    var typed = $("typeInput").value;
+    renderText(typed);
+    updateStats();
+    if (typed.length >= targetText.length && targetText.length > 0) finishTest(false);
+  });
+  $("btnCert").addEventListener("click", function(){
+    if (!lastResult) return;
+    var c = drawCertificate(lastResult);
+    if (c.toBlob) {
+      c.toBlob(function(blob){
+        if (blob) { downloadBlob(blob, "dtz-typing-certificate.png"); setStatus("Certificate downloaded.", "ok"); }
+        else setStatus("Certificate failed. Please try again.", "err");
+      }, "image/png");
+    } else {
+      setStatus("Your browser does not support certificate download.", "err");
+    }
+  });
+  $("btnCopy").addEventListener("click", function(){
+    if (!lastResult) return;
+    var text = buildReport(lastResult);
+    function done(){ setStatus("Result copied.", "ok"); }
+    function fail(){ setStatus("Copy failed. Use Download report instead.", "err"); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, fail);
+    } else {
+      var ta = document.createElement("textarea");
+      ta.value = text; document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); done(); } catch (e) { fail(); }
+      ta.remove();
+    }
+  });
+  $("btnReport").addEventListener("click", function(){
+    if (!lastResult) return;
+    downloadBlob(new Blob([buildReport(lastResult)], { type: "text/plain" }), "dtz-typing-result.txt");
+    setStatus("Report downloaded.", "ok");
+  });
+  $("btnClearHist").addEventListener("click", function(){
+    try { localStorage.removeItem(LS_KEY); } catch (e) {}
+    renderHistory();
+    setStatus("History cleared.", "ok");
+  });
+  newText();
+  $("typeInput").disabled = true;
+  renderHistory();
+});
+</script>
+<!-- DTZ Splash Intro (added 2026-11-25) -->
+<style>
+#dtz-splash-overlay{position:fixed;inset:0;z-index:2147483647;background:#02040a;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Segoe UI',Arial,sans-serif;opacity:1;transition:opacity .45s ease;cursor:pointer}
+#dtz-splash-overlay.dtz-splash-hide{opacity:0;pointer-events:none}
+.dtz-splash-logo-wrap{position:relative;width:190px;height:190px;margin-bottom:22px}
+.dtz-splash-ring{position:absolute;border-radius:50%;border:3px solid transparent}
+.dtz-splash-ring1{inset:-12px;border-top-color:#00e5ff;border-bottom-color:#00e5ff;animation:dtz-splash-spin 3.2s linear infinite}
+.dtz-splash-ring2{inset:-22px;border-left-color:#ff2e88;border-right-color:#ff2e88;animation:dtz-splash-spin-rev 4.6s linear infinite}
+.dtz-splash-ring3{inset:-32px;border-top-color:#9d4dff;animation:dtz-splash-spin 7s linear infinite;opacity:.7}
+@keyframes dtz-splash-spin{to{transform:rotate(360deg)}}
+@keyframes dtz-splash-spin-rev{to{transform:rotate(-360deg)}}
+.dtz-splash-logo{width:100%;height:100%;border-radius:50%;object-fit:cover;box-shadow:0 0 42px #00e5ff,0 0 90px rgba(157,77,255,.45);animation:dtz-splash-logo-in .8s cubic-bezier(.17,.89,.32,1.28) both}
+@keyframes dtz-splash-logo-in{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+.dtz-splash-title{font-size:30px;font-weight:900;letter-spacing:5px;text-transform:uppercase;color:#fff;text-align:center;animation:dtz-splash-title-in .7s ease .25s both}
+.dtz-splash-title span{color:#00e5ff}
+@keyframes dtz-splash-title-in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.dtz-splash-tagline{margin-top:8px;font-size:14px;letter-spacing:5px;text-transform:uppercase;color:#8be9ff;text-align:center;animation:dtz-splash-title-in .7s ease .45s both}
+.dtz-splash-skip{margin-top:20px;font-size:11px;letter-spacing:2px;color:#5b7186;text-transform:uppercase}
+@media (prefers-reduced-motion:reduce){.dtz-splash-ring,.dtz-splash-logo,.dtz-splash-title,.dtz-splash-tagline{animation:none!important}}
+@media (max-width:480px){.dtz-splash-logo-wrap{width:150px;height:150px}.dtz-splash-title{font-size:22px;letter-spacing:3px}.dtz-splash-tagline{font-size:12px;letter-spacing:3px}}
+</style>
+<div id="dtz-splash-overlay" role="presentation">
+  <div class="dtz-splash-logo-wrap">
+    <div class="dtz-splash-ring dtz-splash-ring1"></div>
+    <div class="dtz-splash-ring dtz-splash-ring2"></div>
+    <div class="dtz-splash-ring dtz-splash-ring3"></div>
+    <img class="dtz-splash-logo" src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone" onerror="this.style.display='none'">
+  </div>
+  <div class="dtz-splash-title">Dark <span>Tech</span> Zone</div>
+  <div class="dtz-splash-tagline">Learn. Build. Secure.</div>
+  <div class="dtz-splash-skip">Tap to skip</div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('dtz-splash-overlay');
+  if(!el)return;
+  var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var done=false;
+  function hide(){
+    if(done)return;done=true;
+    el.classList.add('dtz-splash-hide');
+    setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},500);
+  }
+  el.addEventListener('click',hide);
+  el.addEventListener('touchstart',hide,{passive:true});
+  setTimeout(hide,reduced?350:2500);
+})();
+</script>
+<!-- /DTZ Splash Intro -->
+
+</body>
+</html>
