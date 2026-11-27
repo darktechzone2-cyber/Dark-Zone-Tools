@@ -255,7 +255,7 @@ function buildReport(archiveName,entries,archiveSize){
   lines.push('Archive: '+archiveName);
   lines.push('Archive size: '+formatBytes(archiveSize));
   lines.push('Files: '+s.files+' | Folders: '+s.folders+' | Total uncompressed: '+formatBytes(s.totalSize));
-  if(s.ratio!==null)lines.push('Space saved by compression: '+s.ratio+'%');
+  if(s.ratio!==null&&s.ratio>0)lines.push('Space saved by compression: '+s.ratio+'%');
   lines.push('');
   lines.push('Contents:');
   sortEntries(entries,'name').forEach(function(e){
@@ -362,7 +362,7 @@ function renderSummary(){
     [String(s.folders),'Folders'],
     [formatBytes(s.totalSize),'Uncompressed total']
   ];
-  if(s.ratio!==null)boxes.push([s.ratio+'%','Space saved']);
+  if(s.ratio!==null&&s.ratio>0)boxes.push([s.ratio+'%','Space saved']);
   $('sumStats').innerHTML=boxes.map(function(b){
     return '<div class="statbox"><div class="sv">'+esc(b[0])+'</div><div class="sl">'+esc(b[1])+'</div></div>';
   }).join('');
