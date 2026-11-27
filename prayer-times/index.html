@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTZ Prayer Times &amp; Qibla Finder — Dark Tech Zone</title>
+<meta name="description" content="Free prayer times for any city with live countdown to the next prayer, Hijri date, Qibla direction and monthly timetable download. No signup.">
+<link rel="icon" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f4f6fb;--surface:#ffffff;--text:#0f172a;--muted:#64748b;--border:#e2e8f0;--accent:#0891b2;--accent2:#7c3aed;--ok:#15803d;--bad:#dc2626;--warn:#d97706}
+body{font-family:'Segoe UI',system-ui,-apple-system,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+header img{width:44px;height:44px;border-radius:50%;object-fit:cover}
+header .brand{font-weight:800;font-size:18px;letter-spacing:.5px}
+header .brand span{color:var(--accent)}
+header nav{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap}
+header nav a{text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;padding:8px 14px;border:1px solid var(--border);border-radius:20px;background:#fff}
+main{max-width:960px;margin:0 auto;padding:24px 16px 60px}
+.hero{text-align:center;padding:18px 0 8px}
+.hero h1{font-size:30px;font-weight:900}
+.hero h1 span{color:var(--accent)}
+.hero p{color:var(--muted);margin-top:8px;font-size:15px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;margin-top:18px;box-shadow:0 2px 12px rgba(15,23,42,.05)}
+.card h2{font-size:17px;font-weight:800;margin-bottom:12px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.label{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;min-width:88px}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg button{border:1px solid var(--border);background:#f8fafc;color:var(--text);padding:9px 16px;border-radius:20px;font-size:14px;font-weight:700;cursor:pointer}
+.seg button.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent}
+.btn{border:none;cursor:pointer;font-weight:700;font-size:14px;padding:11px 18px;border-radius:10px;display:inline-flex;align-items:center;gap:8px}
+.btn svg{width:16px;height:16px;flex:none}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.btn-ghost{background:#fff;border:1px solid var(--border);color:var(--text)}
+.btn-danger{background:#fff;border:1px solid #fecaca;color:var(--bad)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.searchwrap{position:relative;flex:1;min-width:220px}
+.searchwrap input{width:100%;padding:12px 14px;border:2px solid var(--border);border-radius:12px;font-size:16px;background:#fff;color:var(--text)}
+.results{position:absolute;left:0;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 10px 30px rgba(15,23,42,.12);z-index:30;overflow:hidden;display:none}
+.results button{display:block;width:100%;text-align:left;background:#fff;border:none;border-bottom:1px solid var(--border);padding:11px 14px;font-size:14px;cursor:pointer;color:var(--text)}
+.results button:last-child{border-bottom:none}
+.results button:hover{background:#f0f9ff}
+.results .sub{color:var(--muted);font-size:12px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.chip{border:1px solid var(--border);background:#f8fafc;color:var(--text);padding:8px 14px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+select,input[type=date]{padding:11px 12px;border:2px solid var(--border);border-radius:10px;font-size:14px;background:#fff;color:var(--text);max-width:100%}
+.nextbanner{margin-top:16px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-radius:14px;padding:18px;text-align:center}
+.nextbanner .k{font-size:12px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;opacity:.9}
+.nextbanner .n{font-size:26px;font-weight:900;margin-top:4px}
+.nextbanner .c{font-size:34px;font-weight:900;font-variant-numeric:tabular-nums;margin-top:2px}
+.nextbanner .t{font-size:14px;opacity:.95}
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+.pcard{background:#f8fafc;border:2px solid var(--border);border-radius:14px;padding:16px 10px;text-align:center;position:relative}
+.pcard .pn{font-size:13px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+.pcard .pt{font-size:24px;font-weight:900;margin-top:4px;font-variant-numeric:tabular-nums}
+.pcard.current{border-color:var(--ok);background:#f0fdf4}
+.pcard.next{border-color:var(--accent);background:#ecfeff}
+.pcard .tag{position:absolute;top:8px;right:8px;font-size:10px;font-weight:900;letter-spacing:.5px;padding:3px 8px;border-radius:10px;color:#fff;display:none}
+.pcard.current .tag{display:block;background:var(--ok)}
+.pcard.next .tag{display:block;background:var(--accent)}
+.extras{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+.extra{background:#fff;border:1px dashed var(--border);border-radius:12px;padding:10px;text-align:center}
+.extra .pn{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.extra .pt{font-size:17px;font-weight:800;margin-top:2px;font-variant-numeric:tabular-nums}
+.dateline{font-size:15px;font-weight:700}
+.hijri{color:var(--accent2);font-weight:700;margin-top:2px}
+.tz{color:var(--muted);font-size:13px;margin-top:2px}
+.status{margin-top:12px;font-size:14px;color:var(--muted);min-height:20px}
+.status.err{color:var(--bad);font-weight:600}
+.status.ok{color:var(--ok);font-weight:600}
+.qiblawrap{display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+.compass{width:190px;height:190px;flex:none}
+.qfacts{flex:1;min-width:200px}
+.qfacts .big{font-size:30px;font-weight:900}
+.qfacts p{color:var(--muted);font-size:14px;margin-top:6px;line-height:1.55}
+.tablewrap{overflow-x:auto;margin-top:12px}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:640px}
+th,td{border:1px solid var(--border);padding:8px 6px;text-align:center;font-variant-numeric:tabular-nums}
+th{background:#f8fafc;font-weight:800}
+tr.todayrow td{background:#ecfeff;font-weight:700}
+.note{color:var(--muted);font-size:13px;line-height:1.6;margin-top:14px}
+footer{text-align:center;color:var(--muted);font-size:13px;padding:26px 16px}
+@media(max-width:640px){.hero h1{font-size:24px}.pgrid{grid-template-columns:repeat(2,1fr)}.extras{grid-template-columns:repeat(3,1fr)}.nextbanner .c{font-size:28px}header .brand{font-size:16px}}
+@media print{header,.hero,.noprint,footer{display:none!important}body{background:#fff}.card{box-shadow:none;border:none}}
+</style>
+</head>
+<body>
+<header>
+<img src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone">
+<div class="brand">Dark <span>Tech</span> Zone</div>
+<nav>
+<a href="https://www.darktechzon.site/">All Tools</a>
+<a href="https://whatsapp.com/channel/0029Vb9oK008V0txIkc3oj3z" target="_blank" rel="noopener">WhatsApp Channel</a>
+</nav>
+</header>
+<main>
+<div class="hero">
+<h1>DTZ Prayer Times <span>&amp; Qibla Finder</span></h1>
+<p>Prayer times for any city with a live countdown, Hijri date, Qibla direction and a monthly timetable you can download. Free, no signup.</p>
+</div>
+
+<div class="card noprint">
+<h2>Find your city</h2>
+<div class="row">
+<div class="searchwrap">
+<input id="citySearch" type="text" placeholder="Type a city name, e.g. Lahore" autocomplete="off">
+<div id="searchResults" class="results"></div>
+</div>
+<button id="btnLocate" class="btn btn-primary" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="8"/></svg>Use my location</button>
+</div>
+<div id="quickChips" class="chips"></div>
+<div id="recentWrap" style="display:none">
+<div class="row" style="margin-top:14px"><span class="label">Recent</span><div id="recentList" class="chips" style="margin-top:0"></div><button id="btnClearRecent" class="btn btn-danger" type="button">Clear</button></div>
+</div>
+</div>
+
+<div class="card noprint">
+<h2>Settings</h2>
+<div class="row" style="margin-bottom:12px"><span class="label">Method</span>
+<select id="methodSelect">
+<option value="1" selected>University of Islamic Sciences, Karachi</option>
+<option value="3">Muslim World League</option>
+<option value="2">Islamic Society of North America (ISNA)</option>
+<option value="5">Egyptian General Authority of Survey</option>
+<option value="4">Umm Al-Qura University, Makkah</option>
+<option value="8">Gulf Region</option>
+<option value="9">Kuwait</option>
+<option value="10">Qatar</option>
+<option value="13">Turkey (Diyanet)</option>
+<option value="16">Dubai, UAE</option>
+<option value="20">Indonesia (Kemenag)</option>
+<option value="21">Morocco</option>
+<option value="23">Jordan</option>
+</select></div>
+<div class="row" style="margin-bottom:12px"><span class="label">Asr</span>
+<div id="schoolSeg" class="seg"><button type="button" data-school="1" class="active">Hanafi</button><button type="button" data-school="0">Standard (Shafi)</button></div></div>
+<div class="row" style="margin-bottom:12px"><span class="label">Time</span>
+<div id="fmtSeg" class="seg"><button type="button" data-fmt="12" class="active">12 hour</button><button type="button" data-fmt="24">24 hour</button></div></div>
+<div class="row"><span class="label">Date</span><input id="dateInput" type="date"><button id="btnToday" class="btn btn-ghost" type="button">Today</button></div>
+</div>
+
+<div class="card">
+<h2 id="cityTitle">Karachi, Pakistan</h2>
+<div id="dateLine" class="dateline">Loading…</div>
+<div id="hijriLine" class="hijri"></div>
+<div id="tzLine" class="tz"></div>
+<div id="nextBanner" class="nextbanner">
+<div class="k">Next prayer</div>
+<div id="nextName" class="n">—</div>
+<div id="countdown" class="c">--:--:--</div>
+<div id="nextTime" class="t"></div>
+</div>
+<div id="prayerGrid" class="pgrid"></div>
+<div id="extrasRow" class="extras"></div>
+<div class="row noprint" style="margin-top:16px">
+<button id="btnCopyToday" class="btn btn-primary" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Copy today</button>
+<button id="btnMonth" class="btn btn-ghost" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Monthly timetable</button>
+<button id="btnPrint" class="btn btn-ghost" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Print</button>
+</div>
+<div id="statusLine" class="status">Loading prayer times…</div>
+</div>
+
+<div class="card">
+<h2>Qibla direction</h2>
+<div class="qiblawrap">
+<svg class="compass" viewBox="0 0 200 200" role="img" aria-label="Qibla compass">
+<circle cx="100" cy="100" r="94" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
+<circle cx="100" cy="100" r="70" fill="none" stroke="#e2e8f0" stroke-width="1"/>
+<text x="100" y="22" text-anchor="middle" font-size="15" font-weight="800" fill="#0f172a">N</text>
+<text x="100" y="188" text-anchor="middle" font-size="13" font-weight="700" fill="#64748b">S</text>
+<text x="184" y="105" text-anchor="middle" font-size="13" font-weight="700" fill="#64748b">E</text>
+<text x="16" y="105" text-anchor="middle" font-size="13" font-weight="700" fill="#64748b">W</text>
+<g id="qiblaArrow">
+<polygon points="100,34 90,104 110,104" fill="#0891b2"/>
+<polygon points="100,166 92,104 108,104" fill="#cbd5e1"/>
+</g>
+<circle cx="100" cy="100" r="7" fill="#7c3aed"/>
+</svg>
+<div class="qfacts">
+<div class="big"><span id="qiblaDeg">—</span></div>
+<p id="qiblaDist">Direction from true North, clockwise. Face this way to pray towards the Kaaba in Makkah.</p>
+<p>Tip: on your phone, open a compass app, let it settle pointing North, then turn until you face the degree shown here.</p>
+</div>
+</div>
+</div>
+
+<div id="monthCard" class="card" style="display:none">
+<h2 id="monthTitle">Monthly timetable</h2>
+<div class="tablewrap"><div id="monthTableWrap"></div></div>
+<div class="row noprint" style="margin-top:14px">
+<button id="btnDownloadMonth" class="btn btn-primary" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/></svg>Download timetable (.txt)</button>
+</div>
+</div>
+
+<p class="note">Times are calculated by the free Aladhan service using the method you select. They can differ from your local masjid by a few minutes — for Ramadan and Eid, always follow your local moon-sighting announcement. Your city search and location stay in your browser; nothing is uploaded to Dark Tech Zone.</p>
+</main>
+<footer>Dark Tech Zone — Learn. Build. Secure.</footer>
+<script>
+/*__DTZ_HELPERS_START__*/
+function pad2(n){return String(n).padStart(2,'0');}
+function cleanTime(s){if(s==null)return null;var m=String(s).match(/(\d{1,2}):(\d{2})/);if(!m)return null;return pad2(parseInt(m[1],10))+':'+m[2];}
+function timeToMin(s){var c=cleanTime(s);if(!c)return null;var p=c.split(':');return parseInt(p[0],10)*60+parseInt(p[1],10);}
+function minTo12(min){if(min==null)return '—';var h=Math.floor(min/60)%24;var m=min%60;var ap=h<12?'AM':'PM';var h12=h%12;if(h12===0)h12=12;return h12+':'+pad2(m)+' '+ap;}
+function fmtTime(s,use12){var min=timeToMin(s);if(min==null)return '—';return use12?minTo12(min):cleanTime(s);}
+function countdownText(totalSec){if(totalSec==null||totalSec<0)return '--:--:--';totalSec=Math.floor(totalSec);var h=Math.floor(totalSec/3600);var m=Math.floor((totalSec%3600)/60);var s=totalSec%60;return pad2(h)+':'+pad2(m)+':'+pad2(s);}
+var PRAYER_ORDER=[['Fajr','Fajr'],['Sunrise','Sunrise'],['Dhuhr','Dhuhr'],['Asr','Asr'],['Maghrib','Maghrib'],['Isha','Isha']];
+var EXTRA_ORDER=[['Imsak','Imsak (Sehri end)'],['Midnight','Midnight'],['Lastthird','Last third of night']];
+function prayerList(timings){var out=[];for(var i=0;i<PRAYER_ORDER.length;i++){var k=PRAYER_ORDER[i][0];out.push({key:k,name:PRAYER_ORDER[i][1],raw:timings?timings[k]:null,min:timeToMin(timings?timings[k]:null)});}return out;}
+function nextPrayerInfo(timings,nowSec){var list=prayerList(timings).filter(function(p){return p.min!=null;});if(!list.length)return null;var nowMin=nowSec/60;var current=null;var next=null;for(var i=0;i<list.length;i++){if(list[i].min<=nowMin)current=list[i];else if(!next)next=list[i];}if(next)return{current:current,next:next,secondsLeft:next.min*60-nowSec,nextIsTomorrow:false};var fajr=list[0];return{current:current,next:fajr,secondsLeft:(fajr.min+1440)*60-nowSec,nextIsTomorrow:true};}
+function haversineKm(lat1,lng1,lat2,lng2){var R=6371;var dLat=(lat2-lat1)*Math.PI/180;var dLng=(lng2-lng1)*Math.PI/180;var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2);return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
+function bearingDeg(lat1,lng1,lat2,lng2){var dLng=(lng2-lng1)*Math.PI/180;var y=Math.sin(dLng)*Math.cos(lat2*Math.PI/180);var x=Math.cos(lat1*Math.PI/180)*Math.sin(lat2*Math.PI/180)-Math.sin(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.cos(dLng);var d=Math.atan2(y,x)*180/Math.PI;return (d+360)%360;}
+function compassPoint(deg){var pts=['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];return pts[Math.round(((deg%360)+360)%360/22.5)%16];}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function ddmmYYYY(d){return pad2(d.getDate())+'-'+pad2(d.getMonth()+1)+'-'+d.getFullYear();}
+function isoDate(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
+function nowSecondsInTz(tz,dateObj){try{var parts=new Intl.DateTimeFormat('en-GB',{timeZone:tz||undefined,hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(dateObj||new Date());var h=0,m=0,s=0;parts.forEach(function(p){if(p.type==='hour')h=parseInt(p.value,10)%24;if(p.type==='minute')m=parseInt(p.value,10);if(p.type==='second')s=parseInt(p.value,10);});return h*3600+m*60+s;}catch(e){var d=dateObj||new Date();return d.getHours()*3600+d.getMinutes()*60+d.getSeconds();}}
+function hijriText(h){if(!h)return '';return h.day+' '+h.month.en+' '+h.year+' AH ('+h.weekday.en+')';}
+function buildTodayText(cityLabel,dateReadable,hijri,timings,use12){var lines=[];lines.push('Prayer times — '+cityLabel);lines.push(dateReadable+(hijri?'  |  '+hijriText(hijri):''));lines.push('');var list=prayerList(timings);for(var i=0;i<list.length;i++){lines.push(list[i].name+': '+fmtTime(list[i].raw,use12));}lines.push('');lines.push('Dark Tech Zone — darktechzon.site/prayer-times/');return lines.join('\n');}
+function buildMonthText(cityLabel,monthLabel,days,use12){var lines=[];lines.push('Monthly prayer timetable — '+cityLabel+' — '+monthLabel);lines.push('');lines.push('Date        Fajr     Sunrise  Dhuhr    Asr      Maghrib  Isha');for(var i=0;i<days.length;i++){var d=days[i];var t=d.timings||{};function f(k){return fmtTime(t[k],use12).padEnd(9);}lines.push(String(d.date.gregorian.date).padEnd(12)+f('Fajr')+f('Sunrise')+f('Dhuhr')+f('Asr')+f('Maghrib')+fmtTime(t.Isha,use12));}lines.push('');lines.push('Dark Tech Zone — darktechzon.site/prayer-times/');return lines.join('\n');}
+/*__DTZ_HELPERS_END__*/
+</script>
+<script>
+(function(){
+'use strict';
+var KAABA={lat:21.4225,lng:39.8262};
+var QUICK=[
+{name:'Karachi',country:'Pakistan',admin1:'Sindh',lat:24.8608,lng:67.0104},
+{name:'Lahore',country:'Pakistan',admin1:'Punjab',lat:31.5497,lng:74.3436},
+{name:'Islamabad',country:'Pakistan',admin1:'Islamabad',lat:33.7294,lng:73.0931},
+{name:'Rawalpindi',country:'Pakistan',admin1:'Punjab',lat:33.5973,lng:73.0479},
+{name:'Faisalabad',country:'Pakistan',admin1:'Punjab',lat:31.4504,lng:73.1350},
+{name:'Multan',country:'Pakistan',admin1:'Punjab',lat:30.1575,lng:71.5249},
+{name:'Peshawar',country:'Pakistan',admin1:'Khyber Pakhtunkhwa',lat:34.0151,lng:71.5249},
+{name:'Quetta',country:'Pakistan',admin1:'Balochistan',lat:30.1798,lng:66.9750},
+{name:'Hyderabad',country:'Pakistan',admin1:'Sindh',lat:25.3960,lng:68.3578},
+{name:'Gujranwala',country:'Pakistan',admin1:'Punjab',lat:32.1617,lng:74.1883},
+{name:'Makkah',country:'Saudi Arabia',admin1:'Makkah',lat:21.4225,lng:39.8262},
+{name:'Madinah',country:'Saudi Arabia',admin1:'Madinah',lat:24.4672,lng:39.6111},
+{name:'Dubai',country:'United Arab Emirates',admin1:'Dubai',lat:25.2048,lng:55.2708},
+{name:'London',country:'United Kingdom',admin1:'England',lat:51.5074,lng:-0.1278}
+];
+var state={city:QUICK[0],method:'1',school:'1',use12:true,dateISO:isoDate(new Date()),tz:'Asia/Karachi',dayData:null,monthData:null,monthLabel:'',tomorrowFajrMin:null,timer:null};
+function $(id){return document.getElementById(id);}
+function setStatus(msg,cls){var el=$('statusLine');el.textContent=msg;el.className='status'+(cls?' '+cls:'');}
+function cityLabel(c){return c.name+(c.country?', '+c.country:'');}
+function saveSettings(){try{localStorage.setItem('dtz_prayer_settings_v1',JSON.stringify({method:state.method,school:state.school,use12:state.use12,city:state.city}));}catch(e){}}
+function loadSettings(){try{var s=JSON.parse(localStorage.getItem('dtz_prayer_settings_v1')||'null');if(s){if(s.method)state.method=String(s.method);if(s.school!=null)state.school=String(s.school);if(typeof s.use12==='boolean')state.use12=s.use12;if(s.city&&s.city.lat!=null)state.city=s.city;}}catch(e){}}
+function getRecents(){try{return JSON.parse(localStorage.getItem('dtz_prayer_recent_v1')||'[]');}catch(e){return[];}}
+function pushRecent(c){try{var r=getRecents().filter(function(x){return !(x.name===c.name&&x.country===c.country);});r.unshift({name:c.name,country:c.country||'',admin1:c.admin1||'',lat:c.lat,lng:c.lng});localStorage.setItem('dtz_prayer_recent_v1',JSON.stringify(r.slice(0,8)));}catch(e){}renderRecents();}
+function renderRecents(){var r=getRecents();var wrap=$('recentWrap');var list=$('recentList');if(!r.length){wrap.style.display='none';return;}wrap.style.display='block';list.innerHTML='';r.forEach(function(c){var b=document.createElement('button');b.type='button';b.className='chip';b.textContent=cityLabel(c);b.addEventListener('click',function(){selectCity(c);});list.appendChild(b);});}
+function renderQuick(){var wrap=$('quickChips');wrap.innerHTML='';QUICK.forEach(function(c){var b=document.createElement('button');b.type='button';b.className='chip';b.textContent=c.name;b.addEventListener('click',function(){selectCity(c);});wrap.appendChild(b);});}
+function syncControls(){$('methodSelect').value=state.method;document.querySelectorAll('#schoolSeg button').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-school')===state.school);});document.querySelectorAll('#fmtSeg button').forEach(function(b){b.classList.toggle('active',(b.getAttribute('data-fmt')==='12')===state.use12);});$('dateInput').value=state.dateISO;}
+function selectCity(c){state.city=c;state.tomorrowFajrMin=null;saveSettings();pushRecent(c);loadDay();loadQibla();}
+function apiDayURL(dateISO){var p=dateISO.split('-');var ddmmyyyy=p[2]+'-'+p[1]+'-'+p[0];return 'https://api.aladhan.com/v1/timings/'+ddmmyyyy+'?latitude='+state.city.lat+'&longitude='+state.city.lng+'&method='+state.method+'&school='+state.school;}
+function loadDay(){setStatus('Loading prayer times for '+cityLabel(state.city)+'…');$('cityTitle').textContent=cityLabel(state.city);fetch(apiDayURL(state.dateISO)).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(function(j){if(!j||j.code!==200||!j.data)throw new Error('Bad response');state.dayData=j.data;state.tz=(j.data.meta&&j.data.meta.timezone)||state.tz;state.tomorrowFajrMin=null;renderDay();setStatus('Times loaded for '+cityLabel(state.city)+'.','ok');}).catch(function(e){setStatus('Could not load prayer times. Check your internet connection and try again.','err');});}
+function renderDay(){var d=state.dayData;if(!d)return;$('dateLine').textContent=d.date.gregorian.weekday.en+', '+d.date.readable;$('hijriLine').textContent=hijriText(d.date.hijri);$('tzLine').textContent='Timezone: '+state.tz+'  |  Method: '+(d.meta.method?d.meta.method.name:'');var list=prayerList(d.timings);var grid=$('prayerGrid');grid.innerHTML='';list.forEach(function(p){var div=document.createElement('div');div.className='pcard';div.setAttribute('data-key',p.key);div.innerHTML='<div class="tag"></div><div class="pn">'+esc(p.name)+'</div><div class="pt">'+esc(fmtTime(p.raw,state.use12))+'</div>';grid.appendChild(div);});var ex=$('extrasRow');ex.innerHTML='';EXTRA_ORDER.forEach(function(pair){var div=document.createElement('div');div.className='extra';div.innerHTML='<div class="pn">'+esc(pair[1])+'</div><div class="pt">'+esc(fmtTime(d.timings[pair[0]],state.use12))+'</div>';ex.appendChild(div);});tick();}
+function isViewingToday(){return state.dateISO===isoDate(new Date());}
+function tick(){var d=state.dayData;if(!d)return;var banner=$('nextBanner');if(!isViewingToday()){$('nextName').textContent='Viewing another date';$('countdown').textContent='--:--:--';$('nextTime').textContent='Tap Today to see the live countdown.';document.querySelectorAll('.pcard').forEach(function(el){el.classList.remove('current','next');});return;}var nowSec=nowSecondsInTz(state.tz,new Date());var info=nextPrayerInfo(d.timings,nowSec);if(!info)return;var left=info.secondsLeft;if(info.nextIsTomorrow&&state.tomorrowFajrMin!=null){left=(state.tomorrowFajrMin+1440)*60-nowSec;}else if(info.nextIsTomorrow&&state.tomorrowFajrMin==null){fetchTomorrowFajr();}$('nextName').textContent=info.next.name;$('countdown').textContent=countdownText(left);$('nextTime').textContent='at '+fmtTime(info.next.raw,state.use12)+(info.nextIsTomorrow?' (tomorrow)':'')+(info.current?'  ·  Now: '+info.current.name:'');document.querySelectorAll('.pcard').forEach(function(el){var k=el.getAttribute('data-key');var tag=el.querySelector('.tag');el.classList.remove('current','next');if(info.current&&k===info.current.key){el.classList.add('current');tag.textContent='NOW';}if(k===info.next.key&&!info.nextIsTomorrow){el.classList.add('next');tag.textContent='NEXT';}});}
+function fetchTomorrowFajr(){var t=new Date();t.setDate(t.getDate()+1);var iso=isoDate(t);state.tomorrowFajrMin=-1;fetch(apiDayURL(iso)).then(function(r){return r.json();}).then(function(j){var m=timeToMin(j&&j.data&&j.data.timings&&j.data.timings.Fajr);state.tomorrowFajrMin=(m==null?null:m);}).catch(function(){state.tomorrowFajrMin=null;});}
+function loadQibla(){var c=state.city;var dist=haversineKm(c.lat,c.lng,KAABA.lat,KAABA.lng);function show(deg){$('qiblaDeg').textContent=deg.toFixed(1)+'° '+compassPoint(deg);$('qiblaArrow').setAttribute('transform','rotate('+deg.toFixed(1)+' 100 100)');$('qiblaDist').textContent='Direction from true North, clockwise. Distance to the Kaaba: about '+Math.round(dist).toLocaleString('en-US')+' km. Face this way to pray towards Makkah.';}show(bearingDeg(c.lat,c.lng,KAABA.lat,KAABA.lng));fetch('https://api.aladhan.com/v1/qibla/'+c.lat+'/'+c.lng).then(function(r){return r.json();}).then(function(j){if(j&&j.code===200&&j.data&&typeof j.data.direction==='number')show(j.data.direction);}).catch(function(){});}
+function loadMonth(){var p=state.dateISO.split('-');var y=p[0],m=parseInt(p[1],10);setStatus('Loading monthly timetable…');fetch('https://api.aladhan.com/v1/calendar/'+y+'/'+m+'?latitude='+state.city.lat+'&longitude='+state.city.lng+'&method='+state.method+'&school='+state.school).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(function(j){if(!j||j.code!==200||!j.data)throw new Error('Bad response');state.monthData=j.data;state.monthLabel=j.data[0].date.gregorian.month.en+' '+y;renderMonth();setStatus('Monthly timetable loaded.','ok');$('monthCard').scrollIntoView({behavior:'smooth'});}).catch(function(){setStatus('Could not load the monthly timetable. Try again.','err');});}
+function renderMonth(){var days=state.monthData;if(!days)return;$('monthCard').style.display='block';$('monthTitle').textContent='Monthly timetable — '+cityLabel(state.city)+' — '+state.monthLabel;var todayISO=isoDate(new Date());var html='<table><thead><tr><th>Date</th><th>Hijri</th><th>Fajr</th><th>Sunrise</th><th>Dhuhr</th><th>Asr</th><th>Maghrib</th><th>Isha</th></tr></thead><tbody>';days.forEach(function(d){var g=d.date.gregorian;var iso=g.year+'-'+pad2(g.month.number)+'-'+pad2(parseInt(g.day,10));html+='<tr'+(iso===todayISO?' class="todayrow"':'')+'><td>'+esc(g.date)+'</td><td>'+esc(d.date.hijri.day+' '+d.date.hijri.month.en)+'</td><td>'+esc(fmtTime(d.timings.Fajr,state.use12))+'</td><td>'+esc(fmtTime(d.timings.Sunrise,state.use12))+'</td><td>'+esc(fmtTime(d.timings.Dhuhr,state.use12))+'</td><td>'+esc(fmtTime(d.timings.Asr,state.use12))+'</td><td>'+esc(fmtTime(d.timings.Maghrib,state.use12))+'</td><td>'+esc(fmtTime(d.timings.Isha,state.use12))+'</td></tr>';});html+='</tbody></table>';$('monthTableWrap').innerHTML=html;}
+function downloadText(filename,text){var blob=new Blob([text],{type:'text/plain;charset=utf-8'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},400);}
+function copyText(text,doneMsg){function done(){setStatus(doneMsg,'ok');}if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done).catch(function(){fallback();});}else fallback();function fallback(){var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){setStatus('Copy failed — your browser blocked it.','err');}ta.remove();}}
+var searchTimer=null;
+$('citySearch').addEventListener('input',function(){var q=this.value.trim();clearTimeout(searchTimer);var box=$('searchResults');if(q.length<2){box.style.display='none';return;}searchTimer=setTimeout(function(){fetch('https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(q)+'&count=6&language=en&format=json').then(function(r){return r.json();}).then(function(j){box.innerHTML='';var res=(j&&j.results)||[];if(!res.length){box.style.display='none';return;}res.forEach(function(r){var b=document.createElement('button');b.type='button';b.innerHTML=esc(r.name)+'<div class="sub">'+esc([r.admin1,r.country].filter(Boolean).join(', '))+'</div>';b.addEventListener('click',function(){box.style.display='none';$('citySearch').value='';selectCity({name:r.name,country:r.country||'',admin1:r.admin1||'',lat:r.latitude,lng:r.longitude});});box.appendChild(b);});box.style.display='block';}).catch(function(){box.style.display='none';});},350);});
+document.addEventListener('click',function(e){if(!e.target.closest('.searchwrap'))$('searchResults').style.display='none';});
+$('btnLocate').addEventListener('click',function(){if(!navigator.geolocation){setStatus('Your browser does not support location. Search for your city instead.','err');return;}setStatus('Finding your location…');navigator.geolocation.getCurrentPosition(function(pos){var lat=pos.coords.latitude,lng=pos.coords.longitude;fetch('https://api.bigdatacloud.net/data/reverse-geocode-client?latitude='+lat+'&longitude='+lng+'&localityLanguage=en').then(function(r){return r.json();}).then(function(j){var name=(j&&(j.city||j.locality))||'My Location';selectCity({name:name,country:(j&&j.countryName)||'',admin1:(j&&j.principalSubdivision)||'',lat:lat,lng:lng});}).catch(function(){selectCity({name:'My Location',country:'',admin1:'',lat:lat,lng:lng});});},function(){setStatus('Location was blocked. Search for your city instead.','err');},{timeout:12000});});
+$('methodSelect').addEventListener('change',function(){state.method=this.value;saveSettings();loadDay();if(state.monthData)loadMonth();});
+document.querySelectorAll('#schoolSeg button').forEach(function(b){b.addEventListener('click',function(){state.school=b.getAttribute('data-school');syncControls();saveSettings();loadDay();if(state.monthData)loadMonth();});});
+document.querySelectorAll('#fmtSeg button').forEach(function(b){b.addEventListener('click',function(){state.use12=b.getAttribute('data-fmt')==='12';syncControls();saveSettings();renderDay();if(state.monthData)renderMonth();});});
+$('dateInput').addEventListener('change',function(){if(this.value){state.dateISO=this.value;loadDay();}});
+$('btnToday').addEventListener('click',function(){state.dateISO=isoDate(new Date());syncControls();loadDay();});
+$('btnCopyToday').addEventListener('click',function(){if(!state.dayData)return;copyText(buildTodayText(cityLabel(state.city),state.dayData.date.readable,state.dayData.date.hijri,state.dayData.timings,state.use12),'Today\u2019s times copied. Paste them anywhere to share.');});
+$('btnMonth').addEventListener('click',loadMonth);
+$('btnDownloadMonth').addEventListener('click',function(){if(!state.monthData)return;downloadText('prayer-times-'+state.city.name.toLowerCase().replace(/[^a-z0-9]+/g,'-')+'.txt',buildMonthText(cityLabel(state.city),state.monthLabel,state.monthData,state.use12));setStatus('Timetable downloaded.','ok');});
+$('btnPrint').addEventListener('click',function(){window.print();});
+$('btnClearRecent').addEventListener('click',function(){try{localStorage.removeItem('dtz_prayer_recent_v1');}catch(e){}renderRecents();});
+loadSettings();renderQuick();renderRecents();syncControls();loadDay();loadQibla();
+state.timer=setInterval(tick,1000);
+})();
+</script>
+<!-- DTZ Splash Intro (added 2026-11-25) -->
+<style>
+#dtz-splash-overlay{position:fixed;inset:0;z-index:2147483647;background:#02040a;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Segoe UI',Arial,sans-serif;opacity:1;transition:opacity .45s ease;cursor:pointer}
+#dtz-splash-overlay.dtz-splash-hide{opacity:0;pointer-events:none}
+.dtz-splash-logo-wrap{position:relative;width:190px;height:190px;margin-bottom:22px}
+.dtz-splash-ring{position:absolute;border-radius:50%;border:3px solid transparent}
+.dtz-splash-ring1{inset:-12px;border-top-color:#00e5ff;border-bottom-color:#00e5ff;animation:dtz-splash-spin 3.2s linear infinite}
+.dtz-splash-ring2{inset:-22px;border-left-color:#ff2e88;border-right-color:#ff2e88;animation:dtz-splash-spin-rev 4.6s linear infinite}
+.dtz-splash-ring3{inset:-32px;border-top-color:#9d4dff;animation:dtz-splash-spin 7s linear infinite;opacity:.7}
+@keyframes dtz-splash-spin{to{transform:rotate(360deg)}}
+@keyframes dtz-splash-spin-rev{to{transform:rotate(-360deg)}}
+.dtz-splash-logo{width:100%;height:100%;border-radius:50%;object-fit:cover;box-shadow:0 0 42px #00e5ff,0 0 90px rgba(157,77,255,.45);animation:dtz-splash-logo-in .8s cubic-bezier(.17,.89,.32,1.28) both}
+@keyframes dtz-splash-logo-in{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+.dtz-splash-title{font-size:30px;font-weight:900;letter-spacing:5px;text-transform:uppercase;color:#fff;text-align:center;animation:dtz-splash-title-in .7s ease .25s both}
+.dtz-splash-title span{color:#00e5ff}
+@keyframes dtz-splash-title-in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.dtz-splash-tagline{margin-top:8px;font-size:14px;letter-spacing:5px;text-transform:uppercase;color:#8be9ff;text-align:center;animation:dtz-splash-title-in .7s ease .45s both}
+.dtz-splash-skip{margin-top:20px;font-size:11px;letter-spacing:2px;color:#5b7186;text-transform:uppercase}
+@media (prefers-reduced-motion:reduce){.dtz-splash-ring,.dtz-splash-logo,.dtz-splash-title,.dtz-splash-tagline{animation:none!important}}
+@media (max-width:480px){.dtz-splash-logo-wrap{width:150px;height:150px}.dtz-splash-title{font-size:22px;letter-spacing:3px}.dtz-splash-tagline{font-size:12px;letter-spacing:3px}}
+</style>
+<div id="dtz-splash-overlay" role="presentation">
+  <div class="dtz-splash-logo-wrap">
+    <div class="dtz-splash-ring dtz-splash-ring1"></div>
+    <div class="dtz-splash-ring dtz-splash-ring2"></div>
+    <div class="dtz-splash-ring dtz-splash-ring3"></div>
+    <img class="dtz-splash-logo" src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone" onerror="this.style.display='none'">
+  </div>
+  <div class="dtz-splash-title">Dark <span>Tech</span> Zone</div>
+  <div class="dtz-splash-tagline">Learn. Build. Secure.</div>
+  <div class="dtz-splash-skip">Tap to skip</div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('dtz-splash-overlay');
+  if(!el)return;
+  var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var done=false;
+  function hide(){
+    if(done)return;done=true;
+    el.classList.add('dtz-splash-hide');
+    setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},500);
+  }
+  el.addEventListener('click',hide);
+  el.addEventListener('touchstart',hide,{passive:true});
+  setTimeout(hide,reduced?350:2500);
+})();
+</script>
+<!-- /DTZ Splash Intro -->
+
+</body>
+</html>
