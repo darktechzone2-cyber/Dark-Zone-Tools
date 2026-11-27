@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTZ File Hash Checker — Dark Tech Zone</title>
+<meta name="description" content="Free file hash checker: drop any file and get MD5, SHA-1, SHA-256, SHA-384, SHA-512 and CRC32 hashes, then verify against the publisher's hash. 100% in your browser, nothing uploaded.">
+<link rel="icon" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f4f6fb;--surface:#ffffff;--text:#0f172a;--muted:#64748b;--border:#e2e8f0;--accent:#0891b2;--accent2:#7c3aed;--ok:#15803d;--bad:#dc2626;--warn:#d97706}
+body{font-family:'Segoe UI',system-ui,-apple-system,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+header img{width:44px;height:44px;border-radius:50%;object-fit:cover}
+header .brand{font-weight:800;font-size:18px;letter-spacing:.5px}
+header .brand span{color:var(--accent)}
+header nav{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap}
+header nav a{text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;padding:8px 14px;border:1px solid var(--border);border-radius:20px;background:#fff}
+main{max-width:960px;margin:0 auto;padding:24px 16px 60px}
+.hero{text-align:center;padding:18px 0 8px}
+.hero h1{font-size:30px;font-weight:900}
+.hero h1 span{color:var(--accent)}
+.hero p{color:var(--muted);margin-top:8px;font-size:15px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;margin-top:18px;box-shadow:0 2px 12px rgba(15,23,42,.05)}
+.card h2{font-size:17px;font-weight:800;margin-bottom:12px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.label{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;min-width:88px}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg button{border:1px solid var(--border);background:#f8fafc;color:var(--text);padding:9px 16px;border-radius:20px;font-size:14px;font-weight:700;cursor:pointer}
+.seg button.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent}
+.btn{border:none;cursor:pointer;font-weight:700;font-size:14px;padding:11px 18px;border-radius:10px;display:inline-flex;align-items:center;gap:8px}
+.btn svg{width:16px;height:16px;flex:none}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.btn-ghost{background:#fff;border:1px solid var(--border);color:var(--text)}
+.btn-danger{background:#fff;border:1px solid #fecaca;color:var(--bad)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.dropzone{border:2px dashed #cbd5e1;border-radius:14px;padding:34px 16px;text-align:center;background:#f8fafc;cursor:pointer;transition:border-color .15s,background .15s}
+.dropzone.drag{border-color:var(--accent);background:#ecfeff}
+.dropzone svg{width:44px;height:44px;color:var(--accent);margin-bottom:8px}
+.dropzone .big{font-size:17px;font-weight:800}
+.dropzone .small{color:var(--muted);font-size:13px;margin-top:4px}
+textarea{width:100%;padding:12px 14px;border:2px solid var(--border);border-radius:12px;font-size:15px;font-family:inherit;background:#fff;color:var(--text);resize:vertical;min-height:96px}
+input[type=text]{width:100%;padding:12px 14px;border:2px solid var(--border);border-radius:12px;font-size:14px;font-family:Consolas,Menlo,monospace;background:#fff;color:var(--text)}
+.progresswrap{margin-top:14px;display:none}
+.progressbar{height:10px;background:#e2e8f0;border-radius:6px;overflow:hidden}
+.progressfill{height:100%;width:0%;background:linear-gradient(135deg,var(--accent),var(--accent2));transition:width .15s}
+.progresstext{font-size:13px;color:var(--muted);margin-top:6px;font-variant-numeric:tabular-nums}
+.filemeta{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.metachip{background:#f8fafc;border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:600}
+.metachip b{color:var(--accent)}
+.hashlist{margin-top:6px}
+.hashrow{border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-top:10px;background:#fbfdff}
+.hashrow .top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.hashrow .algo{font-weight:900;font-size:14px;letter-spacing:.4px}
+.hashrow .bits{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.hashrow .copybtn{margin-left:auto}
+.hashrow .val{font-family:Consolas,Menlo,monospace;font-size:13px;word-break:break-all;margin-top:8px;color:var(--text);line-height:1.5}
+.hashrow.match{border-color:var(--ok);background:#f0fdf4}
+.hashrow.nomatch{border-color:#fecaca;background:#fef2f2}
+.verdict{margin-top:14px;border-radius:12px;padding:14px 16px;font-weight:800;font-size:15px;display:none}
+.verdict.ok{display:block;background:#f0fdf4;border:1px solid #bbf7d0;color:var(--ok)}
+.verdict.bad{display:block;background:#fef2f2;border:1px solid #fecaca;color:var(--bad)}
+.verdict.warn{display:block;background:#fffbeb;border:1px solid #fde68a;color:var(--warn)}
+.status{margin-top:12px;font-size:14px;color:var(--muted);min-height:20px}
+.status.err{color:var(--bad);font-weight:600}
+.status.ok{color:var(--ok);font-weight:600}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.chip{border:1px solid var(--border);background:#f8fafc;color:var(--text);padding:8px 14px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.note{color:var(--muted);font-size:13px;line-height:1.6;margin-top:14px}
+footer{text-align:center;color:var(--muted);font-size:13px;padding:26px 16px}
+@media(max-width:640px){.hero h1{font-size:24px}header .brand{font-size:16px}.hashrow .val{font-size:12px}}
+</style>
+</head>
+<body>
+<header>
+<img src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone">
+<div class="brand">Dark <span>Tech</span> Zone</div>
+<nav>
+<a href="https://www.darktechzon.site/">All Tools</a>
+<a href="https://whatsapp.com/channel/0029Vb9oK008V0txIkc3oj3z" target="_blank" rel="noopener">WhatsApp Channel</a>
+</nav>
+</header>
+<main>
+<div class="hero">
+<h1>DTZ File <span>Hash Checker</span></h1>
+<p>Drop any file and get its MD5, SHA-1, SHA-256, SHA-384, SHA-512 and CRC32 hashes — then verify the file is genuine. Everything runs in your browser; your file is never uploaded.</p>
+</div>
+
+<div class="card">
+<h2>1. Choose a file or type text</h2>
+<div class="row" style="margin-bottom:14px"><span class="label">Mode</span>
+<div id="modeSeg" class="seg"><button type="button" data-mode="file" class="active">File</button><button type="button" data-mode="text">Text</button></div></div>
+
+<div id="fileMode">
+<div id="dropZone" class="dropzone" role="button" tabindex="0" aria-label="Choose a file to hash">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5M12 3v12"/></svg>
+<div class="big">Drop a file here, or tap to choose</div>
+<div class="small">APK, ZIP, EXE, PDF, photo — any file up to 200 MB. It stays on your device.</div>
+</div>
+<input id="fileInput" type="file" style="display:none">
+<div class="row" style="margin-top:12px">
+<button id="btnSample" class="btn btn-ghost" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>Try a sample file</button>
+</div>
+</div>
+
+<div id="textMode" style="display:none">
+<textarea id="textInput" placeholder="Type or paste text here — hashes update as you type. Try: Dark Tech Zone"></textarea>
+<div class="chips">
+<button type="button" class="chip sample-text" data-text="Dark Tech Zone">Dark Tech Zone</button>
+<button type="button" class="chip sample-text" data-text="abc">abc</button>
+<button type="button" class="chip sample-text" data-text="The quick brown fox jumps over the lazy dog">The quick brown fox…</button>
+</div>
+</div>
+
+<div id="progressWrap" class="progresswrap">
+<div class="progressbar"><div id="progressFill" class="progressfill"></div></div>
+<div id="progressText" class="progresstext">Reading file…</div>
+</div>
+<div id="fileMeta" class="filemeta"></div>
+<div id="statusLine" class="status">Waiting for a file…</div>
+</div>
+
+<div class="card">
+<h2>2. Hashes</h2>
+<div id="hashList" class="hashlist"><p class="note" style="margin-top:0">Your hashes will appear here.</p></div>
+<div class="row" style="margin-top:16px">
+<button id="btnCopyAll" class="btn btn-primary" type="button" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Copy all hashes</button>
+<button id="btnDownloadReport" class="btn btn-ghost" type="button" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/></svg>Download report (.txt)</button>
+</div>
+</div>
+
+<div class="card">
+<h2>3. Verify against the publisher's hash</h2>
+<p class="note" style="margin-top:0">Downloaded an APK or software from a website? Paste the SHA-256 (or MD5 / SHA-1 / CRC32) shown on the download page. If it matches, your file is exactly what the publisher released — not corrupted, not tampered with.</p>
+<input id="expectedInput" type="text" placeholder="Paste the expected hash here…" autocomplete="off" spellcheck="false" style="margin-top:12px">
+<div id="verdict" class="verdict"></div>
+<div id="recentWrap" style="display:none">
+<div class="row" style="margin-top:16px"><span class="label">Recent</span><div id="recentList" class="chips" style="margin-top:0"></div><button id="btnClearRecent" class="btn btn-danger" type="button">Clear</button></div>
+</div>
+</div>
+
+<p class="note">How it works: your browser reads the file on your own device and calculates the hashes with the built-in WebCrypto engine (SHA family) plus MD5 and CRC32. Nothing is uploaded to Dark Tech Zone or anyone else. MD5 and CRC32 are fine for spotting a corrupted download, but for checking a file is genuine, trust SHA-256 — MD5 can be faked. Files over 200 MB are refused so your browser does not run out of memory; for very large files use your computer's built-in tools (PowerShell Get-FileHash on Windows, shasum on Mac/Linux).</p>
+</main>
+<footer>Dark Tech Zone — Learn. Build. Secure.</footer>
+<script>
+/*__DTZ_HELPERS_START__*/
+function bytesToHex(bytes){var out='';for(var i=0;i<bytes.length;i++){out+=bytes[i].toString(16).padStart(2,'0');}return out;}
+function formatBytes(n){if(n==null||isNaN(n))return '—';if(n<1024)return n+' B';var units=['KB','MB','GB'];var v=n/1024;var u=0;while(v>=1024&&u<units.length-1){v/=1024;u++;}return v.toFixed(v>=100?0:(v>=10?1:2))+' '+units[u];}
+function cleanHash(s){return String(s==null?'':s).trim().toLowerCase().replace(/[^0-9a-f]/g,'');}
+function detectAlgo(hash){var h=cleanHash(hash);if(!h)return null;if(h.length===8)return 'CRC32';if(h.length===32)return 'MD5';if(h.length===40)return 'SHA-1';if(h.length===64)return 'SHA-256';if(h.length===96)return 'SHA-384';if(h.length===128)return 'SHA-512';return null;}
+function verifyHash(expected,hashes){var raw=String(expected==null?'':expected).trim();if(!raw)return{state:'empty'};var h=cleanHash(expected);if(!h)return{state:'unknown-length',length:0};var algo=detectAlgo(h);if(!algo)return{state:'unknown-length',length:h.length};var actual=hashes&&hashes[algo];if(!actual)return{state:'no-hash-yet',algo:algo};return{state:(cleanHash(actual)===h?'match':'mismatch'),algo:algo};}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+var ALGO_ORDER=['SHA-256','MD5','SHA-1','SHA-384','SHA-512','CRC32'];
+var ALGO_BITS={'SHA-256':'256-bit · recommended','MD5':'128-bit · legacy','SHA-1':'160-bit · legacy','SHA-384':'384-bit','SHA-512':'512-bit','CRC32':'32-bit · checksum'};
+function buildReport(meta,hashes){var lines=[];lines.push('DTZ File Hash Checker — report');lines.push('');if(meta&&meta.name)lines.push('File: '+meta.name);if(meta&&meta.size!=null)lines.push('Size: '+formatBytes(meta.size)+' ('+meta.size+' bytes)');if(meta&&meta.type)lines.push('Type: '+meta.type);if(meta&&meta.text!=null)lines.push('Text: '+meta.text);lines.push('');for(var i=0;i<ALGO_ORDER.length;i++){var a=ALGO_ORDER[i];if(hashes&&hashes[a])lines.push(a+': '+hashes[a]);}lines.push('');lines.push('Dark Tech Zone — darktechzon.site/file-hash-checker/');return lines.join('\n');}
+/* CRC32 (IEEE 802.3, reflected) */
+var CRC_TABLE=null;
+function crc32Bytes(bytes){if(!CRC_TABLE){CRC_TABLE=new Uint32Array(256);for(var n=0;n<256;n++){var c=n;for(var k=0;k<8;k++){c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);}CRC_TABLE[n]=c>>>0;}}var crc=0xFFFFFFFF;for(var i=0;i<bytes.length;i++){crc=CRC_TABLE[(crc^bytes[i])&0xFF]^(crc>>>8);}return ((crc^0xFFFFFFFF)>>>0).toString(16).padStart(8,'0');}
+/* MD5 (RFC 1321) */
+function md5Bytes(input){function rl(v,c){return (v<<c)|(v>>>(32-c));}function add(){var s=0;for(var i=0;i<arguments.length;i++)s=(s+arguments[i])|0;return s;}var S=[7,12,17,22,7,12,17,22,7,12,17,22,7,12,17,22,5,9,14,20,5,9,14,20,5,9,14,20,5,9,14,20,4,11,16,23,4,11,16,23,4,11,16,23,4,11,16,23,6,10,15,21,6,10,15,21,6,10,15,21,6,10,15,21];var K=[];for(var ki=0;ki<64;ki++)K[ki]=Math.floor(Math.abs(Math.sin(ki+1))*4294967296)|0;var origLen=input.length;var bitLenLo=(origLen*8)>>>0;var bitLenHi=Math.floor(origLen/536870912)>>>0;var paddedLen=(Math.floor((origLen+9+63)/64)*64);var msg=new Uint8Array(paddedLen);msg.set(input);msg[origLen]=0x80;var dv=new DataView(msg.buffer);dv.setUint32(paddedLen-8,bitLenLo,true);dv.setUint32(paddedLen-4,bitLenHi,true);var a0=0x67452301|0,b0=0xEFCDAB89|0,c0=0x98BADCFE|0,d0=0x10325476|0;var M=new Uint32Array(16);for(var off=0;off<paddedLen;off+=64){for(var j=0;j<16;j++)M[j]=dv.getUint32(off+j*4,true);var A=a0,B=b0,C=c0,D=d0;for(var i2=0;i2<64;i2++){var F,g;if(i2<16){F=(B&C)|(~B&D);g=i2;}else if(i2<32){F=(D&B)|(~D&C);g=(5*i2+1)%16;}else if(i2<48){F=B^C^D;g=(3*i2+5)%16;}else{F=C^(B|~D);g=(7*i2)%16;}var tmp=D;D=C;C=B;B=add(B,rl(add(A,F,K[i2],M[g]),S[i2]));A=tmp;}a0=add(a0,A);b0=add(b0,B);c0=add(c0,C);d0=add(d0,D);}var out=new Uint8Array(16);var odv=new DataView(out.buffer);odv.setUint32(0,a0>>>0,true);odv.setUint32(4,b0>>>0,true);odv.setUint32(8,c0>>>0,true);odv.setUint32(12,d0>>>0,true);return bytesToHex(out);}
+/*__DTZ_HELPERS_END__*/
+</script>
+<script>
+(function(){
+'use strict';
+var MAX_BYTES=200*1024*1024;
+var CHUNK=4*1024*1024;
+var state={mode:'file',hashes:null,meta:null,busy:false};
+function $(id){return document.getElementById(id);}
+function setStatus(msg,cls){var el=$('statusLine');el.textContent=msg;el.className='status'+(cls?' '+cls:'');}
+function setProgress(done,total,label){var wrap=$('progressWrap');if(done==null){wrap.style.display='none';return;}wrap.style.display='block';var pct=total?Math.min(100,Math.round(done/total*100)):0;$('progressFill').style.width=pct+'%';$('progressText').textContent=(label||'Reading file…')+' '+pct+'% — '+formatBytes(done)+' of '+formatBytes(total);}
+function getRecents(){try{return JSON.parse(localStorage.getItem('dtz_hash_recent_v1')||'[]');}catch(e){return[];}}
+function pushRecent(entry){try{var r=getRecents().filter(function(x){return x.sha256!==entry.sha256;});r.unshift(entry);localStorage.setItem('dtz_hash_recent_v1',JSON.stringify(r.slice(0,8)));}catch(e){}renderRecents();}
+function renderRecents(){var r=getRecents();var wrap=$('recentWrap');var list=$('recentList');if(!r.length){wrap.style.display='none';return;}wrap.style.display='block';list.innerHTML='';r.forEach(function(e){var b=document.createElement('button');b.type='button';b.className='chip';b.title=e.sha256;b.textContent=e.name+' — '+String(e.sha256).slice(0,12)+'…';b.addEventListener('click',function(){$('expectedInput').value=e.sha256;runVerify();});list.appendChild(b);});}
+function copyText(text,doneMsg){function done(){setStatus(doneMsg,'ok');}if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(done).catch(function(){fallback();});}else fallback();function fallback(){var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){setStatus('Copy failed — your browser blocked it.','err');}ta.remove();}}
+function renderHashes(){var wrap=$('hashList');wrap.innerHTML='';if(!state.hashes){wrap.innerHTML='<p class="note" style="margin-top:0">Your hashes will appear here.</p>';$('btnCopyAll').disabled=true;$('btnDownloadReport').disabled=true;return;}ALGO_ORDER.forEach(function(algo){var row=document.createElement('div');row.className='hashrow';row.setAttribute('data-algo',algo);row.innerHTML='<div class="top"><span class="algo">'+esc(algo)+'</span><span class="bits">'+esc(ALGO_BITS[algo]||'')+'</span><button type="button" class="btn btn-ghost copybtn">Copy</button></div><div class="val">'+esc(state.hashes[algo]||'—')+'</div>';row.querySelector('.copybtn').addEventListener('click',function(){copyText(state.hashes[algo],algo+' copied.');});wrap.appendChild(row);});$('btnCopyAll').disabled=false;$('btnDownloadReport').disabled=false;runVerify();}
+function renderMeta(){var wrap=$('fileMeta');wrap.innerHTML='';if(!state.meta)return;function chip(label,val){var d=document.createElement('span');d.className='metachip';d.innerHTML=esc(label)+' <b>'+esc(val)+'</b>';wrap.appendChild(d);}if(state.meta.name)chip('File',state.meta.name);if(state.meta.size!=null)chip('Size',formatBytes(state.meta.size));if(state.meta.type)chip('Type',state.meta.type);if(state.meta.text!=null)chip('Text',state.meta.text.length+' characters');}
+function runVerify(){var box=$('verdict');var expected=$('expectedInput').value;var res=verifyHash(expected,state.hashes);document.querySelectorAll('.hashrow').forEach(function(el){el.classList.remove('match','nomatch');});if(res.state==='empty'){box.className='verdict';box.textContent='';return;}if(res.state==='unknown-length'){box.className='verdict warn';box.textContent='That does not look like a complete hash ('+res.length+' hex characters). MD5 is 32, SHA-1 is 40, SHA-256 is 64 characters.';return;}if(res.state==='no-hash-yet'){box.className='verdict warn';box.textContent='Hash type detected: '+res.algo+'. Now choose the file above and the check will run automatically.';return;}var row=document.querySelector('.hashrow[data-algo="'+res.algo+'"]');if(res.state==='match'){if(row)row.classList.add('match');box.className='verdict ok';box.textContent='MATCH — this file is genuine. Its '+res.algo+' is exactly the hash you pasted.';}else{if(row)row.classList.add('nomatch');box.className='verdict bad';box.textContent='MISMATCH — this file does NOT match the '+res.algo+' you pasted. Do not install or trust it; download it again from the official source.';}}
+function shaHex(algo,buffer){return crypto.subtle.digest(algo,buffer).then(function(buf){return bytesToHex(new Uint8Array(buf));});}
+function computeAll(bytes,meta){setProgress(bytes.length,bytes.length,'Calculating hashes…');var jobs=[shaHex('SHA-256',bytes),shaHex('SHA-1',bytes),shaHex('SHA-384',bytes),shaHex('SHA-512',bytes)];return Promise.all(jobs).then(function(r){var hashes={'SHA-256':r[0],'SHA-1':r[1],'SHA-384':r[2],'SHA-512':r[3],'MD5':md5Bytes(bytes),'CRC32':crc32Bytes(bytes)};state.hashes=hashes;state.meta=meta;renderMeta();renderHashes();setProgress(null);setStatus('Done. All 6 hashes calculated on your device.','ok');if(meta&&meta.name&&hashes['SHA-256'])pushRecent({name:meta.name,size:meta.size,sha256:hashes['SHA-256']});});}
+function readFileInChunks(file){return new Promise(function(resolve,reject){var chunks=[];var offset=0;function next(){if(offset>=file.size){var all=new Uint8Array(file.size);var pos=0;chunks.forEach(function(c){all.set(c,pos);pos+=c.length;});resolve(all);return;}var slice=file.slice(offset,offset+CHUNK);slice.arrayBuffer().then(function(buf){chunks.push(new Uint8Array(buf));offset+=buf.byteLength;setProgress(offset,file.size,'Reading file…');setTimeout(next,0);}).catch(reject);}next();});}
+function handleFile(file){if(!file)return;if(state.busy){setStatus('Please wait — still working on the previous file.','err');return;}if(file.size>MAX_BYTES){setStatus('That file is '+formatBytes(file.size)+' — over the 200 MB limit for this browser tool. Use PowerShell Get-FileHash (Windows) or shasum (Mac/Linux) for very large files.','err');return;}if(file.size===0){setStatus('That file is empty (0 bytes). Its hashes are shown below anyway.','err');}state.busy=true;setStatus('Reading '+file.name+'…');readFileInChunks(file).then(function(bytes){return computeAll(bytes,{name:file.name,size:file.size,type:file.type||'unknown'});}).then(function(){state.busy=false;}).catch(function(){state.busy=false;setProgress(null);setStatus('Could not read that file. Try again, or choose a different file.','err');});}
+var textTimer=null;
+function handleText(){var text=$('textInput').value;clearTimeout(textTimer);textTimer=setTimeout(function(){if(state.busy)return;state.busy=true;var bytes=new TextEncoder().encode(text);computeAll(bytes,{text:text,size:bytes.length}).then(function(){state.busy=false;}).catch(function(){state.busy=false;setStatus('Could not hash that text. Try again.','err');});},250);}
+document.querySelectorAll('#modeSeg button').forEach(function(b){b.addEventListener('click',function(){state.mode=b.getAttribute('data-mode');document.querySelectorAll('#modeSeg button').forEach(function(x){x.classList.toggle('active',x===b);});$('fileMode').style.display=state.mode==='file'?'block':'none';$('textMode').style.display=state.mode==='text'?'block':'none';if(state.mode==='text')handleText();});});
+var dz=$('dropZone');
+dz.addEventListener('click',function(){$('fileInput').click();});
+dz.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();$('fileInput').click();}});
+['dragenter','dragover'].forEach(function(ev){dz.addEventListener(ev,function(e){e.preventDefault();dz.classList.add('drag');});});
+['dragleave','drop'].forEach(function(ev){dz.addEventListener(ev,function(e){e.preventDefault();dz.classList.remove('drag');});});
+dz.addEventListener('drop',function(e){var f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];handleFile(f);});
+$('fileInput').addEventListener('change',function(){handleFile(this.files&&this.files[0]);this.value='';});
+$('btnSample').addEventListener('click',function(){var text='Dark Tech Zone — sample file for hash checking.\nLearn. Build. Secure.\n';var blob=new Blob([text],{type:'text/plain'});var file=new File([blob],'dtz-sample.txt',{type:'text/plain'});handleFile(file);});
+$('textInput').addEventListener('input',handleText);
+document.querySelectorAll('.sample-text').forEach(function(b){b.addEventListener('click',function(){$('textInput').value=b.getAttribute('data-text');handleText();});});
+$('expectedInput').addEventListener('input',runVerify);
+$('btnCopyAll').addEventListener('click',function(){if(!state.hashes)return;copyText(buildReport(state.meta,state.hashes),'All hashes copied. Paste them anywhere to share.');});
+$('btnDownloadReport').addEventListener('click',function(){if(!state.hashes)return;var name=(state.meta&&state.meta.name?state.meta.name.replace(/[^a-z0-9._-]+/gi,'-'):'text')+'-hashes.txt';var blob=new Blob([buildReport(state.meta,state.hashes)],{type:'text/plain;charset=utf-8'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},400);setStatus('Report downloaded.','ok');});
+$('btnClearRecent').addEventListener('click',function(){try{localStorage.removeItem('dtz_hash_recent_v1');}catch(e){}renderRecents();});
+renderRecents();
+})();
+</script>
+<!-- DTZ Splash Intro (added 2026-11-25) -->
+<style>
+#dtz-splash-overlay{position:fixed;inset:0;z-index:2147483647;background:#02040a;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Segoe UI',Arial,sans-serif;opacity:1;transition:opacity .45s ease;cursor:pointer}
+#dtz-splash-overlay.dtz-splash-hide{opacity:0;pointer-events:none}
+.dtz-splash-logo-wrap{position:relative;width:190px;height:190px;margin-bottom:22px}
+.dtz-splash-ring{position:absolute;border-radius:50%;border:3px solid transparent}
+.dtz-splash-ring1{inset:-12px;border-top-color:#00e5ff;border-bottom-color:#00e5ff;animation:dtz-splash-spin 3.2s linear infinite}
+.dtz-splash-ring2{inset:-22px;border-left-color:#ff2e88;border-right-color:#ff2e88;animation:dtz-splash-spin-rev 4.6s linear infinite}
+.dtz-splash-ring3{inset:-32px;border-top-color:#9d4dff;animation:dtz-splash-spin 7s linear infinite;opacity:.7}
+@keyframes dtz-splash-spin{to{transform:rotate(360deg)}}
+@keyframes dtz-splash-spin-rev{to{transform:rotate(-360deg)}}
+.dtz-splash-logo{width:100%;height:100%;border-radius:50%;object-fit:cover;box-shadow:0 0 42px #00e5ff,0 0 90px rgba(157,77,255,.45);animation:dtz-splash-logo-in .8s cubic-bezier(.17,.89,.32,1.28) both}
+@keyframes dtz-splash-logo-in{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+.dtz-splash-title{font-size:30px;font-weight:900;letter-spacing:5px;text-transform:uppercase;color:#fff;text-align:center;animation:dtz-splash-title-in .7s ease .25s both}
+.dtz-splash-title span{color:#00e5ff}
+@keyframes dtz-splash-title-in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.dtz-splash-tagline{margin-top:8px;font-size:14px;letter-spacing:5px;text-transform:uppercase;color:#8be9ff;text-align:center;animation:dtz-splash-title-in .7s ease .45s both}
+.dtz-splash-skip{margin-top:20px;font-size:11px;letter-spacing:2px;color:#5b7186;text-transform:uppercase}
+@media (prefers-reduced-motion:reduce){.dtz-splash-ring,.dtz-splash-logo,.dtz-splash-title,.dtz-splash-tagline{animation:none!important}}
+@media (max-width:480px){.dtz-splash-logo-wrap{width:150px;height:150px}.dtz-splash-title{font-size:22px;letter-spacing:3px}.dtz-splash-tagline{font-size:12px;letter-spacing:3px}}
+</style>
+<div id="dtz-splash-overlay" role="presentation">
+  <div class="dtz-splash-logo-wrap">
+    <div class="dtz-splash-ring dtz-splash-ring1"></div>
+    <div class="dtz-splash-ring dtz-splash-ring2"></div>
+    <div class="dtz-splash-ring dtz-splash-ring3"></div>
+    <img class="dtz-splash-logo" src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone" onerror="this.style.display='none'">
+  </div>
+  <div class="dtz-splash-title">Dark <span>Tech</span> Zone</div>
+  <div class="dtz-splash-tagline">Learn. Build. Secure.</div>
+  <div class="dtz-splash-skip">Tap to skip</div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('dtz-splash-overlay');
+  if(!el)return;
+  var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var done=false;
+  function hide(){
+    if(done)return;done=true;
+    el.classList.add('dtz-splash-hide');
+    setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},500);
+  }
+  el.addEventListener('click',hide);
+  el.addEventListener('touchstart',hide,{passive:true});
+  setTimeout(hide,reduced?350:2500);
+})();
+</script>
+<!-- /DTZ Splash Intro -->
+
+</body>
+</html>
