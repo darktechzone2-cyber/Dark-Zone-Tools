@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTZ Beat Studio — Free Online Piano &amp; Beat Maker | Dark Tech Zone</title>
+<meta name="description" content="Play piano, build drum beats, record your melody and download your song as a WAV file. Free online beat maker by Dark Tech Zone — no signup, no install, works in your browser.">
+<link rel="icon" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg">
+<link rel="canonical" href="https://www.darktechzon.site/beat-studio/">
+<style>
+:root{
+  --bg:#070b16; --panel:#0d1424; --panel2:#111b31; --line:#1e2c4d;
+  --text:#eef3ff; --muted:#93a5c9; --cyan:#00e5ff; --pink:#ff2e88; --purple:#9d4dff;
+  --green:#2ee66b; --amber:#ffb020; --red:#ff4d5e;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,Arial,sans-serif;line-height:1.5;padding-bottom:40px}
+a{color:var(--cyan);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:1080px;margin:0 auto;padding:0 14px}
+header.top{border-bottom:1px solid var(--line);background:linear-gradient(180deg,#0a1122,#070b16)}
+.top-inner{display:flex;align-items:center;gap:14px;padding:14px 0;flex-wrap:wrap}
+.logo-img{width:52px;height:52px;border-radius:50%;object-fit:cover;box-shadow:0 0 18px rgba(0,229,255,.5)}
+.brand h1{font-size:24px;letter-spacing:1px}
+.brand h1 span{color:var(--cyan)}
+.brand p{color:var(--muted);font-size:13px}
+.top-links{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.chip-link{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--panel);color:var(--text);padding:7px 12px;border-radius:999px;font-size:13px}
+.chip-link:hover{border-color:var(--cyan);text-decoration:none}
+.chip-link svg{width:15px;height:15px}
+.hero{padding:22px 0 6px;text-align:center}
+.hero h2{font-size:30px;line-height:1.2}
+.hero h2 span{background:linear-gradient(90deg,var(--cyan),var(--purple),var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--muted);max-width:720px;margin:8px auto 0;font-size:15px}
+.badges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+.badge{font-size:12px;color:var(--muted);border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:4px 10px}
+.badge b{color:var(--text)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:16px}
+.panel h3{font-size:16px;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.panel h3 svg{width:18px;height:18px;color:var(--cyan)}
+.panel .sub{color:var(--muted);font-size:13px;margin-bottom:12px}
+.transport{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:10px 16px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+.btn svg{width:16px;height:16px;flex:none}
+.btn:hover{border-color:var(--cyan)}
+.btn.primary{background:linear-gradient(90deg,#0077ff,#00b8d9);border-color:transparent;color:#fff}
+.btn.play-on{background:linear-gradient(90deg,#0a9d4d,#2ee66b);border-color:transparent;color:#04150a}
+.btn.rec-on{background:linear-gradient(90deg,#c2183f,#ff4d5e);border-color:transparent;color:#fff}
+.btn.small{padding:7px 11px;font-size:13px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.ctl{display:flex;align-items:center;gap:8px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:7px 12px}
+.ctl label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+.ctl output{font-weight:700;min-width:52px;text-align:right;font-variant-numeric:tabular-nums}
+input[type=range]{accent-color:var(--cyan);width:130px}
+select{background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px 10px;font-size:14px;font-family:inherit}
+input[type=text]{background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:14px;font-family:inherit;min-width:0}
+.toggle{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--muted);cursor:pointer;user-select:none}
+.toggle input{accent-color:var(--cyan);width:17px;height:17px}
+.status-line{margin-top:12px;font-size:13px;color:var(--muted);min-height:20px}
+.status-line b{color:var(--text)}
+.seq-wrap{overflow-x:auto;padding-bottom:4px}
+.seq{display:grid;gap:6px;min-width:640px}
+.seq-row{display:grid;grid-template-columns:74px repeat(16,1fr);gap:5px;align-items:center}
+.seq-label{font-size:12px;font-weight:700;letter-spacing:.5px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.seq-label .dot{width:10px;height:10px;border-radius:50%;flex:none}
+.step{height:40px;border-radius:8px;border:1px solid var(--line);background:#0a1120;cursor:pointer;padding:0;transition:transform .05s}
+.step.beat{border-color:#2c4476}
+.step.on-kick{background:var(--pink);border-color:var(--pink)}
+.step.on-snare{background:var(--amber);border-color:var(--amber)}
+.step.on-hat{background:var(--cyan);border-color:var(--cyan)}
+.step.on-clap{background:var(--purple);border-color:var(--purple)}
+.step.now{outline:2px solid #fff;outline-offset:1px}
+.step:hover{transform:scale(1.06)}
+.presets{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.preset-btn{border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:999px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+.preset-btn:hover{border-color:var(--pink)}
+.piano-scroll{overflow-x:auto;padding-bottom:6px}
+.piano{position:relative;display:flex;min-width:700px;height:210px;user-select:none;touch-action:none}
+.wkey{flex:1;background:linear-gradient(180deg,#fdfdff,#dfe6f5);border:1px solid #9fb0cf;border-radius:0 0 8px 8px;cursor:pointer;position:relative;display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;color:#5b6b8c;font-size:11px;font-weight:700}
+.wkey.active{background:linear-gradient(180deg,#b8f4ff,#5fd8f2)}
+.wkey.scale-hint{box-shadow:inset 0 -14px 0 rgba(0,229,255,.35)}
+.bkey{position:absolute;top:0;width:4.4%;height:128px;background:linear-gradient(180deg,#2a3350,#05070d);border:1px solid #000;border-radius:0 0 6px 6px;cursor:pointer;z-index:2;color:#8fa3cc;font-size:9px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:6px}
+.bkey.active{background:linear-gradient(180deg,#7b2ff7,#3d1470)}
+.bkey.scale-hint{box-shadow:inset 0 -10px 0 rgba(157,77,255,.65)}
+.piano-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.now-note{font-size:14px;color:var(--muted)}
+.now-note b{color:var(--cyan);font-size:17px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:820px){.grid2{grid-template-columns:1fr}}
+.proj-list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.proj-item{display:flex;align-items:center;gap:8px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:9px 12px}
+.proj-item .nm{font-weight:700;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.proj-item .meta{color:var(--muted);font-size:12px}
+.proj-item .spacer{flex:1}
+.empty-note{color:var(--muted);font-size:13px;border:1px dashed var(--line);border-radius:10px;padding:12px;text-align:center}
+.howto ol{margin-left:20px;color:var(--muted);font-size:14px}
+.howto li{margin:6px 0}
+.howto b{color:var(--text)}
+kbd{background:#1b2745;border:1px solid #33497c;border-bottom-width:2px;border-radius:5px;padding:1px 6px;font-size:12px;font-family:inherit;color:var(--text)}
+footer{margin-top:26px;border-top:1px solid var(--line);padding-top:18px;color:var(--muted);font-size:13px;text-align:center}
+footer .flinks{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:8px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);background:#0e2a3d;border:1px solid var(--cyan);color:var(--text);padding:11px 18px;border-radius:12px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:.25s;z-index:9999;max-width:92vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.audio-player{width:100%;margin-top:10px}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap top-inner">
+    <img class="logo-img" src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone logo" onerror="this.style.display='none'">
+    <div class="brand">
+      <h1>Dark <span>Tech</span> Zone</h1>
+      <p>Free tools for everyone — Learn. Build. Secure.</p>
+    </div>
+    <nav class="top-links">
+      <a class="chip-link" href="https://www.darktechzon.site/">All Tools</a>
+      <a class="chip-link" href="https://whatsapp.com/channel/0029Vb9oK008V0txIkc3oj3z" target="_blank" rel="noopener">WhatsApp Channel</a>
+      <a class="chip-link" href="https://youtube.com/@darktechzone1" target="_blank" rel="noopener">YouTube</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <h2>DTZ <span>Beat Studio</span></h2>
+    <p>Play the piano, build a drum beat, record your own melody and download your finished song as a WAV file. Everything runs in your browser — nothing is uploaded.</p>
+    <div class="badges">
+      <span class="badge"><b>100% Free</b> — no signup</span>
+      <span class="badge"><b>4 instruments</b> + drum machine</span>
+      <span class="badge"><b>Download WAV</b> of your song</span>
+      <span class="badge"><b>Share link</b> for your beat</span>
+    </div>
+  </section>
+
+  <section class="panel" aria-label="Studio transport">
+    <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg> Studio Controls</h3>
+    <p class="sub">Press Play to start the drum loop, then play the piano on top. Use the Record Song button when your beat is ready.</p>
+    <div class="transport">
+      <button class="btn primary" id="btnPlay" type="button">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg><span id="btnPlayLabel">Play Beat</span>
+      </button>
+      <div class="ctl"><label for="bpmRange">Tempo</label><input type="range" id="bpmRange" min="60" max="180" step="1" value="100"><output id="bpmOut">100 BPM</output></div>
+      <div class="ctl"><label for="volRange">Volume</label><input type="range" id="volRange" min="0" max="100" step="1" value="80"><output id="volOut">80%</output></div>
+      <div class="ctl"><label for="instSelect">Instrument</label>
+        <select id="instSelect">
+          <option value="piano" selected>Piano</option>
+          <option value="synth">Synth</option>
+          <option value="bell">Bell</option>
+          <option value="bass">Bass</option>
+        </select>
+      </div>
+      <label class="toggle"><input type="checkbox" id="chkMetro"> Metronome</label>
+      <label class="toggle"><input type="checkbox" id="chkScale" checked> Easy scale highlight</label>
+    </div>
+    <div class="status-line" id="statusLine">Ready. Tap any piano key or press Play Beat to start.</div>
+  </section>
+
+  <section class="panel" aria-label="Drum sequencer">
+    <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg> Drum Machine — 16 Steps</h3>
+    <p class="sub">Tap squares to switch drum sounds on or off. Each row is one drum: Kick, Snare, Hi-Hat and Clap. The white outline shows the step playing right now.</p>
+    <div class="seq-wrap"><div class="seq" id="seqGrid"></div></div>
+    <div class="presets" id="presetRow"></div>
+    <div class="presets">
+      <button class="btn small" id="btnRandom" type="button">Random Beat</button>
+      <button class="btn small" id="btnClearBeat" type="button">Clear Beat</button>
+      <button class="btn small" id="btnCopyBeat" type="button">Copy Beat Pattern</button>
+    </div>
+  </section>
+
+  <section class="panel" aria-label="Piano keyboard">
+    <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 6v7M10 6v7M14 6v7M18 6v7"/></svg> Piano — Play Your Melody</h3>
+    <p class="sub">Tap or click the keys, or use your computer keyboard: <kbd>A</kbd> <kbd>W</kbd> <kbd>S</kbd> <kbd>E</kbd> <kbd>D</kbd> <kbd>F</kbd> <kbd>T</kbd> <kbd>G</kbd> <kbd>Y</kbd> <kbd>H</kbd> <kbd>U</kbd> <kbd>J</kbd> <kbd>K</kbd>. Highlighted keys are in the C major pentatonic scale, so they always sound good together.</p>
+    <div class="piano-scroll"><div class="piano" id="pianoKeys"></div></div>
+    <div class="piano-tools">
+      <button class="btn small" id="btnOctDown" type="button">Octave −</button>
+      <span class="now-note">Range: <b id="octLabel">C4 – B5</b></span>
+      <button class="btn small" id="btnOctUp" type="button">Octave +</button>
+      <span class="now-note">Last note: <b id="lastNote">—</b></span>
+    </div>
+    <div class="piano-tools">
+      <button class="btn small" id="btnRecMelody" type="button">
+        <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="7"/></svg><span id="btnRecMelodyLabel">Record Melody</span>
+      </button>
+      <button class="btn small" id="btnPlayMelody" type="button">Play Melody</button>
+      <button class="btn small" id="btnClearMelody" type="button">Clear Melody</button>
+      <span class="now-note" id="melodyInfo">No melody recorded yet.</span>
+    </div>
+  </section>
+
+  <div class="grid2">
+    <section class="panel" aria-label="Export your song">
+      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-4-4m4 4l4-4"/><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg> Record &amp; Download Your Song</h3>
+      <p class="sub">Export renders your drum beat plus your recorded melody into a real WAV audio file on your device.</p>
+      <div class="transport">
+        <div class="ctl"><label for="barsSelect">Length</label>
+          <select id="barsSelect">
+            <option value="1">1 bar</option>
+            <option value="2" selected>2 bars</option>
+            <option value="4">4 bars</option>
+            <option value="8">8 bars</option>
+          </select>
+        </div>
+        <button class="btn primary" id="btnExportWav" type="button">Download WAV</button>
+        <button class="btn" id="btnRecLive" type="button"><span id="btnRecLiveLabel">Record Live Playing</span></button>
+      </div>
+      <audio class="audio-player hidden" id="livePlayer" controls></audio>
+      <div class="status-line" id="exportStatus">Tip: record a melody first, then export — the WAV will contain drums + melody together.</div>
+    </section>
+
+    <section class="panel" aria-label="Save and share">
+      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg> Save &amp; Share Projects</h3>
+      <p class="sub">Projects are saved in this browser only. The share link puts your whole beat inside the link itself — send it to anyone and they can play and edit it.</p>
+      <div class="transport">
+        <input type="text" id="projName" placeholder="Project name, e.g. My First Beat" maxlength="40" style="flex:1">
+        <button class="btn primary" id="btnSaveProj" type="button">Save Project</button>
+        <button class="btn" id="btnShare" type="button">Copy Share Link</button>
+        <button class="btn" id="btnDownloadJson" type="button">Download Project File</button>
+      </div>
+      <div class="proj-list" id="projList"></div>
+    </section>
+  </div>
+
+  <section class="panel howto" aria-label="How to use">
+    <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4m0-4h.01"/></svg> How To Make Your First Beat</h3>
+    <ol>
+      <li>Pick a ready-made style above the drum machine (for example <b>Desi Groove</b> or <b>Hip-Hop</b>), or tap squares to build your own pattern.</li>
+      <li>Press <b>Play Beat</b> and set the <b>Tempo</b> slider until the groove feels right.</li>
+      <li>Press <b>Record Melody</b>, play notes on the piano, then press it again to stop. Your melody will loop with the drums.</li>
+      <li>Choose a length and press <b>Download WAV</b> — your song file is created on your device, ready to share anywhere.</li>
+      <li>Press <b>Copy Share Link</b> to send your beat to friends. They open the link and hear exactly your pattern and melody.</li>
+    </ol>
+    <p class="sub" style="margin-top:10px">Honest note: all sounds are synthesized live by your browser (Web Audio). No audio files are downloaded and nothing you play is uploaded anywhere.</p>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="flinks">
+      <a href="https://www.darktechzon.site/">darktechzon.site — All Free Tools</a>
+      <a href="https://whatsapp.com/channel/0029Vb9oK008V0txIkc3oj3z" target="_blank" rel="noopener">WhatsApp Channel</a>
+      <a href="https://youtube.com/@darktechzone1" target="_blank" rel="noopener">YouTube @darktechzone1</a>
+    </div>
+    <p>DTZ Beat Studio by Dark Tech Zone — Learn. Build. Secure.</p>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status"></div>
+<script>
+/*DTZ-HELPERS-START*/
+'use strict';
+var NOTE_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+var DRUM_ROWS = ['kick','snare','hat','clap'];
+var DRUM_LABELS = {kick:'Kick', snare:'Snare', hat:'Hi-Hat', clap:'Clap'};
+var INSTRUMENTS = ['piano','synth','bell','bass'];
+var PENTATONIC = [0,2,4,7,9];
+var KEY_MAP = {a:0,w:1,s:2,e:3,d:4,f:5,t:6,g:7,y:8,h:9,u:10,j:11,k:12,o:13,l:14,p:15,';':16};
+function esc(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+function noteFreq(midi){
+  return 440 * Math.pow(2, (midi - 69) / 12);
+}
+function noteName(midi){
+  var n = NOTE_NAMES[((midi % 12) + 12) % 12];
+  var oct = Math.floor(midi / 12) - 1;
+  return n + oct;
+}
+function isBlackKey(midi){
+  var pc = ((midi % 12) + 12) % 12;
+  return pc === 1 || pc === 3 || pc === 6 || pc === 8 || pc === 10;
+}
+function inScale(midi){
+  var pc = ((midi % 12) + 12) % 12;
+  return PENTATONIC.indexOf(pc) !== -1;
+}
+function clampBpm(v){
+  v = Math.round(Number(v) || 100);
+  if (v < 60) return 60;
+  if (v > 180) return 180;
+  return v;
+}
+function stepDuration(bpm){
+  return 60 / clampBpm(bpm) / 4;
+}
+function barDuration(bpm){
+  return stepDuration(bpm) * 16;
+}
+function emptyPattern(){
+  var p = {};
+  DRUM_ROWS.forEach(function(r){ p[r] = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]; });
+  return p;
+}
+function patternFromStrings(map){
+  var p = emptyPattern();
+  DRUM_ROWS.forEach(function(r){
+    var s = String(map[r] || '');
+    for (var i = 0; i < 16; i++){ p[r][i] = s.charAt(i) === '1' ? 1 : 0; }
+  });
+  return p;
+}
+var PRESETS = [
+  {name:'Hip-Hop', bpm:90, rows:{kick:'1000000100100000', snare:'0000100000001000', hat:'1010101010101010', clap:'0000000000000000'}},
+  {name:'EDM', bpm:128, rows:{kick:'1000100010001000', snare:'0000000000000000', hat:'0010001000100010', clap:'0000100000001000'}},
+  {name:'Rock', bpm:120, rows:{kick:'1000000010000000', snare:'0000100000001000', hat:'1111111111111111', clap:'0000000000000000'}},
+  {name:'Desi Groove', bpm:100, rows:{kick:'1001000010010000', snare:'0000000000000000', hat:'1011101110111011', clap:'0010001000100010'}},
+  {name:'Chill', bpm:75, rows:{kick:'1000000000100000', snare:'0000100000001000', hat:'1000100010001000', clap:'0000000000000000'}}
+];
+function randomPattern(rand){
+  rand = rand || Math.random;
+  var p = emptyPattern();
+  for (var i = 0; i < 16; i++){
+    if (i % 4 === 0) p.kick[i] = 1;
+    else if (rand() < 0.18) p.kick[i] = 1;
+    if (i === 4 || i === 12) p.snare[i] = 1;
+    else if (rand() < 0.05) p.snare[i] = 1;
+    if (i % 2 === 0) p.hat[i] = rand() < 0.85 ? 1 : 0;
+    else if (rand() < 0.3) p.hat[i] = 1;
+    if ((i === 7 || i === 15) && rand() < 0.5) p.clap[i] = 1;
+  }
+  return p;
+}
+function countActiveSteps(p){
+  var n = 0;
+  DRUM_ROWS.forEach(function(r){
+    (p[r] || []).forEach(function(v){ if (v) n++; });
+  });
+  return n;
+}
+function patternToText(p, bpm){
+  var lines = ['DTZ Beat Studio pattern — ' + clampBpm(bpm) + ' BPM'];
+  DRUM_ROWS.forEach(function(r){
+    var row = (p[r] || []).map(function(v){ return v ? 'X' : '.'; }).join('');
+    lines.push(DRUM_LABELS[r] + ': ' + row);
+  });
+  lines.push('Make your own free beat: https://www.darktechzon.site/beat-studio/');
+  return lines.join('\n');
+}
+function sanitizeMelody(mel){
+  if (!Array.isArray(mel)) return [];
+  return mel.filter(function(n){
+    return n && isFinite(n.midi) && isFinite(n.t) && isFinite(n.dur) && n.midi >= 21 && n.midi <= 108 && n.t >= 0 && n.dur > 0;
+  }).slice(0, 512).map(function(n){
+    return {midi: Math.round(n.midi), t: Math.round(n.t * 1000) / 1000, dur: Math.round(Math.min(n.dur, 8) * 1000) / 1000};
+  });
+}
+function sanitizeProject(obj){
+  if (!obj || typeof obj !== 'object') return null;
+  var p = emptyPattern();
+  if (obj.pattern && typeof obj.pattern === 'object'){
+    DRUM_ROWS.forEach(function(r){
+      var arr = obj.pattern[r];
+      if (Array.isArray(arr)){
+        for (var i = 0; i < 16; i++){ p[r][i] = arr[i] ? 1 : 0; }
+      }
+    });
+  }
+  var inst = INSTRUMENTS.indexOf(obj.instrument) !== -1 ? obj.instrument : 'piano';
+  return {
+    name: String(obj.name || 'Untitled Beat').slice(0, 40),
+    bpm: clampBpm(obj.bpm),
+    instrument: inst,
+    pattern: p,
+    melody: sanitizeMelody(obj.melody)
+  };
+}
+function encodeShare(project){
+  var clean = sanitizeProject(project);
+  if (!clean) return '';
+  var json = JSON.stringify(clean);
+  var bytes = new TextEncoder().encode(json);
+  var bin = '';
+  bytes.forEach(function(b){ bin += String.fromCharCode(b); });
+  return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+function decodeShare(str){
+  try {
+    if (!str || typeof str !== 'string' || str.length > 20000) return null;
+    var b64 = str.replace(/-/g, '+').replace(/_/g, '/');
+    while (b64.length % 4) b64 += '=';
+    var bin = atob(b64);
+    var bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    var json = new TextDecoder().decode(bytes);
+    return sanitizeProject(JSON.parse(json));
+  } catch (e) { return null; }
+}
+function floatTo16BitPCM(output, offset, input){
+  for (var i = 0; i < input.length; i++, offset += 2){
+    var s = Math.max(-1, Math.min(1, input[i]));
+    output.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+  }
+}
+function writeString(view, offset, str){
+  for (var i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
+}
+function encodeWAV(channels, sampleRate){
+  var numCh = channels.length;
+  var len = channels[0].length;
+  var buffer = new ArrayBuffer(44 + len * numCh * 2);
+  var view = new DataView(buffer);
+  writeString(view, 0, 'RIFF');
+  view.setUint32(4, 36 + len * numCh * 2, true);
+  writeString(view, 8, 'WAVE');
+  writeString(view, 12, 'fmt ');
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true);
+  view.setUint16(22, numCh, true);
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, sampleRate * numCh * 2, true);
+  view.setUint16(32, numCh * 2, true);
+  view.setUint16(34, 16, true);
+  writeString(view, 36, 'data');
+  view.setUint32(40, len * numCh * 2, true);
+  var offset = 44;
+  if (numCh === 1){
+    floatTo16BitPCM(view, offset, channels[0]);
+  } else {
+    var inter = new Float32Array(len * numCh);
+    for (var i = 0; i < len; i++){
+      for (var c = 0; c < numCh; c++) inter[i * numCh + c] = channels[c][i];
+    }
+    floatTo16BitPCM(view, offset, inter);
+  }
+  return buffer;
+}
+function formatDuration(sec){
+  sec = Math.max(0, Math.round(sec));
+  var m = Math.floor(sec / 60);
+  var s = sec % 60;
+  return m + ':' + (s < 10 ? '0' : '') + s;
+}
+function exportFileName(name){
+  var base = String(name || 'dtz-beat').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  if (!base) base = 'dtz-beat';
+  return base.slice(0, 40) + '.wav';
+}
+/*DTZ-HELPERS-END*/
+</script>
+<script>
+(function(){
+'use strict';
+function $(id){ return document.getElementById(id); }
+var LS_KEY = 'dtzBeatStudioProjectsV1';
+var LS_AUTO = 'dtzBeatStudioAutosaveV1';
+
+var state = {
+  bpm: 100,
+  instrument: 'piano',
+  pattern: patternFromStrings(PRESETS[3].rows),
+  melody: [],
+  baseMidi: 60,
+  volume: 0.8
+};
+
+var actx = null, master = null, noiseBuf = null, recDest = null;
+var playing = false, schedTimer = null, nextStepTime = 0, currentStep = 0, playStartCtxTime = 0;
+var recMelody = false, recMelodyStart = 0, openNotes = {};
+var liveRec = null, liveChunks = [];
+var activeVoices = {};
+
+function toast(msg){
+  var t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._h);
+  t._h = setTimeout(function(){ t.classList.remove('show'); }, 2600);
+}
+function setStatus(msg){ $('statusLine').textContent = msg; }
+function setExportStatus(msg){ $('exportStatus').textContent = msg; }
+
+function ensureAudio(){
+  if (actx) { if (actx.state === 'suspended') actx.resume(); return actx; }
+  var AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) { setStatus('This browser does not support Web Audio. Please use Chrome, Edge, Firefox or Safari.'); return null; }
+  actx = new AC();
+  var comp = actx.createDynamicsCompressor();
+  comp.threshold.value = -18; comp.ratio.value = 6;
+  master = actx.createGain();
+  master.gain.value = state.volume;
+  master.connect(comp); comp.connect(actx.destination);
+  recDest = actx.createMediaStreamDestination();
+  master.connect(recDest);
+  var len = actx.sampleRate * 1;
+  noiseBuf = actx.createBuffer(1, len, actx.sampleRate);
+  var d = noiseBuf.getChannelData(0);
+  for (var i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+  return actx;
+}
+
+function makeNoise(ctx, dest, time, dur, filterType, freq, gainVal, q){
+  var src = ctx.createBufferSource();
+  src.buffer = noiseBuf || (function(){
+    var b = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
+    var ch = b.getChannelData(0);
+    for (var i = 0; i < ch.length; i++) ch[i] = Math.random() * 2 - 1;
+    return b;
+  })();
+  var f = ctx.createBiquadFilter();
+  f.type = filterType; f.frequency.value = freq; f.Q.value = q || 0.8;
+  var g = ctx.createGain();
+  g.gain.setValueAtTime(gainVal, time);
+  g.gain.exponentialRampToValueAtTime(0.001, time + dur);
+  src.connect(f); f.connect(g); g.connect(dest);
+  src.start(time); src.stop(time + dur + 0.02);
+}
+
+function playDrum(ctx, dest, row, time){
+  if (row === 'kick'){
+    var o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(150, time);
+    o.frequency.exponentialRampToValueAtTime(45, time + 0.12);
+    g.gain.setValueAtTime(0.95, time);
+    g.gain.exponentialRampToValueAtTime(0.001, time + 0.24);
+    o.connect(g); g.connect(dest);
+    o.start(time); o.stop(time + 0.26);
+  } else if (row === 'snare'){
+    makeNoise(ctx, dest, time, 0.16, 'bandpass', 1800, 0.55, 0.7);
+    var o2 = ctx.createOscillator(), g2 = ctx.createGain();
+    o2.type = 'triangle'; o2.frequency.value = 190;
+    g2.gain.setValueAtTime(0.35, time);
+    g2.gain.exponentialRampToValueAtTime(0.001, time + 0.09);
+    o2.connect(g2); g2.connect(dest);
+    o2.start(time); o2.stop(time + 0.1);
+  } else if (row === 'hat'){
+    makeNoise(ctx, dest, time, 0.05, 'highpass', 7500, 0.3, 0.7);
+  } else if (row === 'clap'){
+    for (var k = 0; k < 3; k++){
+      makeNoise(ctx, dest, time + k * 0.02, 0.05, 'bandpass', 1200, 0.4, 1.5);
+    }
+    makeNoise(ctx, dest, time + 0.06, 0.18, 'bandpass', 1200, 0.3, 1.5);
+  }
+}
+
+function playTone(ctx, dest, midi, time, dur, instrument, velocity){
+  var freq = noteFreq(midi);
+  var g = ctx.createGain();
+  g.connect(dest);
+  var vel = velocity == null ? 0.8 : velocity;
+  var oscs = [];
+  function osc(type, f, gv){
+    var o = ctx.createOscillator(); o.type = type; o.frequency.value = f;
+    var og = ctx.createGain(); og.gain.value = gv;
+    o.connect(og); og.connect(g);
+    oscs.push(o);
+    return o;
+  }
+  var attack = 0.005, decayTo = 0.001;
+  if (instrument === 'piano'){
+    osc('triangle', freq, 0.85);
+    osc('sine', freq * 2, 0.28);
+    osc('sine', freq * 3, 0.1);
+    g.gain.setValueAtTime(0, time);
+    g.gain.linearRampToValueAtTime(0.75 * vel, time + attack);
+    g.gain.exponentialRampToValueAtTime(0.22 * vel, time + 0.18);
+    g.gain.exponentialRampToValueAtTime(decayTo, time + Math.max(dur, 0.7));
+  } else if (instrument === 'synth'){
+    osc('sawtooth', freq, 0.5);
+    osc('square', freq / 2, 0.22);
+    var f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 2600;
+    g.disconnect(); g.connect(f); f.connect(dest);
+    g.gain.setValueAtTime(0, time);
+    g.gain.linearRampToValueAtTime(0.6 * vel, time + attack);
+    g.gain.setValueAtTime(0.6 * vel, time + Math.max(dur - 0.06, attack));
+    g.gain.exponentialRampToValueAtTime(decayTo, time + Math.max(dur, 0.25));
+  } else if (instrument === 'bell'){
+    osc('sine', freq, 0.7);
+    osc('sine', freq * 2.76, 0.3);
+    osc('sine', freq * 5.4, 0.12);
+    g.gain.setValueAtTime(0, time);
+    g.gain.linearRampToValueAtTime(0.65 * vel, time + attack);
+    g.gain.exponentialRampToValueAtTime(decayTo, time + Math.max(dur, 1.4));
+  } else {
+    osc('sine', freq / 2, 0.9);
+    osc('triangle', freq, 0.3);
+    g.gain.setValueAtTime(0, time);
+    g.gain.linearRampToValueAtTime(0.85 * vel, time + attack);
+    g.gain.exponentialRampToValueAtTime(decayTo, time + Math.max(dur, 0.5));
+  }
+  var stopAt = time + Math.max(dur, 1.5) + 0.05;
+  oscs.forEach(function(o){ o.start(time); o.stop(stopAt); });
+  return {oscillators: oscs, gain: g, stopAt: stopAt};
+}
+
+function noteOn(midi){
+  var ctx = ensureAudio(); if (!ctx) return;
+  if (activeVoices[midi]) return;
+  var voice = playTone(ctx, master, midi, ctx.currentTime, 1.2, state.instrument, 0.85);
+  activeVoices[midi] = voice;
+  $('lastNote').textContent = noteName(midi) + ' (' + Math.round(noteFreq(midi)) + ' Hz)';
+  highlightKey(midi, true);
+  if (recMelody){
+    openNotes[midi] = ctx.currentTime - recMelodyStart;
+  }
+}
+function noteOff(midi){
+  var ctx = actx; if (!ctx) return;
+  var voice = activeVoices[midi];
+  if (voice){
+    try {
+      voice.gain.gain.cancelScheduledValues(ctx.currentTime);
+      voice.gain.gain.setValueAtTime(Math.max(voice.gain.gain.value, 0.05), ctx.currentTime);
+      voice.gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+      voice.oscillators.forEach(function(o){ try { o.stop(ctx.currentTime + 0.16); } catch(e){} });
+    } catch(e){}
+    delete activeVoices[midi];
+  }
+  highlightKey(midi, false);
+  if (recMelody && openNotes[midi] != null){
+    var t0 = openNotes[midi];
+    var dur = Math.max(0.08, (ctx.currentTime - recMelodyStart) - t0);
+    state.melody.push({midi: midi, t: Math.round(t0 * 1000) / 1000, dur: Math.round(dur * 1000) / 1000});
+    delete openNotes[midi];
+    updateMelodyInfo();
+    autosave();
+  }
+}
+function highlightKey(midi, on){
+  var el = document.querySelector('[data-midi="' + midi + '"]');
+  if (el) el.classList.toggle('active', !!on);
+}
+
+function scheduleStep(step, time){
+  DRUM_ROWS.forEach(function(row){
+    if (state.pattern[row][step]) playDrum(actx, master, row, time);
+  });
+  if ($('chkMetro').checked && step % 4 === 0){
+    playTone(actx, master, step === 0 ? 96 : 91, time, 0.07, 'bell', 0.25);
+  }
+  var delayMs = Math.max(0, (time - actx.currentTime) * 1000);
+  setTimeout(function(){ showStep(step); }, delayMs);
+}
+function showStep(step){
+  var cells = document.querySelectorAll('.step.now');
+  cells.forEach(function(c){ c.classList.remove('now'); });
+  if (!playing) return;
+  var col = document.querySelectorAll('[data-step="' + step + '"]');
+  col.forEach(function(c){ c.classList.add('now'); });
+}
+function schedulerTick(){
+  while (nextStepTime < actx.currentTime + 0.14){
+    scheduleStep(currentStep, nextStepTime);
+    nextStepTime += stepDuration(state.bpm);
+    currentStep = (currentStep + 1) % 16;
+  }
+}
+function startSequencer(){
+  var ctx = ensureAudio(); if (!ctx) return;
+  playing = true;
+  currentStep = 0;
+  playStartCtxTime = ctx.currentTime + 0.06;
+  nextStepTime = playStartCtxTime;
+  schedTimer = setInterval(schedulerTick, 25);
+  schedulerTick();
+  $('btnPlayLabel').textContent = 'Stop Beat';
+  $('btnPlay').classList.add('play-on');
+  setStatus('Beat playing at ' + state.bpm + ' BPM. Play the piano on top, or record a melody.');
+  if (state.melody.length) scheduleMelodyLoop();
+}
+function stopSequencer(){
+  playing = false;
+  if (schedTimer) clearInterval(schedTimer);
+  schedTimer = null;
+  showStep(-1);
+  document.querySelectorAll('.step.now').forEach(function(c){ c.classList.remove('now'); });
+  $('btnPlayLabel').textContent = 'Play Beat';
+  $('btnPlay').classList.remove('play-on');
+  setStatus('Beat stopped.');
+}
+function scheduleMelodyLoop(){
+  if (!playing || !state.melody.length) return;
+  var barLen = barDuration(state.bpm);
+  var startAt = playStartCtxTime;
+  var now = actx.currentTime;
+  while (startAt < now) startAt += barLen;
+  state.melody.forEach(function(n){
+    var t = startAt + (n.t % barLen);
+    playTone(actx, master, n.midi, t, Math.max(n.dur, 0.15), state.instrument, 0.8);
+    var delayMs = Math.max(0, (t - actx.currentTime) * 1000);
+    (function(midi, d){
+      setTimeout(function(){ highlightKey(midi, true); setTimeout(function(){ highlightKey(midi, false); }, 180); }, d);
+    })(n.midi, delayMs);
+  });
+  setTimeout(scheduleMelodyLoop, Math.max(50, (startAt + barLen - actx.currentTime) * 1000 - 120));
+}
+
+function playMelodyOnce(){
+  var ctx = ensureAudio(); if (!ctx) return;
+  if (!state.melody.length){ toast('No melody recorded yet. Press Record Melody and play some notes.'); return; }
+  var t0 = ctx.currentTime + 0.05;
+  state.melody.forEach(function(n){
+    playTone(ctx, master, n.midi, t0 + n.t, Math.max(n.dur, 0.15), state.instrument, 0.85);
+    (function(midi, d){
+      setTimeout(function(){ highlightKey(midi, true); setTimeout(function(){ highlightKey(midi, false); }, 200); }, d * 1000);
+    })(n.midi, n.t);
+  });
+  toast('Playing your melody (' + state.melody.length + ' notes).');
+}
+function updateMelodyInfo(){
+  var el = $('melodyInfo');
+  if (!state.melody.length){ el.textContent = 'No melody recorded yet.'; return; }
+  var end = 0;
+  state.melody.forEach(function(n){ end = Math.max(end, n.t + n.dur); });
+  el.textContent = 'Melody: ' + state.melody.length + ' notes, ' + formatDuration(end) + ' long. It loops with the beat and is included in WAV export.';
+}
+
+function currentProject(name){
+  return {
+    name: name || ($('projName').value.trim() || 'Untitled Beat'),
+    bpm: state.bpm,
+    instrument: state.instrument,
+    pattern: state.pattern,
+    melody: state.melody
+  };
+}
+function applyProject(proj){
+  var clean = sanitizeProject(proj);
+  if (!clean) return false;
+  state.bpm = clean.bpm;
+  state.instrument = clean.instrument;
+  state.pattern = clean.pattern;
+  state.melody = clean.melody;
+  $('bpmRange').value = clean.bpm;
+  $('bpmOut').textContent = clean.bpm + ' BPM';
+  $('instSelect').value = clean.instrument;
+  $('projName').value = clean.name === 'Untitled Beat' ? '' : clean.name;
+  renderSequencer();
+  updateMelodyInfo();
+  autosave();
+  return true;
+}
+function loadProjects(){
+  try {
+    var raw = localStorage.getItem(LS_KEY);
+    var arr = raw ? JSON.parse(raw) : [];
+    return Array.isArray(arr) ? arr.map(sanitizeProject).filter(Boolean) : [];
+  } catch(e){ return []; }
+}
+function saveProjects(arr){
+  try { localStorage.setItem(LS_KEY, JSON.stringify(arr.slice(0, 8))); } catch(e){}
+}
+function autosave(){
+  try { localStorage.setItem(LS_AUTO, JSON.stringify(currentProject())); } catch(e){}
+}
+function renderProjects(){
+  var list = loadProjects();
+  var box = $('projList');
+  box.innerHTML = '';
+  if (!list.length){
+    var d = document.createElement('div');
+    d.className = 'empty-note';
+    d.textContent = 'No saved projects yet. Make a beat, give it a name and press Save Project.';
+    box.appendChild(d);
+    return;
+  }
+  list.forEach(function(p, idx){
+    var item = document.createElement('div');
+    item.className = 'proj-item';
+    var left = document.createElement('div');
+    left.innerHTML = '<div class="nm">' + esc(p.name) + '</div><div class="meta">' + p.bpm + ' BPM · ' + esc(p.instrument) + ' · ' + countActiveSteps(p.pattern) + ' drum hits · ' + p.melody.length + ' notes</div>';
+    var spacer = document.createElement('div'); spacer.className = 'spacer';
+    var btnLoad = document.createElement('button'); btnLoad.className = 'btn small'; btnLoad.type = 'button'; btnLoad.textContent = 'Load';
+    btnLoad.addEventListener('click', function(){
+      if (applyProject(p)){ toast('Loaded project: ' + p.name); setStatus('Project loaded. Press Play Beat to hear it.'); }
+    });
+    var btnDel = document.createElement('button'); btnDel.className = 'btn small'; btnDel.type = 'button'; btnDel.textContent = 'Delete';
+    btnDel.addEventListener('click', function(){
+      var arr = loadProjects(); arr.splice(idx, 1); saveProjects(arr); renderProjects();
+      toast('Project deleted.');
+    });
+    item.appendChild(left); item.appendChild(spacer); item.appendChild(btnLoad); item.appendChild(btnDel);
+    box.appendChild(item);
+  });
+}
+
+function renderSequencer(){
+  var grid = $('seqGrid');
+  grid.innerHTML = '';
+  var colors = {kick:'var(--pink)', snare:'var(--amber)', hat:'var(--cyan)', clap:'var(--purple)'};
+  DRUM_ROWS.forEach(function(row){
+    var rowEl = document.createElement('div');
+    rowEl.className = 'seq-row';
+    var lab = document.createElement('div');
+    lab.className = 'seq-label';
+    lab.innerHTML = '<span class="dot" style="background:' + colors[row] + '"></span>' + DRUM_LABELS[row];
+    rowEl.appendChild(lab);
+    for (var s = 0; s < 16; s++){
+      (function(rowName, stepIdx){
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'step' + (stepIdx % 4 === 0 ? ' beat' : '') + (state.pattern[rowName][stepIdx] ? ' on-' + rowName : '');
+        b.setAttribute('data-step', String(stepIdx));
+        b.setAttribute('aria-label', DRUM_LABELS[rowName] + ' step ' + (stepIdx + 1));
+        b.addEventListener('click', function(){
+          state.pattern[rowName][stepIdx] = state.pattern[rowName][stepIdx] ? 0 : 1;
+          b.className = 'step' + (stepIdx % 4 === 0 ? ' beat' : '') + (state.pattern[rowName][stepIdx] ? ' on-' + rowName : '');
+          if (state.pattern[rowName][stepIdx]){
+            var ctx = ensureAudio();
+            if (ctx) playDrum(ctx, master, rowName, ctx.currentTime);
+          }
+          autosave();
+        });
+        rowEl.appendChild(b);
+      })(row, s);
+    }
+    grid.appendChild(rowEl);
+  });
+}
+function renderPresets(){
+  var row = $('presetRow');
+  row.innerHTML = '';
+  PRESETS.forEach(function(p){
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'preset-btn'; b.textContent = p.name + ' · ' + p.bpm;
+    b.addEventListener('click', function(){
+      state.pattern = patternFromStrings(p.rows);
+      state.bpm = clampBpm(p.bpm);
+      $('bpmRange').value = state.bpm;
+      $('bpmOut').textContent = state.bpm + ' BPM';
+      renderSequencer();
+      autosave();
+      toast(p.name + ' preset loaded at ' + state.bpm + ' BPM.');
+    });
+    row.appendChild(b);
+  });
+}
+function renderPiano(){
+  var box = $('pianoKeys');
+  box.innerHTML = '';
+  var whites = [];
+  for (var m = state.baseMidi; m < state.baseMidi + 24; m++){
+    if (!isBlackKey(m)) whites.push(m);
+  }
+  var whiteCount = whites.length;
+  whites.forEach(function(midi){
+    var k = document.createElement('div');
+    k.className = 'wkey' + (($('chkScale').checked && inScale(midi)) ? ' scale-hint' : '');
+    k.setAttribute('data-midi', String(midi));
+    k.textContent = noteName(midi);
+    bindKey(k, midi);
+    box.appendChild(k);
+  });
+  var whiteIndex = 0;
+  for (var m2 = state.baseMidi; m2 < state.baseMidi + 24; m2++){
+    if (!isBlackKey(m2)){ whiteIndex++; continue; }
+    (function(midi, wi){
+      var k = document.createElement('div');
+      k.className = 'bkey' + (($('chkScale').checked && inScale(midi)) ? ' scale-hint' : '');
+      k.setAttribute('data-midi', String(midi));
+      k.style.left = 'calc(' + (wi * (100 / whiteCount)) + '% - 2.2%)';
+      k.textContent = noteName(midi);
+      bindKey(k, midi);
+      box.appendChild(k);
+    })(m2, whiteIndex);
+  }
+  $('octLabel').textContent = noteName(state.baseMidi) + ' – ' + noteName(state.baseMidi + 23);
+}
+function bindKey(el, midi){
+  el.addEventListener('pointerdown', function(e){ e.preventDefault(); el.setPointerCapture && e.pointerId != null && el.setPointerCapture(e.pointerId); noteOn(midi); });
+  el.addEventListener('pointerup', function(){ noteOff(midi); });
+  el.addEventListener('pointercancel', function(){ noteOff(midi); });
+  el.addEventListener('pointerleave', function(){ noteOff(midi); });
+  el.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+}
+
+function copyText(text, okMsg){
+  function fallback(){
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); toast(okMsg); }
+    catch(e){ toast('Copy failed — please copy manually.'); }
+    document.body.removeChild(ta);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(function(){ toast(okMsg); }, fallback);
+  } else fallback();
+}
+function downloadBlob(blob, filename){
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){ URL.revokeObjectURL(url); document.body.removeChild(a); }, 400);
+}
+
+function exportWAV(){
+  var bars = parseInt($('barsSelect').value, 10) || 2;
+  var barLen = barDuration(state.bpm);
+  var totalSec = barLen * bars + 0.6;
+  var sampleRate = 44100;
+  var OC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+  if (!OC){ setExportStatus('WAV export is not supported in this browser. Use Record Live Playing instead.'); return; }
+  setExportStatus('Rendering ' + bars + ' bar(s) at ' + state.bpm + ' BPM — please wait...');
+  $('btnExportWav').disabled = true;
+  var off = new OC(2, Math.ceil(totalSec * sampleRate), sampleRate);
+  var offMaster = off.createGain();
+  offMaster.gain.value = state.volume;
+  var offComp = off.createDynamicsCompressor();
+  offMaster.connect(offComp); offComp.connect(off.destination);
+  var stepDur = stepDuration(state.bpm);
+  for (var bar = 0; bar < bars; bar++){
+    for (var s = 0; s < 16; s++){
+      var t = bar * barLen + s * stepDur;
+      DRUM_ROWS.forEach(function(row){
+        if (state.pattern[row][s]) playDrum(off, offMaster, row, t);
+      });
+    }
+    state.melody.forEach(function(n){
+      playTone(off, offMaster, n.midi, bar * barLen + (n.t % barLen), Math.max(n.dur, 0.15), state.instrument, 0.85);
+    });
+  }
+  off.startRendering().then(function(rendered){
+    var chans = [rendered.getChannelData(0), rendered.getChannelData(1)];
+    var buf = encodeWAV(chans, sampleRate);
+    var blob = new Blob([buf], {type: 'audio/wav'});
+    var name = exportFileName($('projName').value.trim() || 'dtz-beat');
+    downloadBlob(blob, name);
+    $('btnExportWav').disabled = false;
+    setExportStatus('Done. Downloaded ' + name + ' (' + Math.round(blob.size / 1024) + ' KB, ' + formatDuration(totalSec) + '). Share it anywhere.');
+    toast('WAV downloaded: ' + name);
+  }).catch(function(err){
+    $('btnExportWav').disabled = false;
+    setExportStatus('Export failed: ' + (err && err.message ? err.message : 'unknown error') + '. Try Record Live Playing instead.');
+  });
+}
+
+function toggleLiveRecord(){
+  var ctx = ensureAudio(); if (!ctx) return;
+  if (liveRec && liveRec.state === 'recording'){
+    liveRec.stop();
+    return;
+  }
+  if (!window.MediaRecorder){ setExportStatus('Live recording is not supported in this browser. Use Download WAV instead.'); return; }
+  liveChunks = [];
+  try { liveRec = new MediaRecorder(recDest.stream); }
+  catch(e){ setExportStatus('Live recording could not start in this browser. Use Download WAV instead.'); return; }
+  liveRec.ondataavailable = function(e){ if (e.data && e.data.size) liveChunks.push(e.data); };
+  liveRec.onstop = function(){
+    var blob = new Blob(liveChunks, {type: liveRec.mimeType || 'audio/webm'});
+    var player = $('livePlayer');
+    player.src = URL.createObjectURL(blob);
+    player.classList.remove('hidden');
+    var ext = (liveRec.mimeType || '').indexOf('mp4') !== -1 ? '.m4a' : '.webm';
+    var name = exportFileName($('projName').value.trim() || 'dtz-live').replace(/\.wav$/, ext);
+    downloadBlob(blob, name);
+    $('btnRecLiveLabel').textContent = 'Record Live Playing';
+    $('btnRecLive').classList.remove('rec-on');
+    setExportStatus('Live recording saved as ' + name + ' (' + Math.round(blob.size / 1024) + ' KB). You can also press play above to hear it.');
+    toast('Live recording downloaded.');
+  };
+  liveRec.start();
+  $('btnRecLiveLabel').textContent = 'Stop Recording';
+  $('btnRecLive').classList.add('rec-on');
+  setExportStatus('Recording live... play the beat and piano now. Press Stop Recording when finished.');
+  if (!playing) startSequencer();
+}
+
+/* ---------- wire up ---------- */
+$('btnPlay').addEventListener('click', function(){ playing ? stopSequencer() : startSequencer(); });
+$('bpmRange').addEventListener('input', function(){
+  state.bpm = clampBpm(this.value);
+  $('bpmOut').textContent = state.bpm + ' BPM';
+  autosave();
+});
+$('volRange').addEventListener('input', function(){
+  state.volume = Number(this.value) / 100;
+  $('volOut').textContent = this.value + '%';
+  if (master) master.gain.value = state.volume;
+});
+$('instSelect').addEventListener('change', function(){
+  state.instrument = INSTRUMENTS.indexOf(this.value) !== -1 ? this.value : 'piano';
+  autosave();
+  var ctx = ensureAudio();
+  if (ctx) playTone(ctx, master, state.baseMidi + 12, ctx.currentTime, 0.5, state.instrument, 0.85);
+});
+$('chkScale').addEventListener('change', renderPiano);
+$('btnRandom').addEventListener('click', function(){
+  state.pattern = randomPattern();
+  renderSequencer(); autosave();
+  toast('Random beat generated. Press Play Beat to hear it.');
+});
+$('btnClearBeat').addEventListener('click', function(){
+  state.pattern = emptyPattern();
+  renderSequencer(); autosave();
+  toast('Drum pattern cleared.');
+});
+$('btnCopyBeat').addEventListener('click', function(){
+  copyText(patternToText(state.pattern, state.bpm), 'Beat pattern copied.');
+});
+$('btnOctDown').addEventListener('click', function(){
+  state.baseMidi = Math.max(36, state.baseMidi - 12);
+  renderPiano();
+});
+$('btnOctUp').addEventListener('click', function(){
+  state.baseMidi = Math.min(72, state.baseMidi + 12);
+  renderPiano();
+});
+$('btnRecMelody').addEventListener('click', function(){
+  var ctx = ensureAudio(); if (!ctx) return;
+  if (!recMelody){
+    recMelody = true;
+    recMelodyStart = ctx.currentTime;
+    openNotes = {};
+    $('btnRecMelodyLabel').textContent = 'Stop Melody Recording';
+    $('btnRecMelody').classList.add('rec-on');
+    setStatus('Recording melody... play notes on the piano now. Press Stop Melody Recording when done.');
+    if (!playing) startSequencer();
+  } else {
+    Object.keys(openNotes).forEach(function(m){ noteOff(Number(m)); });
+    recMelody = false;
+    $('btnRecMelodyLabel').textContent = 'Record Melody';
+    $('btnRecMelody').classList.remove('rec-on');
+    updateMelodyInfo(); autosave();
+    toast('Melody recorded: ' + state.melody.length + ' notes.');
+    setStatus('Melody saved. It now loops with the beat and will be inside your WAV export.');
+  }
+});
+$('btnPlayMelody').addEventListener('click', playMelodyOnce);
+$('btnClearMelody').addEventListener('click', function(){
+  state.melody = []; openNotes = {};
+  updateMelodyInfo(); autosave();
+  toast('Melody cleared.');
+});
+$('btnExportWav').addEventListener('click', exportWAV);
+$('btnRecLive').addEventListener('click', toggleLiveRecord);
+$('btnSaveProj').addEventListener('click', function(){
+  var proj = sanitizeProject(currentProject());
+  if (!proj){ toast('Could not save this project.'); return; }
+  var arr = loadProjects();
+  var existing = -1;
+  arr.forEach(function(p, i){ if (p.name === proj.name) existing = i; });
+  if (existing !== -1) arr[existing] = proj; else arr.unshift(proj);
+  saveProjects(arr);
+  renderProjects();
+  toast('Project saved: ' + proj.name);
+});
+$('btnShare').addEventListener('click', function(){
+  var code = encodeShare(currentProject());
+  if (!code){ toast('Could not create a share link for this project.'); return; }
+  var url = location.origin + location.pathname + '#beat=' + code;
+  copyText(url, 'Share link copied. Send it to anyone.');
+});
+$('btnDownloadJson').addEventListener('click', function(){
+  var proj = sanitizeProject(currentProject());
+  var blob = new Blob([JSON.stringify(proj, null, 2)], {type: 'application/json'});
+  downloadBlob(blob, exportFileName(proj.name).replace(/\.wav$/, '.json'));
+  toast('Project file downloaded.');
+});
+
+var heldKeys = {};
+document.addEventListener('keydown', function(e){
+  if (e.repeat || e.metaKey || e.ctrlKey || e.altKey) return;
+  var tag = (e.target && e.target.tagName) || '';
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+  if (e.code === 'Space'){ e.preventDefault(); playing ? stopSequencer() : startSequencer(); return; }
+  var key = String(e.key || '').toLowerCase();
+  if (key in KEY_MAP && !heldKeys[key]){
+    heldKeys[key] = true;
+    noteOn(state.baseMidi + KEY_MAP[key]);
+  }
+});
+document.addEventListener('keyup', function(e){
+  var key = String(e.key || '').toLowerCase();
+  if (key in KEY_MAP){
+    heldKeys[key] = false;
+    noteOff(state.baseMidi + KEY_MAP[key]);
+  }
+});
+
+/* ---------- init ---------- */
+function initFromHashOrAutosave(){
+  var hash = location.hash || '';
+  var m = hash.match(/#beat=([A-Za-z0-9\-_]+)/);
+  if (m){
+    var shared = decodeShare(m[1]);
+    if (shared && applyProject(shared)){
+      setStatus('Shared beat loaded: "' + shared.name + '" at ' + shared.bpm + ' BPM. Press Play Beat to hear it.');
+      toast('Shared beat loaded.');
+      return;
+    }
+  }
+  try {
+    var raw = localStorage.getItem(LS_AUTO);
+    if (raw){
+      var saved = sanitizeProject(JSON.parse(raw));
+      if (saved) applyProject(saved);
+    }
+  } catch(e){}
+}
+renderPresets();
+renderSequencer();
+renderPiano();
+renderProjects();
+updateMelodyInfo();
+initFromHashOrAutosave();
+renderSequencer();
+renderPiano();
+})();
+</script>
+<!-- DTZ Splash Intro (added 2026-11-25) -->
+<style>
+#dtz-splash-overlay{position:fixed;inset:0;z-index:2147483647;background:#02040a;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Segoe UI',Arial,sans-serif;opacity:1;transition:opacity .45s ease;cursor:pointer}
+#dtz-splash-overlay.dtz-splash-hide{opacity:0;pointer-events:none}
+.dtz-splash-logo-wrap{position:relative;width:190px;height:190px;margin-bottom:22px}
+.dtz-splash-ring{position:absolute;border-radius:50%;border:3px solid transparent}
+.dtz-splash-ring1{inset:-12px;border-top-color:#00e5ff;border-bottom-color:#00e5ff;animation:dtz-splash-spin 3.2s linear infinite}
+.dtz-splash-ring2{inset:-22px;border-left-color:#ff2e88;border-right-color:#ff2e88;animation:dtz-splash-spin-rev 4.6s linear infinite}
+.dtz-splash-ring3{inset:-32px;border-top-color:#9d4dff;animation:dtz-splash-spin 7s linear infinite;opacity:.7}
+@keyframes dtz-splash-spin{to{transform:rotate(360deg)}}
+@keyframes dtz-splash-spin-rev{to{transform:rotate(-360deg)}}
+.dtz-splash-logo{width:100%;height:100%;border-radius:50%;object-fit:cover;box-shadow:0 0 42px #00e5ff,0 0 90px rgba(157,77,255,.45);animation:dtz-splash-logo-in .8s cubic-bezier(.17,.89,.32,1.28) both}
+@keyframes dtz-splash-logo-in{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+.dtz-splash-title{font-size:30px;font-weight:900;letter-spacing:5px;text-transform:uppercase;color:#fff;text-align:center;animation:dtz-splash-title-in .7s ease .25s both}
+.dtz-splash-title span{color:#00e5ff}
+@keyframes dtz-splash-title-in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.dtz-splash-tagline{margin-top:8px;font-size:14px;letter-spacing:5px;text-transform:uppercase;color:#8be9ff;text-align:center;animation:dtz-splash-title-in .7s ease .45s both}
+.dtz-splash-skip{margin-top:20px;font-size:11px;letter-spacing:2px;color:#5b7186;text-transform:uppercase}
+@media (prefers-reduced-motion:reduce){.dtz-splash-ring,.dtz-splash-logo,.dtz-splash-title,.dtz-splash-tagline{animation:none!important}}
+@media (max-width:480px){.dtz-splash-logo-wrap{width:150px;height:150px}.dtz-splash-title{font-size:22px;letter-spacing:3px}.dtz-splash-tagline{font-size:12px;letter-spacing:3px}}
+</style>
+<div id="dtz-splash-overlay" role="presentation">
+  <div class="dtz-splash-logo-wrap">
+    <div class="dtz-splash-ring dtz-splash-ring1"></div>
+    <div class="dtz-splash-ring dtz-splash-ring2"></div>
+    <div class="dtz-splash-ring dtz-splash-ring3"></div>
+    <img class="dtz-splash-logo" src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone" onerror="this.style.display='none'">
+  </div>
+  <div class="dtz-splash-title">Dark <span>Tech</span> Zone</div>
+  <div class="dtz-splash-tagline">Learn. Build. Secure.</div>
+  <div class="dtz-splash-skip">Tap to skip</div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('dtz-splash-overlay');
+  if(!el)return;
+  var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var done=false;
+  function hide(){
+    if(done)return;done=true;
+    el.classList.add('dtz-splash-hide');
+    setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},500);
+  }
+  el.addEventListener('click',hide);
+  el.addEventListener('touchstart',hide,{passive:true});
+  setTimeout(hide,reduced?350:2500);
+})();
+</script>
+<!-- /DTZ Splash Intro -->
+</body>
+</html>
