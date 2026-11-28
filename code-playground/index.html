@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTZ Code Playground — Dark Tech Zone</title>
+<meta name="description" content="Free online HTML, CSS and JavaScript playground: write code, see the live preview and console instantly, load templates, add Tailwind, Bootstrap or jQuery, share by link and download your page. No signup, runs 100% in your browser.">
+<link rel="icon" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f4f6fb;--surface:#ffffff;--text:#0f172a;--muted:#64748b;--border:#e2e8f0;--accent:#0891b2;--accent2:#7c3aed;--ok:#15803d;--bad:#dc2626;--warn:#d97706;--codebg:#0b1220}
+body{font-family:'Segoe UI',system-ui,-apple-system,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+header img{width:44px;height:44px;border-radius:50%;object-fit:cover}
+header .brand{font-weight:800;font-size:18px;letter-spacing:.5px}
+header .brand span{color:var(--accent)}
+header nav{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap}
+header nav a{text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;padding:8px 14px;border:1px solid var(--border);border-radius:20px;background:#fff}
+main{max-width:1280px;margin:0 auto;padding:22px 16px 60px}
+.hero{text-align:center;padding:14px 0 6px}
+.hero h1{font-size:30px;font-weight:900}
+.hero h1 span{color:var(--accent)}
+.hero p{color:var(--muted);margin-top:8px;font-size:15px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;margin-top:16px;box-shadow:0 2px 12px rgba(15,23,42,.05)}
+.card h2{font-size:16px;font-weight:800;margin-bottom:10px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.label{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.btn{border:none;cursor:pointer;font-weight:700;font-size:14px;padding:10px 16px;border-radius:10px;display:inline-flex;align-items:center;gap:8px;font-family:inherit}
+.btn svg{width:16px;height:16px;flex:none}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.btn-ghost{background:#fff;border:1px solid var(--border);color:var(--text)}
+.btn-small{padding:7px 12px;font-size:13px;border-radius:8px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{border:1px solid var(--border);background:#f8fafc;color:var(--text);padding:8px 14px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+.seg button.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent}
+select,input[type=text]{font:inherit;font-size:14px;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:#fff;color:var(--text)}
+input[type=text]{flex:1;min-width:160px}
+.toggle{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;cursor:pointer;user-select:none}
+.toggle input{width:18px;height:18px;accent-color:var(--accent)}
+.msg{margin-top:12px;font-size:14px;padding:12px 14px;border-radius:10px;display:none}
+.msg.show{display:block}
+.msg.ok{background:#dcfce7;color:#14532d;border:1px solid #86efac}
+.msg.err{background:#fee2e2;color:#7f1d1d;border:1px solid #fca5a5}
+.msg.info{background:#e0f2fe;color:#075985;border:1px solid #7dd3fc}
+.work{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;align-items:start}
+@media(max-width:900px){.work{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(15,23,42,.05)}
+.panel-head{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--border);flex-wrap:wrap;background:#f8fafc}
+.panel-head .title{font-weight:800;font-size:14px;margin-right:auto}
+.tabs{display:flex;gap:6px}
+.tabs button{border:1px solid var(--border);background:#fff;padding:7px 14px;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit}
+.tabs button.active{background:var(--codebg);color:#fff;border-color:var(--codebg)}
+.editor-wrap{display:none}
+.editor-wrap.active{display:block}
+.editor-wrap textarea{width:100%;height:420px;border:none;padding:12px;font-family:Consolas,'Courier New',monospace;font-size:14px;line-height:1.55;resize:vertical;background:#fff;color:var(--text)}
+.CodeMirror{height:420px;font-size:14px;line-height:1.55;font-family:Consolas,'Courier New',monospace}
+.stats{font-size:12px;color:var(--muted);padding:8px 12px;border-top:1px solid var(--border);display:flex;gap:14px;flex-wrap:wrap;background:#fff}
+.preview-outer{background:#e8edf5;padding:14px;display:flex;justify-content:center;min-height:460px}
+.preview-frame{width:100%;height:440px;border:1px solid var(--border);border-radius:10px;background:#fff;transition:width .25s ease}
+.console{max-height:240px;overflow:auto;background:var(--codebg);color:#e2e8f0;font-family:Consolas,'Courier New',monospace;font-size:13px;padding:10px 12px;min-height:90px}
+.console .line{padding:4px 0;border-bottom:1px solid rgba(255,255,255,.06);white-space:pre-wrap;word-break:break-word}
+.console .time{color:#7dd3fc;margin-right:8px}
+.console .lvl-log{color:#e2e8f0}.console .lvl-info{color:#7dd3fc}.console .lvl-warn{color:#fbbf24}.console .lvl-error{color:#f87171}
+.console .empty{color:#94a3b8}
+.badge{display:inline-block;font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px;background:#e0f2fe;color:#075985}
+.badge.err{background:#fee2e2;color:#7f1d1d}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.chip{border:1px solid var(--border);background:#f8fafc;padding:7px 12px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.saved-item{display:flex;align-items:center;gap:10px;border:1px solid var(--border);border-radius:10px;padding:9px 12px;margin-top:8px;flex-wrap:wrap}
+.saved-item .nm{font-weight:700;font-size:14px}
+.saved-item .when{color:var(--muted);font-size:12px;margin-right:auto}
+.note{font-size:13px;color:var(--muted);line-height:1.6}
+.kbd{font-family:Consolas,monospace;background:#eef2f7;border:1px solid var(--border);border-bottom-width:2px;border-radius:6px;padding:1px 6px;font-size:12px}
+footer{max-width:1280px;margin:0 auto;padding:0 16px 40px;color:var(--muted);font-size:13px;line-height:1.7;text-align:center}
+footer a{color:var(--accent);font-weight:600;text-decoration:none}
+.hidden-file{display:none}
+</style>
+</head>
+<body>
+<header>
+  <img src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone" onerror="this.style.display='none'">
+  <div class="brand">Dark <span>Tech</span> Zone</div>
+  <nav>
+    <a href="https://www.darktechzon.site/" target="_blank" rel="noopener">All Tools</a>
+    <a href="https://t.me/DarkTechZone2" target="_blank" rel="noopener">Telegram</a>
+    <a href="https://whatsapp.com/channel/0029Vb9oK008V0txIkc3oj3z" target="_blank" rel="noopener">WhatsApp Channel</a>
+  </nav>
+</header>
+<main>
+  <section class="hero">
+    <h1>DTZ Code <span>Playground</span></h1>
+    <p>Write HTML, CSS and JavaScript and see the live page and console instantly. No signup, no install — everything runs in your browser.</p>
+  </section>
+
+  <section class="card" aria-label="Playground controls">
+    <div class="row">
+      <button class="btn btn-primary" id="btnRun" type="button"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>Run</button>
+      <label class="toggle"><input type="checkbox" id="chkAuto" checked> Auto-run as I type</label>
+      <span class="note">Press <span class="kbd">Ctrl</span> + <span class="kbd">Enter</span> to run</span>
+      <span class="badge" id="runBadge">Not run yet</span>
+    </div>
+    <div class="row" style="margin-top:14px">
+      <span class="label">Template</span>
+      <select id="selTemplate" aria-label="Choose a template"></select>
+      <button class="btn btn-ghost btn-small" id="btnTemplate" type="button">Load template</button>
+      <span class="label">Preview size</span>
+      <div class="seg" id="segSize">
+        <button type="button" data-size="desktop" class="active">Desktop</button>
+        <button type="button" data-size="tablet">Tablet</button>
+        <button type="button" data-size="mobile">Mobile</button>
+      </div>
+    </div>
+    <div class="row" style="margin-top:14px">
+      <span class="label">Libraries</span>
+      <label class="toggle"><input type="checkbox" id="libTailwind"> Tailwind CSS</label>
+      <label class="toggle"><input type="checkbox" id="libBootstrap"> Bootstrap 5</label>
+      <label class="toggle"><input type="checkbox" id="libJquery"> jQuery</label>
+      <span class="note">Libraries load from public CDNs inside the preview and the downloaded file.</span>
+    </div>
+    <div class="row" style="margin-top:14px">
+      <button class="btn btn-ghost btn-small" id="btnDownload" type="button">Download .html</button>
+      <button class="btn btn-ghost btn-small" id="btnShare" type="button">Copy share link</button>
+      <button class="btn btn-ghost btn-small" id="btnOpenTab" type="button">Open preview in new tab</button>
+      <button class="btn btn-ghost btn-small" id="btnOpenFile" type="button">Open file</button>
+      <input class="hidden-file" type="file" id="fileInput" accept=".html,.htm,.css,.js,.txt">
+      <button class="btn btn-ghost btn-small" id="btnClearAll" type="button">Clear all code</button>
+    </div>
+    <div class="msg" id="msgBox" role="status"></div>
+  </section>
+
+  <div class="work">
+    <section class="panel" aria-label="Code editors">
+      <div class="panel-head">
+        <div class="tabs" id="editorTabs">
+          <button type="button" data-tab="html" class="active">HTML</button>
+          <button type="button" data-tab="css">CSS</button>
+          <button type="button" data-tab="js">JavaScript</button>
+        </div>
+        <span class="title"></span>
+        <button class="btn btn-ghost btn-small" id="btnCopyTab" type="button">Copy code</button>
+      </div>
+      <div class="editor-wrap active" id="wrapHtml"><textarea id="edHtml" spellcheck="false" aria-label="HTML editor"></textarea></div>
+      <div class="editor-wrap" id="wrapCss"><textarea id="edCss" spellcheck="false" aria-label="CSS editor"></textarea></div>
+      <div class="editor-wrap" id="wrapJs"><textarea id="edJs" spellcheck="false" aria-label="JavaScript editor"></textarea></div>
+      <div class="stats">
+        <span id="statHtml">HTML: 0 chars</span>
+        <span id="statCss">CSS: 0 chars</span>
+        <span id="statJs">JS: 0 chars</span>
+        <span id="statSaved">Autosave: on</span>
+      </div>
+    </section>
+
+    <section class="panel" aria-label="Live preview">
+      <div class="panel-head">
+        <span class="title">Live Preview</span>
+        <span class="badge" id="previewBadge">Ready</span>
+      </div>
+      <div class="preview-outer">
+        <iframe class="preview-frame" id="previewFrame" title="Code preview" sandbox="allow-scripts allow-modals allow-popups"></iframe>
+      </div>
+      <div class="panel-head" style="border-top:1px solid var(--border)">
+        <span class="title">Console <span class="badge" id="consoleBadge">0 messages</span></span>
+        <button class="btn btn-ghost btn-small" id="btnClearConsole" type="button">Clear console</button>
+      </div>
+      <div class="console" id="consoleBox"><div class="line empty">Console output will appear here. Try console.log("Hello") in the JavaScript tab.</div></div>
+    </section>
+  </div>
+
+  <section class="card" aria-label="Saved projects">
+    <h2>Saved projects (in this browser)</h2>
+    <div class="row">
+      <input type="text" id="projectName" placeholder="Project name, for example: My landing page" maxlength="60">
+      <button class="btn btn-primary btn-small" id="btnSaveProject" type="button">Save project</button>
+    </div>
+    <div id="savedList"><p class="note" style="margin-top:10px">No saved projects yet. Your current code is autosaved automatically and restored when you come back.</p></div>
+  </section>
+
+  <section class="card" aria-label="How it works">
+    <h2>How it works</h2>
+    <p class="note">Write your page in the three tabs and press Run. The HTML tab holds the page body — or paste a complete HTML document and your CSS and JavaScript will be added to it automatically. The preview runs in a sandbox, separate from this page, and the console below it shows your <span class="kbd">console.log</span> output and any JavaScript errors. Use Copy share link to send your code inside the link itself, or Download .html to keep a single working file. Your code is never uploaded: autosave and saved projects stay in this browser only.</p>
+    <div class="chips" id="quickChips"></div>
+  </section>
+</main>
+<footer>
+  <p>DTZ Code Playground by Dark Tech Zone — Learn. Build. Secure.</p>
+  <p>Canonical page: <a href="https://www.darktechzon.site/code-playground/">darktechzon.site/code-playground</a> · Editor: CodeMirror (MIT) via cdnjs · Libraries load from their public CDNs.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/codemirror.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/xml/xml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/css/css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.18/mode/htmlmixed/htmlmixed.min.js"></script>
+<script>
+'use strict';
+// === DTZ HELPERS START ===
+var LIBS = {
+  tailwind: { label: 'Tailwind CSS', head: '<script src="https://cdn.tailwindcss.com"><\/script>', body: '' },
+  bootstrap: { label: 'Bootstrap 5', head: '<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">', body: '<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"><\/script>' },
+  jquery: { label: 'jQuery', head: '<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"><\/script>', body: '' }
+};
+var LIB_KEYS = ['tailwind', 'bootstrap', 'jquery'];
+var LEVELS = ['log', 'info', 'warn', 'error'];
+var MAX_SHARE_CHARS = 60000;
+
+function esc(s) {
+  if (s == null) return '';
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function str(v) { return v == null ? '' : String(v); }
+function countLines(s) { s = str(s); if (!s) return 0; return s.split('\n').length; }
+function isFullDocument(html) {
+  var h = str(html).trim().toLowerCase();
+  return h.indexOf('<!doctype') === 0 || h.indexOf('<html') === 0 || h.indexOf('<html') > -1 && h.indexOf('<head') > -1;
+}
+function selectedLibs(libs) {
+  var out = [];
+  if (!libs || typeof libs !== 'object') return out;
+  for (var i = 0; i < LIB_KEYS.length; i++) { if (libs[LIB_KEYS[i]]) out.push(LIB_KEYS[i]); }
+  return out;
+}
+function libHead(libs) {
+  var parts = [];
+  var sel = selectedLibs(libs);
+  for (var i = 0; i < sel.length; i++) { if (LIBS[sel[i]].head) parts.push(LIBS[sel[i]].head); }
+  return parts.join('\n');
+}
+function libBody(libs) {
+  var parts = [];
+  var sel = selectedLibs(libs);
+  for (var i = 0; i < sel.length; i++) { if (LIBS[sel[i]].body) parts.push(LIBS[sel[i]].body); }
+  return parts.join('\n');
+}
+function consoleBridge() {
+  return '<script>(function(){' +
+    'function send(level,args){try{var parts=[];for(var i=0;i<args.length;i++){var a=args[i];try{parts.push(typeof a==="string"?a:JSON.stringify(a))}catch(e){parts.push(String(a))}}parent.postMessage({dtzConsole:true,level:level,text:parts.join(" ")},"*")}catch(e){}}' +
+    '["log","info","warn","error"].forEach(function(l){var orig=console[l];console[l]=function(){send(l,arguments);if(orig)orig.apply(console,arguments)}});' +
+    'window.addEventListener("error",function(e){send("error",[e.message+(e.lineno?" (line "+e.lineno+")":"")])});' +
+    'window.addEventListener("unhandledrejection",function(e){send("error",["Unhandled promise rejection: "+String(e.reason&&e.reason.message?e.reason.message:e.reason)])});' +
+    '})();<\/script>';
+}
+function buildDocument(state, forDownload) {
+  state = state || {};
+  var html = str(state.html), css = str(state.css), js = str(state.js);
+  var headLibs = libHead(state.libs), bodyLibs = libBody(state.libs);
+  var bridge = forDownload ? '' : consoleBridge();
+  var styleTag = css.trim() ? '<style>\n' + css + '\n</style>' : '';
+  var scriptTag = js.trim() ? '<script>\n' + js + '\n<\/script>' : '';
+  if (isFullDocument(html)) {
+    var doc = html;
+    var headAdd = [headLibs, styleTag].filter(Boolean).join('\n');
+    var bodyAdd = [bridge, bodyLibs, scriptTag].filter(Boolean).join('\n');
+    if (headAdd) {
+      if (/<\/head>/i.test(doc)) doc = doc.replace(/<\/head>/i, headAdd + '\n</head>');
+      else if (/<body[^>]*>/i.test(doc)) doc = doc.replace(/<body[^>]*>/i, function (m) { return m + '\n' + headAdd; });
+      else doc = headAdd + '\n' + doc;
+    }
+    if (bodyAdd) {
+      if (/<\/body>/i.test(doc)) doc = doc.replace(/<\/body>/i, bodyAdd + '\n</body>');
+      else doc = doc + '\n' + bodyAdd;
+    }
+    return doc;
+  }
+  return '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<title>My Page</title>\n' +
+    (headLibs ? headLibs + '\n' : '') + (styleTag ? styleTag + '\n' : '') +
+    '</head>\n<body>\n' + html + '\n' + (bridge ? bridge + '\n' : '') + (bodyLibs ? bodyLibs + '\n' : '') + (scriptTag ? scriptTag + '\n' : '') +
+    '</body>\n</html>';
+}
+function utf8ToBase64(s) {
+  var bytes = new TextEncoder().encode(str(s));
+  var bin = '';
+  for (var i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+  return btoa(bin);
+}
+function base64ToUtf8(b64) {
+  var bin = atob(str(b64));
+  var bytes = new Uint8Array(bin.length);
+  for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new TextDecoder().decode(bytes);
+}
+function encodeShare(state) {
+  state = state || {};
+  var payload = { h: str(state.html), c: str(state.css), j: str(state.js), l: selectedLibs(state.libs) };
+  var json = JSON.stringify(payload);
+  if (json.length > MAX_SHARE_CHARS) return null;
+  return utf8ToBase64(json).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+function decodeShare(code) {
+  try {
+    var b64 = str(code).replace(/-/g, '+').replace(/_/g, '/');
+    while (b64.length % 4) b64 += '=';
+    var json = base64ToUtf8(b64);
+    if (json.length > MAX_SHARE_CHARS) return null;
+    var p = JSON.parse(json);
+    if (!p || typeof p !== 'object') return null;
+    if (typeof p.h !== 'string' || typeof p.c !== 'string' || typeof p.j !== 'string') return null;
+    var libs = {};
+    if (Array.isArray(p.l)) { for (var i = 0; i < p.l.length; i++) { if (LIB_KEYS.indexOf(p.l[i]) > -1) libs[p.l[i]] = true; } }
+    return { html: p.h, css: p.c, js: p.j, libs: libs };
+  } catch (e) { return null; }
+}
+function normalizeLevel(level) { return LEVELS.indexOf(level) > -1 ? level : 'log'; }
+function formatConsoleEntry(level, text, time) {
+  return { level: normalizeLevel(level), text: str(text).slice(0, 4000), time: str(time) };
+}
+function fileKind(name) {
+  var n = str(name).toLowerCase();
+  if (n.endsWith('.html') || n.endsWith('.htm')) return 'html';
+  if (n.endsWith('.css')) return 'css';
+  if (n.endsWith('.js') || n.endsWith('.mjs')) return 'js';
+  if (n.endsWith('.txt')) return 'html';
+  return null;
+}
+function downloadName(title) {
+  var t = str(title).trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 50);
+  return (t || 'my-page') + '.html';
+}
+function previewWidth(mode) {
+  if (mode === 'mobile') return '375px';
+  if (mode === 'tablet') return '768px';
+  return '100%';
+}
+function cleanProjectName(name) {
+  var n = str(name).trim().replace(/\s+/g, ' ').slice(0, 60);
+  return n || 'Untitled project';
+}
+function makeSnapshot(name, state, nowMs) {
+  state = state || {};
+  return { name: cleanProjectName(name), html: str(state.html), css: str(state.css), js: str(state.js), libs: selectedLibs(state.libs), savedAt: typeof nowMs === 'number' ? nowMs : 0 };
+}
+function sortSnapshots(list) {
+  if (!Array.isArray(list)) return [];
+  return list.filter(function (x) { return x && typeof x === 'object' && typeof x.name === 'string'; })
+    .slice().sort(function (a, b) { return (b.savedAt || 0) - (a.savedAt || 0); }).slice(0, 8);
+}
+function codeStats(state) {
+  state = state || {};
+  return {
+    htmlChars: str(state.html).length, cssChars: str(state.css).length, jsChars: str(state.js).length,
+    htmlLines: countLines(state.html), cssLines: countLines(state.css), jsLines: countLines(state.js)
+  };
+}
+var TEMPLATES = [
+  { id: 'hello', name: 'Hello Page', libs: [],
+    html: '<main class="box">\n  <h1>Hello from DTZ Code Playground</h1>\n  <p>Edit the HTML, CSS and JavaScript tabs, then press Run.</p>\n  <button id="btn">Click me</button>\n  <p id="out"></p>\n</main>',
+    css: 'body{font-family:Arial,sans-serif;background:#f4f6fb;margin:0;padding:32px}\n.box{max-width:560px;margin:auto;background:#fff;border-radius:16px;padding:28px;box-shadow:0 4px 20px rgba(0,0,0,.08)}\nh1{color:#0891b2}\nbutton{background:#0891b2;color:#fff;border:none;padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:bold}',
+    js: 'var count = 0;\ndocument.getElementById("btn").addEventListener("click", function () {\n  count++;\n  document.getElementById("out").textContent = "Clicked " + count + " time(s)";\n  console.log("Button clicked:", count);\n});\nconsole.log("Hello Page ready");' },
+  { id: 'counter', name: 'Counter App', libs: [],
+    html: '<div class="app">\n  <h1>Counter</h1>\n  <div class="num" id="num">0</div>\n  <div class="row">\n    <button id="minus">- 1</button>\n    <button id="reset">Reset</button>\n    <button id="plus">+ 1</button>\n  </div>\n</div>',
+    css: 'body{font-family:Arial,sans-serif;background:#0f172a;color:#fff;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0}\n.app{text-align:center}\n.num{font-size:72px;font-weight:900;margin:16px 0}\n.row{display:flex;gap:10px;justify-content:center}\nbutton{padding:12px 20px;border:none;border-radius:10px;font-weight:bold;cursor:pointer;background:#22d3ee}',
+    js: 'var n = 0;\nvar num = document.getElementById("num");\nfunction show() { num.textContent = n; console.log("Counter:", n); }\ndocument.getElementById("plus").onclick = function () { n++; show(); };\ndocument.getElementById("minus").onclick = function () { n--; show(); };\ndocument.getElementById("reset").onclick = function () { n = 0; show(); };' },
+  { id: 'canvas', name: 'Canvas Animation', libs: [],
+    html: '<h1>Bouncing Ball</h1>\n<canvas id="cv" width="520" height="320"></canvas>\n<p>Animation runs with requestAnimationFrame.</p>',
+    css: 'body{font-family:Arial,sans-serif;text-align:center;background:#eef2ff;margin:0;padding:24px}\ncanvas{background:#0f172a;border-radius:12px;max-width:100%}',
+    js: 'var cv = document.getElementById("cv");\nvar ctx = cv.getContext("2d");\nvar x = 60, y = 60, vx = 3, vy = 2.4, r = 22;\nfunction frame() {\n  ctx.clearRect(0, 0, cv.width, cv.height);\n  x += vx; y += vy;\n  if (x < r || x > cv.width - r) vx = -vx;\n  if (y < r || y > cv.height - r) vy = -vy;\n  ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);\n  ctx.fillStyle = "#22d3ee"; ctx.fill();\n  requestAnimationFrame(frame);\n}\nframe();\nconsole.log("Canvas animation started");' },
+  { id: 'fetch', name: 'Fetch Live Data', libs: [],
+    html: '<h1>Live Data Demo</h1>\n<button id="load">Load a random fact</button>\n<p id="fact">Press the button.</p>',
+    css: 'body{font-family:Arial,sans-serif;padding:28px;background:#fff7ed}\nbutton{background:#ea580c;color:#fff;border:none;padding:10px 16px;border-radius:8px;cursor:pointer;font-weight:bold}\n#fact{font-size:18px;line-height:1.6;max-width:600px}',
+    js: 'document.getElementById("load").addEventListener("click", function () {\n  var el = document.getElementById("fact");\n  el.textContent = "Loading...";\n  fetch("https://catfact.ninja/fact")\n    .then(function (r) { return r.json(); })\n    .then(function (d) { el.textContent = d.fact; console.log("Fact loaded"); })\n    .catch(function (e) { el.textContent = "Could not load. Check your connection."; console.error(e.message); });\n});' },
+  { id: 'form', name: 'Form Validation', libs: [],
+    html: '<form id="f" class="card">\n  <h1>Sign up</h1>\n  <label>Full name <input id="name" type="text" placeholder="Your name"></label>\n  <label>Email <input id="email" type="email" placeholder="you@example.com"></label>\n  <button type="submit">Submit</button>\n  <p id="msg"></p>\n</form>',
+    css: 'body{font-family:Arial,sans-serif;background:#f0fdf4;display:flex;justify-content:center;padding:32px;margin:0}\n.card{background:#fff;padding:26px;border-radius:14px;width:340px;box-shadow:0 4px 18px rgba(0,0,0,.08)}\nlabel{display:block;margin:12px 0;font-weight:bold;font-size:14px}\ninput{width:100%;padding:10px;margin-top:6px;border:1px solid #cbd5e1;border-radius:8px;box-sizing:border-box}\nbutton{width:100%;padding:11px;background:#16a34a;color:#fff;border:none;border-radius:8px;font-weight:bold;cursor:pointer;margin-top:8px}\n#msg{font-weight:bold}',
+    js: 'document.getElementById("f").addEventListener("submit", function (e) {\n  e.preventDefault();\n  var name = document.getElementById("name").value.trim();\n  var email = document.getElementById("email").value.trim();\n  var msg = document.getElementById("msg");\n  if (name.length < 2) { msg.textContent = "Please enter your full name."; msg.style.color = "#dc2626"; console.warn("Name too short"); return; }\n  if (email.indexOf("@") < 1 || email.indexOf(".") < 0) { msg.textContent = "Please enter a valid email."; msg.style.color = "#dc2626"; console.warn("Invalid email"); return; }\n  msg.textContent = "Welcome, " + name + "!"; msg.style.color = "#15803d";\n  console.log("Form OK:", name, email);\n});' },
+  { id: 'todo', name: 'To-Do List', libs: [],
+    html: '<div class="app">\n  <h1>My Tasks</h1>\n  <div class="row">\n    <input id="task" type="text" placeholder="Write a task...">\n    <button id="add">Add</button>\n  </div>\n  <ul id="list"></ul>\n  <p id="count"></p>\n</div>',
+    css: 'body{font-family:Arial,sans-serif;background:#fdf2f8;padding:28px;margin:0}\n.app{max-width:480px;margin:auto;background:#fff;border-radius:14px;padding:22px;box-shadow:0 4px 18px rgba(0,0,0,.07)}\n.row{display:flex;gap:8px}\ninput{flex:1;padding:10px;border:1px solid #cbd5e1;border-radius:8px}\nbutton{background:#db2777;color:#fff;border:none;padding:10px 16px;border-radius:8px;font-weight:bold;cursor:pointer}\nli{margin:8px 0;cursor:pointer}\nli.done{text-decoration:line-through;color:#94a3b8}',
+    js: 'var list = document.getElementById("list");\nvar input = document.getElementById("task");\nfunction updateCount() {\n  var total = list.children.length;\n  var done = list.querySelectorAll(".done").length;\n  document.getElementById("count").textContent = done + " of " + total + " done";\n}\nfunction addTask() {\n  var text = input.value.trim();\n  if (!text) { console.warn("Empty task ignored"); return; }\n  var li = document.createElement("li");\n  li.textContent = text;\n  li.title = "Click to mark done";\n  li.onclick = function () { li.classList.toggle("done"); updateCount(); };\n  list.appendChild(li);\n  input.value = "";\n  updateCount();\n  console.log("Task added:", text);\n}\ndocument.getElementById("add").onclick = addTask;\ninput.addEventListener("keydown", function (e) { if (e.key === "Enter") addTask(); });' },
+  { id: 'tailwind', name: 'Tailwind Starter', libs: ['tailwind'],
+    html: '<div class="min-h-screen bg-slate-100 flex items-center justify-center p-6">\n  <div class="bg-white rounded-2xl shadow-lg p-8 max-w-md w-full text-center">\n    <h1 class="text-3xl font-extrabold text-cyan-600">Tailwind Starter</h1>\n    <p class="text-slate-600 mt-3">Utility classes style this card. Edit the HTML and watch it change.</p>\n    <button id="twBtn" class="mt-5 bg-cyan-600 text-white font-bold px-5 py-2.5 rounded-lg">Press me</button>\n    <p id="twOut" class="mt-3 font-semibold"></p>\n  </div>\n</div>',
+    css: '/* Tailwind does the styling. Add your own CSS here if you like. */',
+    js: 'document.getElementById("twBtn").addEventListener("click", function () {\n  document.getElementById("twOut").textContent = "Tailwind + JavaScript working";\n  console.log("Tailwind button clicked");\n});' }
+];
+function getTemplate(id) {
+  for (var i = 0; i < TEMPLATES.length; i++) { if (TEMPLATES[i].id === id) return TEMPLATES[i]; }
+  return null;
+}
+// === DTZ HELPERS END ===
+</script>
+<script>
+'use strict';
+function $(id) { return document.getElementById(id); }
+var STORE_KEY = 'dtz-playground-v1';
+var SAVED_KEY = 'dtz-playground-saved-v1';
+var editors = {};
+var activeTab = 'html';
+var autoTimer = null;
+var consoleCount = 0;
+var errorCount = 0;
+var previewBlobUrl = null;
+
+function showMsg(text, kind) {
+  var box = $('msgBox');
+  box.textContent = text;
+  box.className = 'msg show ' + (kind || 'info');
+  if (kind === 'ok') setTimeout(function () { box.className = 'msg'; }, 3500);
+}
+function getCode(kind) {
+  if (editors[kind]) return editors[kind].getValue();
+  return $(kind === 'html' ? 'edHtml' : kind === 'css' ? 'edCss' : 'edJs').value;
+}
+function setCode(kind, value) {
+  if (editors[kind]) editors[kind].setValue(value || '');
+  else $(kind === 'html' ? 'edHtml' : kind === 'css' ? 'edCss' : 'edJs').value = value || '';
+  refreshEditors();
+}
+function currentLibs() {
+  return { tailwind: $('libTailwind').checked, bootstrap: $('libBootstrap').checked, jquery: $('libJquery').checked };
+}
+function setLibs(libs) {
+  libs = libs || {};
+  var sel = Array.isArray(libs) ? libs : selectedLibs(libs);
+  $('libTailwind').checked = sel.indexOf('tailwind') > -1;
+  $('libBootstrap').checked = sel.indexOf('bootstrap') > -1;
+  $('libJquery').checked = sel.indexOf('jquery') > -1;
+}
+function currentState() {
+  return { html: getCode('html'), css: getCode('css'), js: getCode('js'), libs: currentLibs() };
+}
+function applyState(state) {
+  setCode('html', state.html || '');
+  setCode('css', state.css || '');
+  setCode('js', state.js || '');
+  setLibs(state.libs || {});
+  updateStats();
+}
+function updateStats() {
+  var s = codeStats(currentState());
+  $('statHtml').textContent = 'HTML: ' + s.htmlChars + ' chars, ' + s.htmlLines + ' lines';
+  $('statCss').textContent = 'CSS: ' + s.cssChars + ' chars, ' + s.cssLines + ' lines';
+  $('statJs').textContent = 'JS: ' + s.jsChars + ' chars, ' + s.jsLines + ' lines';
+}
+function autosave() {
+  try {
+    localStorage.setItem(STORE_KEY, JSON.stringify(currentState()));
+    $('statSaved').textContent = 'Autosaved ' + new Date().toLocaleTimeString();
+  } catch (e) { $('statSaved').textContent = 'Autosave unavailable'; }
+}
+function onCodeChanged() {
+  updateStats();
+  autosave();
+  if ($('chkAuto').checked) {
+    clearTimeout(autoTimer);
+    autoTimer = setTimeout(runPreview, 800);
+  }
+}
+function refreshEditors() {
+  for (var k in editors) { if (editors[k]) editors[k].refresh(); }
+}
+function switchTab(tab) {
+  activeTab = tab;
+  var btns = $('editorTabs').querySelectorAll('button');
+  btns.forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-tab') === tab); });
+  $('wrapHtml').classList.toggle('active', tab === 'html');
+  $('wrapCss').classList.toggle('active', tab === 'css');
+  $('wrapJs').classList.toggle('active', tab === 'js');
+  refreshEditors();
+}
+function clearConsole() {
+  consoleCount = 0; errorCount = 0;
+  $('consoleBox').innerHTML = '<div class="line empty">Console cleared.</div>';
+  updateConsoleBadge();
+}
+function updateConsoleBadge() {
+  $('consoleBadge').textContent = consoleCount + (consoleCount === 1 ? ' message' : ' messages') + (errorCount ? ', ' + errorCount + ' error' + (errorCount === 1 ? '' : 's') : '');
+  $('consoleBadge').className = 'badge' + (errorCount ? ' err' : '');
+}
+function addConsole(level, text) {
+  var entry = formatConsoleEntry(level, text, new Date().toLocaleTimeString());
+  var box = $('consoleBox');
+  var empty = box.querySelector('.empty');
+  if (empty) empty.remove();
+  var div = document.createElement('div');
+  div.className = 'line lvl-' + entry.level;
+  var time = document.createElement('span');
+  time.className = 'time';
+  time.textContent = entry.time;
+  div.appendChild(time);
+  div.appendChild(document.createTextNode(entry.text));
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+  consoleCount++;
+  if (entry.level === 'error') errorCount++;
+  updateConsoleBadge();
+}
+function runPreview() {
+  clearConsole();
+  var doc = buildDocument(currentState(), false);
+  $('previewFrame').srcdoc = doc;
+  var now = new Date().toLocaleTimeString();
+  $('runBadge').textContent = 'Last run ' + now;
+  $('previewBadge').textContent = 'Running';
+  autosave();
+}
+function copyText(text, okMsg) {
+  function done() { showMsg(okMsg, 'ok'); }
+  function fallback() {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); done(); } catch (e) { showMsg('Copy failed. Select the code and copy manually.', 'err'); }
+    ta.remove();
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done).catch(fallback);
+  else fallback();
+}
+function loadTemplate(id, silent) {
+  var t = getTemplate(id);
+  if (!t) return;
+  applyState({ html: t.html, css: t.css, js: t.js, libs: t.libs });
+  runPreview();
+  if (!silent) showMsg('Template loaded: ' + t.name, 'ok');
+}
+function readSaved() {
+  try {
+    var raw = localStorage.getItem(SAVED_KEY);
+    return sortSnapshots(raw ? JSON.parse(raw) : []);
+  } catch (e) { return []; }
+}
+function writeSaved(list) {
+  try { localStorage.setItem(SAVED_KEY, JSON.stringify(sortSnapshots(list))); } catch (e) {}
+}
+function renderSaved() {
+  var list = readSaved();
+  var box = $('savedList');
+  box.innerHTML = '';
+  if (!list.length) {
+    var p = document.createElement('p');
+    p.className = 'note';
+    p.style.marginTop = '10px';
+    p.textContent = 'No saved projects yet. Your current code is autosaved automatically and restored when you come back.';
+    box.appendChild(p);
+    return;
+  }
+  list.forEach(function (item, idx) {
+    var row = document.createElement('div');
+    row.className = 'saved-item';
+    var nm = document.createElement('span');
+    nm.className = 'nm';
+    nm.textContent = item.name;
+    var when = document.createElement('span');
+    when.className = 'when';
+    when.textContent = item.savedAt ? new Date(item.savedAt).toLocaleString() : '';
+    var load = document.createElement('button');
+    load.type = 'button';
+    load.className = 'btn btn-ghost btn-small';
+    load.textContent = 'Load';
+    load.addEventListener('click', function () {
+      applyState({ html: item.html, css: item.css, js: item.js, libs: item.libs });
+      runPreview();
+      showMsg('Project loaded: ' + item.name, 'ok');
+    });
+    var del = document.createElement('button');
+    del.type = 'button';
+    del.className = 'btn btn-ghost btn-small';
+    del.textContent = 'Delete';
+    del.addEventListener('click', function () {
+      var cur = readSaved();
+      cur.splice(idx, 1);
+      writeSaved(cur);
+      renderSaved();
+      showMsg('Project deleted.', 'ok');
+    });
+    row.appendChild(nm);
+    row.appendChild(when);
+    row.appendChild(load);
+    row.appendChild(del);
+    box.appendChild(row);
+  });
+}
+function initEditors() {
+  if (!window.CodeMirror) return;
+  var modes = { html: 'htmlmixed', css: 'css', js: 'javascript' };
+  var ids = { html: 'edHtml', css: 'edCss', js: 'edJs' };
+  ['html', 'css', 'js'].forEach(function (kind) {
+    editors[kind] = CodeMirror.fromTextArea($(ids[kind]), {
+      mode: modes[kind], lineNumbers: true, indentUnit: 2, tabSize: 2,
+      lineWrapping: true, viewportMargin: Infinity
+    });
+    editors[kind].on('change', onCodeChanged);
+  });
+  setTimeout(refreshEditors, 100);
+}
+function restoreInitial() {
+  var hash = window.location.hash || '';
+  if (hash.indexOf('#code=') === 0) {
+    var decoded = decodeShare(hash.slice(6));
+    if (decoded) {
+      applyState(decoded);
+      showMsg('Shared code loaded from the link.', 'ok');
+      return true;
+    }
+    showMsg('That share link could not be read. Starting with the Hello Page template.', 'err');
+  }
+  try {
+    var raw = localStorage.getItem(STORE_KEY);
+    if (raw) {
+      var saved = JSON.parse(raw);
+      if (saved && typeof saved.html === 'string') { applyState(saved); return true; }
+    }
+  } catch (e) {}
+  return false;
+}
+function init() {
+  var sel = $('selTemplate');
+  TEMPLATES.forEach(function (t) {
+    var opt = document.createElement('option');
+    opt.value = t.id;
+    opt.textContent = t.name;
+    sel.appendChild(opt);
+  });
+  var chips = $('quickChips');
+  TEMPLATES.forEach(function (t) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'chip';
+    b.textContent = t.name;
+    b.addEventListener('click', function () { sel.value = t.id; loadTemplate(t.id); });
+    chips.appendChild(b);
+  });
+  ['edHtml', 'edCss', 'edJs'].forEach(function (id) { $(id).addEventListener('input', onCodeChanged); });
+  initEditors();
+  if (!restoreInitial()) {
+    var hello = getTemplate('hello');
+    applyState({ html: hello.html, css: hello.css, js: hello.js, libs: hello.libs });
+  }
+  renderSaved();
+  runPreview();
+  $('btnRun').addEventListener('click', runPreview);
+  $('btnTemplate').addEventListener('click', function () { loadTemplate(sel.value); });
+  $('editorTabs').addEventListener('click', function (e) {
+    var tab = e.target.getAttribute && e.target.getAttribute('data-tab');
+    if (tab) switchTab(tab);
+  });
+  $('segSize').addEventListener('click', function (e) {
+    var mode = e.target.getAttribute && e.target.getAttribute('data-size');
+    if (!mode) return;
+    $('segSize').querySelectorAll('button').forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-size') === mode); });
+    $('previewFrame').style.width = previewWidth(mode);
+    $('previewFrame').style.maxWidth = '100%';
+  });
+  ['libTailwind', 'libBootstrap', 'libJquery'].forEach(function (id) { $(id).addEventListener('change', onCodeChanged); });
+  $('chkAuto').addEventListener('change', function () { if ($('chkAuto').checked) runPreview(); });
+  $('btnClearConsole').addEventListener('click', clearConsole);
+  $('btnCopyTab').addEventListener('click', function () {
+    copyText(getCode(activeTab), activeTab.toUpperCase() + ' code copied.');
+  });
+  $('btnDownload').addEventListener('click', function () {
+    var name = cleanProjectName($('projectName').value);
+    var doc = buildDocument(currentState(), true);
+    var blob = new Blob([doc], { type: 'text/html;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = downloadName(name === 'Untitled project' ? 'my-page' : name);
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+    showMsg('Downloaded ' + a.download + ' — open it in any browser to run your page.', 'ok');
+  });
+  $('btnShare').addEventListener('click', function () {
+    var code = encodeShare(currentState());
+    if (!code) { showMsg('Code is too large for a share link. Use Download .html instead.', 'err'); return; }
+    var link = window.location.origin + window.location.pathname + '#code=' + code;
+    copyText(link, 'Share link copied. Anyone opening it sees your code.');
+  });
+  $('btnOpenTab').addEventListener('click', function () {
+    var doc = buildDocument(currentState(), true);
+    if (previewBlobUrl) URL.revokeObjectURL(previewBlobUrl);
+    previewBlobUrl = URL.createObjectURL(new Blob([doc], { type: 'text/html;charset=utf-8' }));
+    window.open(previewBlobUrl, '_blank', 'noopener');
+  });
+  $('btnOpenFile').addEventListener('click', function () { $('fileInput').click(); });
+  $('fileInput').addEventListener('change', function () {
+    var file = $('fileInput').files && $('fileInput').files[0];
+    if (!file) return;
+    var kind = fileKind(file.name);
+    if (!kind) { showMsg('Please choose an .html, .css or .js file.', 'err'); return; }
+    if (file.size > 1024 * 1024) { showMsg('File is larger than 1 MB. Please choose a smaller file.', 'err'); return; }
+    var reader = new FileReader();
+    reader.onload = function () {
+      setCode(kind, String(reader.result || ''));
+      switchTab(kind);
+      onCodeChanged();
+      showMsg('File loaded into the ' + kind.toUpperCase() + ' tab: ' + file.name, 'ok');
+    };
+    reader.onerror = function () { showMsg('Could not read that file.', 'err'); };
+    reader.readAsText(file);
+    $('fileInput').value = '';
+  });
+  $('btnClearAll').addEventListener('click', function () {
+    applyState({ html: '', css: '', js: '', libs: {} });
+    runPreview();
+    showMsg('All code cleared. Autosave updated.', 'ok');
+  });
+  $('btnSaveProject').addEventListener('click', function () {
+    var snap = makeSnapshot($('projectName').value, currentState(), Date.now());
+    var list = readSaved();
+    list.unshift(snap);
+    writeSaved(list);
+    renderSaved();
+    $('projectName').value = '';
+    showMsg('Project saved: ' + snap.name + ' (kept in this browser, latest 8).', 'ok');
+  });
+  document.addEventListener('keydown', function (e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); runPreview(); }
+  });
+  window.addEventListener('message', function (e) {
+    if (!e.data || e.data.dtzConsole !== true) return;
+    if (e.source !== $('previewFrame').contentWindow) return;
+    addConsole(e.data.level, e.data.text);
+  });
+}
+document.addEventListener('DOMContentLoaded', init);
+</script>
+<!-- DTZ Splash Intro (added 2026-11-25) -->
+<style>
+#dtz-splash-overlay{position:fixed;inset:0;z-index:2147483647;background:#02040a;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Segoe UI',Arial,sans-serif;opacity:1;transition:opacity .45s ease;cursor:pointer}
+#dtz-splash-overlay.dtz-splash-hide{opacity:0;pointer-events:none}
+.dtz-splash-logo-wrap{position:relative;width:190px;height:190px;margin-bottom:22px}
+.dtz-splash-ring{position:absolute;border-radius:50%;border:3px solid transparent}
+.dtz-splash-ring1{inset:-12px;border-top-color:#00e5ff;border-bottom-color:#00e5ff;animation:dtz-splash-spin 3.2s linear infinite}
+.dtz-splash-ring2{inset:-22px;border-left-color:#ff2e88;border-right-color:#ff2e88;animation:dtz-splash-spin-rev 4.6s linear infinite}
+.dtz-splash-ring3{inset:-32px;border-top-color:#9d4dff;animation:dtz-splash-spin 7s linear infinite;opacity:.7}
+@keyframes dtz-splash-spin{to{transform:rotate(360deg)}}
+@keyframes dtz-splash-spin-rev{to{transform:rotate(-360deg)}}
+.dtz-splash-logo{width:100%;height:100%;border-radius:50%;object-fit:cover;box-shadow:0 0 42px #00e5ff,0 0 90px rgba(157,77,255,.45);animation:dtz-splash-logo-in .8s cubic-bezier(.17,.89,.32,1.28) both}
+@keyframes dtz-splash-logo-in{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+.dtz-splash-title{font-size:30px;font-weight:900;letter-spacing:5px;text-transform:uppercase;color:#fff;text-align:center;animation:dtz-splash-title-in .7s ease .25s both}
+.dtz-splash-title span{color:#00e5ff}
+@keyframes dtz-splash-title-in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.dtz-splash-tagline{margin-top:8px;font-size:14px;letter-spacing:5px;text-transform:uppercase;color:#8be9ff;text-align:center;animation:dtz-splash-title-in .7s ease .45s both}
+.dtz-splash-skip{margin-top:20px;font-size:11px;letter-spacing:2px;color:#5b7186;text-transform:uppercase}
+@media (prefers-reduced-motion:reduce){.dtz-splash-ring,.dtz-splash-logo,.dtz-splash-title,.dtz-splash-tagline{animation:none!important}}
+@media (max-width:480px){.dtz-splash-logo-wrap{width:150px;height:150px}.dtz-splash-title{font-size:22px;letter-spacing:3px}.dtz-splash-tagline{font-size:12px;letter-spacing:3px}}
+</style>
+<div id="dtz-splash-overlay" role="presentation">
+  <div class="dtz-splash-logo-wrap">
+    <div class="dtz-splash-ring dtz-splash-ring1"></div>
+    <div class="dtz-splash-ring dtz-splash-ring2"></div>
+    <div class="dtz-splash-ring dtz-splash-ring3"></div>
+    <img class="dtz-splash-logo" src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone" onerror="this.style.display='none'">
+  </div>
+  <div class="dtz-splash-title">Dark <span>Tech</span> Zone</div>
+  <div class="dtz-splash-tagline">Learn. Build. Secure.</div>
+  <div class="dtz-splash-skip">Tap to skip</div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('dtz-splash-overlay');
+  if(!el)return;
+  var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var done=false;
+  function hide(){
+    if(done)return;done=true;
+    el.classList.add('dtz-splash-hide');
+    setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},500);
+  }
+  el.addEventListener('click',hide);
+  el.addEventListener('touchstart',hide,{passive:true});
+  setTimeout(hide,reduced?350:2500);
+})();
+</script>
+<!-- /DTZ Splash Intro -->
+
+</body>
+</html>
