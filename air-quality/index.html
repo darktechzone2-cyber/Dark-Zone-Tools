@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DTZ Air Quality Tracker — Dark Tech Zone</title>
+<meta name="description" content="Free live air quality tracker: US AQI, PM2.5, PM10 and smog levels for any city, hourly chart, 5-day outlook, Pakistan cities ranking and weather snapshot. No signup, no key.">
+<link rel="icon" href="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f4f6fb;--surface:#ffffff;--text:#0f172a;--muted:#64748b;--border:#e2e8f0;--accent:#0891b2;--accent2:#7c3aed;--ok:#15803d;--bad:#dc2626;--warn:#d97706}
+body{font-family:'Segoe UI',system-ui,-apple-system,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+header img{width:44px;height:44px;border-radius:50%;object-fit:cover}
+header .brand{font-weight:800;font-size:18px;letter-spacing:.5px}
+header .brand span{color:var(--accent)}
+header nav{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap}
+header nav a{text-decoration:none;color:var(--accent);font-weight:600;font-size:14px;padding:8px 14px;border:1px solid var(--border);border-radius:20px;background:#fff}
+main{max-width:960px;margin:0 auto;padding:24px 16px 60px}
+.hero{text-align:center;padding:18px 0 8px}
+.hero h1{font-size:30px;font-weight:900}
+.hero h1 span{color:var(--accent)}
+.hero p{color:var(--muted);margin-top:8px;font-size:15px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;margin-top:18px;box-shadow:0 2px 12px rgba(15,23,42,.05)}
+.card h2{font-size:17px;font-weight:800;margin-bottom:12px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.label{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;min-width:88px}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg button{border:1px solid var(--border);background:#f8fafc;color:var(--text);padding:9px 16px;border-radius:20px;font-size:14px;font-weight:700;cursor:pointer}
+.seg button.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent}
+.btn{border:none;cursor:pointer;font-weight:700;font-size:14px;padding:11px 18px;border-radius:10px;display:inline-flex;align-items:center;gap:8px}
+.btn svg{width:16px;height:16px;flex:none}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.btn-ghost{background:#fff;border:1px solid var(--border);color:var(--text)}
+.btn-small{padding:7px 12px;font-size:13px;border-radius:8px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+input[type=text],select{font:inherit;font-size:15px;padding:11px 14px;border:1px solid var(--border);border-radius:10px;background:#fff;color:var(--text)}
+input[type=text]{flex:1;min-width:200px}
+.msg{margin-top:12px;font-size:14px;padding:12px 14px;border-radius:10px;display:none}
+.msg.show{display:block}
+.msg.err{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
+.msg.ok{background:#f0fdf4;color:#166534;border:1px solid #bbf7d0}
+.msg.info{background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe}
+.chip{border:1px solid var(--border);background:#f8fafc;color:var(--text);padding:8px 14px;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.chip.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent}
+.result-row{display:flex;gap:12px;align-items:center;border:1px solid var(--border);border-radius:12px;padding:11px 14px;margin-top:8px;background:#fff;cursor:pointer;width:100%;text-align:left;font:inherit;color:var(--text)}
+.result-row:hover{border-color:var(--accent)}
+.result-row .rn{font-weight:800;font-size:14px;flex:1}
+.result-row .rm{color:var(--muted);font-size:12px}
+.aqi-top{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.aqi-circle{width:132px;height:132px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;flex:none;box-shadow:0 6px 20px rgba(15,23,42,.18)}
+.aqi-circle .n{font-size:44px;font-weight:900;line-height:1}
+.aqi-circle .u{font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;margin-top:4px}
+.aqi-info{flex:1;min-width:240px}
+.aqi-info .city{font-size:22px;font-weight:900}
+.aqi-info .meta{color:var(--muted);font-size:13px;margin-top:3px}
+.aqi-badge{display:inline-block;color:#fff;font-weight:800;font-size:13px;padding:5px 12px;border-radius:14px;margin-top:8px}
+.aqi-advice{margin-top:10px;font-size:14px;line-height:1.55;background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+.scalebar{position:relative;height:14px;border-radius:8px;margin-top:16px;background:linear-gradient(90deg,#16a34a 0 10%,#eab308 10% 20%,#ea580c 20% 30%,#dc2626 30% 40%,#7c3aed 40% 60%,#7f1d1d 60% 100%)}
+.scale-marker{position:absolute;top:-5px;width:4px;height:24px;background:#0f172a;border-radius:2px;transform:translateX(-2px)}
+.scale-labels{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;font-weight:700;margin-top:5px}
+.statsgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:6px}
+.statbox{border:1px solid var(--border);border-radius:12px;padding:12px 14px;background:#f8fafc}
+.statbox .sv{font-size:18px;font-weight:900}
+.statbox .sl{font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.statbox .ss{font-size:12px;color:var(--muted);margin-top:3px}
+.daygrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.daybox{border:1px solid var(--border);border-radius:12px;padding:12px;background:#f8fafc;text-align:center}
+.daybox .d{font-weight:800;font-size:13px}
+.daybox .a{font-size:26px;font-weight:900;margin-top:6px}
+.daybox .c{font-size:12px;font-weight:700;margin-top:2px}
+.daybox .p{font-size:12px;color:var(--muted);margin-top:4px}
+.wx-now{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.wx-now .t{font-size:40px;font-weight:900}
+.wx-now .d{color:var(--muted);font-size:14px;line-height:1.6}
+.wx-days{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px;margin-top:14px}
+.wx-day{border:1px solid var(--border);border-radius:10px;padding:9px;background:#f8fafc;text-align:center}
+.wx-day .d{font-weight:800;font-size:12px}
+.wx-day .c{font-size:11px;color:var(--muted);margin-top:3px;min-height:26px}
+.wx-day .t{font-weight:800;font-size:13px;margin-top:3px}
+table.rank{width:100%;border-collapse:collapse;margin-top:10px;font-size:14px}
+table.rank th{text-align:left;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.5px;padding:8px;border-bottom:2px solid var(--border)}
+table.rank td{padding:9px 8px;border-bottom:1px solid var(--border)}
+table.rank tr.clickable{cursor:pointer}
+table.rank tr.clickable:hover{background:#f0f9ff}
+.pill{display:inline-block;color:#fff;font-weight:800;font-size:11px;padding:3px 9px;border-radius:10px}
+.recent-chip{display:flex;gap:10px;align-items:center;border:1px solid var(--border);border-radius:12px;padding:10px 14px;margin-top:8px;background:#fff;font-size:13px;cursor:pointer;width:100%;text-align:left;font:inherit;color:var(--text)}
+.recent-chip:hover{border-color:var(--accent)}
+.recent-chip .rn{font-weight:800;flex:1}
+.recent-chip .rm{color:var(--muted)}
+.chart-wrap{margin-top:12px}
+canvas.chart{width:100%;height:220px;display:block}
+.legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--muted);font-weight:600}
+.legend .dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:middle}
+.scale-table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}
+.scale-table th{text-align:left;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.5px;padding:7px 8px;border-bottom:2px solid var(--border)}
+.scale-table td{padding:8px;border-bottom:1px solid var(--border);vertical-align:top}
+.note{color:var(--muted);font-size:13px;line-height:1.6;margin-top:10px}
+footer{text-align:center;color:var(--muted);font-size:13px;padding:26px 16px 40px;line-height:1.7}
+@media (max-width:560px){.hero h1{font-size:25px}.aqi-circle{width:112px;height:112px}.aqi-circle .n{font-size:36px}}
+</style>
+</head>
+<body>
+<header>
+<img src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone">
+<div class="brand">Dark <span>Tech</span> Zone</div>
+<nav>
+<a href="https://www.darktechzon.site/">All Tools</a>
+<a href="https://whatsapp.com/channel/0029Vb9oK008V0txIkc3oj3z" target="_blank" rel="noopener">WhatsApp Channel</a>
+</nav>
+</header>
+<main>
+<div class="hero">
+<h1>DTZ Air Quality <span>Tracker</span></h1>
+<p>Live AQI, PM2.5 and smog levels for any city — hourly chart, 5-day outlook, Pakistan cities ranking and a weather snapshot. Free, no signup, no key.</p>
+</div>
+
+<div class="card">
+<h2>Find your city</h2>
+<div class="row">
+<input type="text" id="searchInput" placeholder="Type a city name, e.g. Lahore" maxlength="60" autocomplete="off">
+<button class="btn btn-primary" id="btnSearch" type="button">Search</button>
+<button class="btn btn-ghost" id="btnLocate" type="button">Use my location</button>
+</div>
+<div class="row" id="chipsRow" style="margin-top:14px"></div>
+<div id="searchResults"></div>
+<div class="msg" id="searchMsg"></div>
+</div>
+
+<div class="card" id="aqiCard" hidden>
+<div class="aqi-top">
+<div class="aqi-circle" id="aqiCircle">
+<div class="n" id="aqiNum">--</div>
+<div class="u">US AQI</div>
+</div>
+<div class="aqi-info">
+<div class="city" id="aqiCity">City</div>
+<div class="meta" id="aqiMeta"></div>
+<span class="aqi-badge" id="aqiBadge">--</span>
+<div class="aqi-advice" id="aqiAdvice"></div>
+</div>
+</div>
+<div class="scalebar"><div class="scale-marker" id="aqiScaleMarker" style="left:0%"></div></div>
+<div class="scale-labels"><span>0 Good</span><span>50</span><span>100</span><span>150</span><span>200</span><span>300</span><span>500 Hazardous</span></div>
+<div class="statsgrid" style="margin-top:16px">
+<div class="statbox"><div class="sv" id="aqiEu">--</div><div class="sl">European AQI</div><div class="ss" id="aqiEuSub"></div></div>
+<div class="statbox"><div class="sv" id="aqiPm25">--</div><div class="sl">PM2.5 (fine dust)</div><div class="ss" id="aqiPm25Sub"></div></div>
+<div class="statbox"><div class="sv" id="aqiUpdated">--</div><div class="sl">Last updated</div><div class="ss">City local time, hourly</div></div>
+</div>
+<div class="row" style="margin-top:16px">
+<button class="btn btn-ghost btn-small" id="btnRefresh" type="button">Refresh</button>
+<button class="btn btn-ghost btn-small" id="btnCopy" type="button">Copy summary</button>
+<button class="btn btn-ghost btn-small" id="btnReport" type="button">Download report (.txt)</button>
+</div>
+<div class="msg" id="aqiMsg"></div>
+</div>
+
+<div class="card" id="polCard" hidden>
+<h2>Pollutants right now</h2>
+<div class="statsgrid" id="polGrid"></div>
+<p class="note">PM2.5 is the fine dust that drives smog in Pakistan. Levels use US EPA breakpoints and are indicative for the current hourly reading. Other gases are shown as concentrations in micrograms per cubic metre.</p>
+</div>
+
+<div class="card" id="chartCard" hidden>
+<h2>Next 48 hours</h2>
+<div class="seg" role="group" aria-label="Chart metric">
+<button id="mAqi" class="active" type="button">US AQI</button>
+<button id="mPm25" type="button">PM2.5</button>
+<button id="mPm10" type="button">PM10</button>
+</div>
+<div class="chart-wrap"><canvas class="chart" id="chartCanvas" width="900" height="220"></canvas></div>
+<div class="legend" id="chartLegend"></div>
+<p class="note" id="chartNote"></p>
+</div>
+
+<div class="card" id="outlookCard" hidden>
+<h2>5-day air outlook</h2>
+<div class="daygrid" id="outlookGrid"></div>
+<p class="note">Each day shows the highest hourly AQI expected that day and the average PM2.5. Plan outdoor work, school runs and exercise around the cleaner days.</p>
+</div>
+
+<div class="card" id="wxCard" hidden>
+<h2>Weather snapshot</h2>
+<div class="wx-now">
+<div class="t" id="wxTemp">--</div>
+<div class="d" id="wxDetail"></div>
+</div>
+<div class="wx-days" id="wxDays"></div>
+</div>
+
+<div class="card" id="rankCard">
+<h2>Pakistan cities ranking — worst air first</h2>
+<p class="note" style="margin-top:0">Live AQI for 10 major Pakistani cities. Tap any city to open its full report above.</p>
+<div class="row" style="margin-top:12px">
+<button class="btn btn-primary" id="btnRank" type="button">Load ranking</button>
+<button class="btn btn-ghost btn-small" id="btnCopyRank" type="button" disabled>Copy ranking</button>
+</div>
+<div class="msg" id="rankMsg"></div>
+<div id="rankTableWrap"></div>
+</div>
+
+<div class="card" id="recentCard" hidden>
+<div class="row">
+<h2 style="flex:1;margin:0">Recent cities</h2>
+<button class="btn btn-ghost btn-small" id="btnClearRecent" type="button">Clear</button>
+</div>
+<p class="note">Saved on this device only. Tap a city to load it again.</p>
+<div id="recentList"></div>
+</div>
+
+<div class="card">
+<h2>How to read the AQI scale</h2>
+<table class="scale-table">
+<tr><th>US AQI</th><th>Level</th><th>What it means</th></tr>
+<tr><td>0–50</td><td><span class="pill" style="background:#16a34a">Good</span></td><td>Air is clean. Enjoy outdoor activities as normal.</td></tr>
+<tr><td>51–100</td><td><span class="pill" style="background:#ca8a04">Moderate</span></td><td>Acceptable air. Very sensitive people should watch for symptoms.</td></tr>
+<tr><td>101–150</td><td><span class="pill" style="background:#ea580c">Unhealthy for sensitive groups</span></td><td>Children, elderly and asthma patients should reduce long outdoor exertion.</td></tr>
+<tr><td>151–200</td><td><span class="pill" style="background:#dc2626">Unhealthy</span></td><td>Everyone may feel effects. Reduce outdoor exertion; sensitive groups should avoid it.</td></tr>
+<tr><td>201–300</td><td><span class="pill" style="background:#7c3aed">Very Unhealthy</span></td><td>Health alert. Avoid outdoor exertion, keep windows closed, use a mask outdoors.</td></tr>
+<tr><td>301+</td><td><span class="pill" style="background:#7f1d1d">Hazardous</span></td><td>Emergency conditions. Stay indoors; wear an N95 mask if you must go out.</td></tr>
+</table>
+<p class="note">Data: Open-Meteo Air Quality API (Copernicus CAMS model, CC BY 4.0) and Open-Meteo Weather API. Values are model estimates for your area, updated hourly — nearby streets can differ. This tool is for general guidance, not medical advice. If you have breathing problems, follow your doctor's advice.</p>
+</div>
+</main>
+<footer>Dark Tech Zone — Learn. Build. Secure.<br>Air data: Open-Meteo (CAMS model), CC BY 4.0. Indicative only — not medical advice.</footer>
+<script>
+// === DTZ HELPERS START ===
+var PK_CITIES = [
+  { name: 'Lahore', lat: 31.558, lon: 74.35071 },
+  { name: 'Karachi', lat: 24.8608, lon: 67.0104 },
+  { name: 'Islamabad', lat: 33.72148, lon: 73.04329 },
+  { name: 'Rawalpindi', lat: 33.59733, lon: 73.0479 },
+  { name: 'Faisalabad', lat: 31.41554, lon: 73.08969 },
+  { name: 'Multan', lat: 30.19679, lon: 71.47824 },
+  { name: 'Peshawar', lat: 34.008, lon: 71.57849 },
+  { name: 'Quetta', lat: 30.18414, lon: 67.00141 },
+  { name: 'Hyderabad (Sindh)', lat: 25.39689, lon: 68.37718 },
+  { name: 'Gujranwala', lat: 32.15567, lon: 74.18705 }
+];
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+function isNum(v) { return typeof v === 'number' && isFinite(v); }
+function fmt1(v) { return isNum(v) ? (Math.round(v * 10) / 10).toString() : '--'; }
+function fmt0(v) { return isNum(v) ? Math.round(v).toString() : '--'; }
+function aqiCategory(aqi) {
+  if (!isNum(aqi) || aqi < 0) return null;
+  if (aqi <= 50) return { key: 'good', label: 'Good', color: '#16a34a', advice: 'Air quality is good. Enjoy outdoor activities as normal.' };
+  if (aqi <= 100) return { key: 'moderate', label: 'Moderate', color: '#ca8a04', advice: 'Air quality is acceptable. Very sensitive people should watch for symptoms such as coughing or shortness of breath.' };
+  if (aqi <= 150) return { key: 'usg', label: 'Unhealthy for Sensitive Groups', color: '#ea580c', advice: 'Sensitive groups — children, elderly people and asthma patients — should reduce long or heavy outdoor exertion. Everyone else can continue normal activities.' };
+  if (aqi <= 200) return { key: 'unhealthy', label: 'Unhealthy', color: '#dc2626', advice: 'Everyone may begin to feel effects. Reduce outdoor exertion; sensitive groups should avoid it and consider a mask outdoors.' };
+  if (aqi <= 300) return { key: 'very-unhealthy', label: 'Very Unhealthy', color: '#7c3aed', advice: 'Health alert: everyone should avoid outdoor exertion. Keep windows closed, run an air purifier if you have one, and wear a mask if you go out.' };
+  return { key: 'hazardous', label: 'Hazardous', color: '#7f1d1d', advice: 'Emergency conditions. Stay indoors with windows closed. If you must go out, wear a well-fitted N95 mask and keep the trip short.' };
+}
+function euCategory(v) {
+  if (!isNum(v) || v < 0) return null;
+  if (v <= 20) return 'Good';
+  if (v <= 40) return 'Fair';
+  if (v <= 60) return 'Moderate';
+  if (v <= 80) return 'Poor';
+  if (v <= 100) return 'Very poor';
+  return 'Extremely poor';
+}
+function pm25Level(v) {
+  if (!isNum(v) || v < 0) return null;
+  if (v <= 12) return 'Good';
+  if (v <= 35.4) return 'Moderate';
+  if (v <= 55.4) return 'Unhealthy for Sensitive Groups';
+  if (v <= 150.4) return 'Unhealthy';
+  if (v <= 250.4) return 'Very Unhealthy';
+  return 'Hazardous';
+}
+function pm10Level(v) {
+  if (!isNum(v) || v < 0) return null;
+  if (v <= 54) return 'Good';
+  if (v <= 154) return 'Moderate';
+  if (v <= 254) return 'Unhealthy for Sensitive Groups';
+  if (v <= 354) return 'Unhealthy';
+  if (v <= 424) return 'Very Unhealthy';
+  return 'Hazardous';
+}
+function wmoText(code) {
+  var map = {
+    0: 'Clear sky', 1: 'Mainly clear', 2: 'Partly cloudy', 3: 'Overcast',
+    45: 'Fog', 48: 'Fog with rime', 51: 'Light drizzle', 53: 'Drizzle', 55: 'Heavy drizzle',
+    56: 'Freezing drizzle', 57: 'Freezing drizzle', 61: 'Light rain', 63: 'Rain', 65: 'Heavy rain',
+    66: 'Freezing rain', 67: 'Freezing rain', 71: 'Light snow', 73: 'Snow', 75: 'Heavy snow',
+    77: 'Snow grains', 80: 'Light rain showers', 81: 'Rain showers', 82: 'Heavy rain showers',
+    85: 'Snow showers', 86: 'Snow showers', 95: 'Thunderstorm', 96: 'Thunderstorm with hail', 99: 'Thunderstorm with hail'
+  };
+  return map[code] || 'Unknown';
+}
+function dayLabel(isoDate) {
+  var parts = String(isoDate || '').split('-');
+  if (parts.length !== 3) return String(isoDate || '');
+  var y = parseInt(parts[0], 10), m = parseInt(parts[1], 10), d = parseInt(parts[2], 10);
+  if (!y || !m || !d) return String(isoDate);
+  var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  var wd = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+  return days[wd] + ' ' + d + ' ' + months[m - 1];
+}
+function dailyOutlook(hourly) {
+  if (!hourly || !hourly.time) return [];
+  var byDate = {};
+  var order = [];
+  for (var i = 0; i < hourly.time.length; i++) {
+    var date = String(hourly.time[i]).slice(0, 10);
+    if (!byDate[date]) { byDate[date] = { date: date, maxAqi: null, pmSum: 0, pmCount: 0, hours: 0 }; order.push(date); }
+    var a = hourly.us_aqi ? hourly.us_aqi[i] : null;
+    var p = hourly.pm2_5 ? hourly.pm2_5[i] : null;
+    if (isNum(a)) { byDate[date].maxAqi = byDate[date].maxAqi == null ? a : Math.max(byDate[date].maxAqi, a); }
+    if (isNum(p)) { byDate[date].pmSum += p; byDate[date].pmCount += 1; }
+    byDate[date].hours += 1;
+  }
+  return order.map(function (date) {
+    var r = byDate[date];
+    return { date: r.date, maxAqi: r.maxAqi, avgPm25: r.pmCount ? Math.round((r.pmSum / r.pmCount) * 10) / 10 : null, hours: r.hours };
+  });
+}
+function nextHours(hourly, fromIso, count) {
+  if (!hourly || !hourly.time || !hourly.time.length) return { times: [], us_aqi: [], pm2_5: [], pm10: [] };
+  var start = 0;
+  if (fromIso) {
+    for (var i = 0; i < hourly.time.length; i++) {
+      if (hourly.time[i] >= fromIso) { start = i; break; }
+      if (i === hourly.time.length - 1) start = i;
+    }
+  }
+  function slice(arr) { return (arr || []).slice(start, start + count); }
+  return { times: slice(hourly.time), us_aqi: slice(hourly.us_aqi), pm2_5: slice(hourly.pm2_5), pm10: slice(hourly.pm10) };
+}
+function sortRanking(rows) {
+  return (rows || []).slice().sort(function (a, b) {
+    var av = isNum(a.aqi) ? a.aqi : -1;
+    var bv = isNum(b.aqi) ? b.aqi : -1;
+    return bv - av;
+  });
+}
+function buildSummary(cityName, cur) {
+  if (!cur) return '';
+  var cat = aqiCategory(cur.us_aqi);
+  var parts = [];
+  parts.push(cityName + ' AQI ' + fmt0(cur.us_aqi) + (cat ? ' (' + cat.label + ')' : ''));
+  parts.push('PM2.5 ' + fmt1(cur.pm2_5) + ' ug/m3');
+  if (isNum(cur.pm10)) parts.push('PM10 ' + fmt1(cur.pm10) + ' ug/m3');
+  if (cat) parts.push(cat.advice);
+  return parts.join(' — ');
+}
+function buildReport(city, aqiData, wxData, rankingRows) {
+  var lines = [];
+  lines.push('DTZ Air Quality Tracker — Report');
+  lines.push('================================');
+  var name = city ? (city.name + (city.country ? ', ' + city.country : '')) : 'Unknown city';
+  lines.push('City: ' + name);
+  if (city && isNum(city.lat) && isNum(city.lon)) lines.push('Coordinates: ' + city.lat + ', ' + city.lon);
+  var cur = aqiData && aqiData.current ? aqiData.current : null;
+  if (cur) {
+    var cat = aqiCategory(cur.us_aqi);
+    lines.push('Updated (city local time): ' + String(cur.time || '').replace('T', ' '));
+    lines.push('');
+    lines.push('US AQI: ' + fmt0(cur.us_aqi) + (cat ? ' — ' + cat.label : ''));
+    if (cat) lines.push('Advice: ' + cat.advice);
+    lines.push('European AQI: ' + fmt0(cur.european_aqi) + (euCategory(cur.european_aqi) ? ' — ' + euCategory(cur.european_aqi) : ''));
+    lines.push('');
+    lines.push('Pollutants (ug/m3):');
+    lines.push('- PM2.5: ' + fmt1(cur.pm2_5) + (pm25Level(cur.pm2_5) ? ' (' + pm25Level(cur.pm2_5) + ')' : ''));
+    lines.push('- PM10: ' + fmt1(cur.pm10) + (pm10Level(cur.pm10) ? ' (' + pm10Level(cur.pm10) + ')' : ''));
+    lines.push('- Ozone (O3): ' + fmt1(cur.ozone));
+    lines.push('- Nitrogen dioxide (NO2): ' + fmt1(cur.nitrogen_dioxide));
+    lines.push('- Sulphur dioxide (SO2): ' + fmt1(cur.sulphur_dioxide));
+    lines.push('- Carbon monoxide (CO): ' + fmt1(cur.carbon_monoxide));
+  }
+  var outlook = aqiData ? dailyOutlook(aqiData.hourly).filter(function (d) { return d.maxAqi != null; }) : [];
+  if (outlook.length) {
+    lines.push('');
+    lines.push('Daily outlook (highest hourly AQI per day):');
+    outlook.slice(0, 5).forEach(function (d) {
+      var c = aqiCategory(d.maxAqi);
+      lines.push('- ' + dayLabel(d.date) + ': AQI ' + fmt0(d.maxAqi) + (c ? ' (' + c.label + ')' : '') + ', avg PM2.5 ' + fmt1(d.avgPm25) + ' ug/m3');
+    });
+  }
+  if (wxData && wxData.current) {
+    var w = wxData.current;
+    lines.push('');
+    lines.push('Weather now: ' + fmt1(w.temperature_2m) + ' C, ' + wmoText(w.weather_code) + ', humidity ' + fmt0(w.relative_humidity_2m) + '%, wind ' + fmt1(w.wind_speed_10m) + ' km/h');
+    if (wxData.daily && wxData.daily.time) {
+      lines.push('7-day forecast:');
+      for (var i = 0; i < wxData.daily.time.length; i++) {
+        lines.push('- ' + dayLabel(wxData.daily.time[i]) + ': ' + wmoText(wxData.daily.weather_code[i]) + ', ' + fmt1(wxData.daily.temperature_2m_min[i]) + ' to ' + fmt1(wxData.daily.temperature_2m_max[i]) + ' C');
+      }
+    }
+  }
+  if (rankingRows && rankingRows.length) {
+    lines.push('');
+    lines.push('Pakistan cities ranking (worst air first):');
+    sortRanking(rankingRows).forEach(function (r, idx) {
+      var c = aqiCategory(r.aqi);
+      lines.push((idx + 1) + '. ' + r.name + ' — AQI ' + fmt0(r.aqi) + (c ? ' (' + c.label + ')' : '') + ', PM2.5 ' + fmt1(r.pm25) + ' ug/m3');
+    });
+  }
+  lines.push('');
+  lines.push('Source: Open-Meteo Air Quality API (Copernicus CAMS model, CC BY 4.0) + Open-Meteo Weather API.');
+  lines.push('Model estimates, updated hourly. Indicative only — not medical advice.');
+  lines.push('Dark Tech Zone — Learn. Build. Secure. https://www.darktechzon.site/air-quality/');
+  return lines.join('\n');
+}
+// === DTZ HELPERS END ===
+var GEO_BASE = 'https://geocoding-api.open-meteo.com/v1/search';
+var AQI_BASE = 'https://air-quality-api.open-meteo.com/v1/air-quality';
+var WX_BASE = 'https://api.open-meteo.com/v1/forecast';
+var state = { city: null, aqi: null, wx: null, ranking: [], metric: 'us_aqi' };
+function $(id) { return document.getElementById(id); }
+function showMsg(id, text, kind) {
+  var el = $(id);
+  el.textContent = text || '';
+  el.className = 'msg' + (text ? ' show ' + (kind || 'info') : '');
+}
+function aqiUrl(lat, lon, full) {
+  var u = AQI_BASE + '?latitude=' + lat + '&longitude=' + lon + '&timezone=auto';
+  if (full) {
+    u += '&current=us_aqi,european_aqi,pm2_5,pm10,ozone,nitrogen_dioxide,sulphur_dioxide,carbon_monoxide&hourly=us_aqi,pm2_5,pm10&forecast_days=6';
+  } else {
+    u += '&current=us_aqi,pm2_5';
+  }
+  return u;
+}
+function wxUrl(lat, lon) {
+  return WX_BASE + '?latitude=' + lat + '&longitude=' + lon + '&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto&forecast_days=7';
+}
+function fetchJson(url) {
+  return fetch(url).then(function (r) {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  });
+}
+function cityLabel(city) {
+  if (!city) return '';
+  var bits = [city.name];
+  if (city.admin1) bits.push(city.admin1);
+  if (city.country) bits.push(city.country);
+  return bits.join(', ');
+}
+function renderChips() {
+  var wrap = $('chipsRow');
+  wrap.innerHTML = '';
+  PK_CITIES.forEach(function (c) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'chip' + (state.city && state.city.name === c.name ? ' active' : '');
+    b.textContent = c.name;
+    b.addEventListener('click', function () {
+      loadCity({ name: c.name, country: 'Pakistan', admin1: '', lat: c.lat, lon: c.lon });
+    });
+    wrap.appendChild(b);
+  });
+}
+function renderSearchResults(results) {
+  var wrap = $('searchResults');
+  wrap.innerHTML = '';
+  (results || []).forEach(function (r) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'result-row';
+    var left = document.createElement('span');
+    left.className = 'rn';
+    left.textContent = r.name + (r.admin1 ? ', ' + r.admin1 : '') + (r.country ? ', ' + r.country : '');
+    var right = document.createElement('span');
+    right.className = 'rm';
+    right.textContent = (r.population ? 'Pop. ' + Number(r.population).toLocaleString('en-US') : '') + ' · ' + r.latitude + ', ' + r.longitude;
+    b.appendChild(left);
+    b.appendChild(right);
+    b.addEventListener('click', function () {
+      wrap.innerHTML = '';
+      loadCity({ name: r.name, country: r.country || '', admin1: r.admin1 || '', lat: r.latitude, lon: r.longitude });
+    });
+    wrap.appendChild(b);
+  });
+}
+function doSearch() {
+  var q = $('searchInput').value.trim();
+  if (q.length < 2) { showMsg('searchMsg', 'Type at least 2 letters of a city name.', 'err'); return; }
+  showMsg('searchMsg', 'Searching...', 'info');
+  $('searchResults').innerHTML = '';
+  fetchJson(GEO_BASE + '?name=' + encodeURIComponent(q) + '&count=5&language=en&format=json')
+    .then(function (d) {
+      var results = (d && d.results) || [];
+      if (!results.length) { showMsg('searchMsg', 'No city found for "' + q + '". Check the spelling and try again.', 'err'); return; }
+      showMsg('searchMsg', '', '');
+      renderSearchResults(results);
+    })
+    .catch(function () { showMsg('searchMsg', 'City search failed. Check your internet connection and try again.', 'err'); });
+}
+function levelColor(label) {
+  var map = { 'Good': '#16a34a', 'Moderate': '#ca8a04', 'Unhealthy for Sensitive Groups': '#ea580c', 'Unhealthy': '#dc2626', 'Very Unhealthy': '#7c3aed', 'Hazardous': '#7f1d1d' };
+  return map[label] || '#94a3b8';
+}
+function renderAqi() {
+  var cur = state.aqi && state.aqi.current;
+  if (!cur) return;
+  var cat = aqiCategory(cur.us_aqi);
+  $('aqiCard').hidden = false;
+  $('aqiCity').textContent = cityLabel(state.city);
+  var tz = state.aqi.timezone || '';
+  $('aqiMeta').textContent = (tz ? 'Timezone: ' + tz + ' · ' : '') + 'Coordinates: ' + state.city.lat + ', ' + state.city.lon;
+  $('aqiNum').textContent = fmt0(cur.us_aqi);
+  $('aqiCircle').style.background = cat ? cat.color : '#94a3b8';
+  var badge = $('aqiBadge');
+  badge.textContent = cat ? cat.label : 'No data';
+  badge.style.background = cat ? cat.color : '#94a3b8';
+  $('aqiAdvice').textContent = cat ? cat.advice : 'No air quality data is available for this location right now.';
+  var pct = isNum(cur.us_aqi) ? Math.min(100, Math.max(0, (cur.us_aqi / 500) * 100)) : 0;
+  $('aqiScaleMarker').style.left = pct + '%';
+  $('aqiEu').textContent = fmt0(cur.european_aqi);
+  $('aqiEuSub').textContent = euCategory(cur.european_aqi) || '';
+  $('aqiPm25').textContent = fmt1(cur.pm2_5) + ' ug/m3';
+  $('aqiPm25Sub').textContent = pm25Level(cur.pm2_5) || '';
+  $('aqiUpdated').textContent = String(cur.time || '').replace('T', ' ');
+}
+function renderPollutants() {
+  var cur = state.aqi && state.aqi.current;
+  if (!cur) return;
+  $('polCard').hidden = false;
+  var items = [
+    { v: fmt1(cur.pm2_5), l: 'PM2.5 — fine dust', s: pm25Level(cur.pm2_5) || '' },
+    { v: fmt1(cur.pm10), l: 'PM10 — coarse dust', s: pm10Level(cur.pm10) || '' },
+    { v: fmt1(cur.ozone), l: 'Ozone (O3)', s: 'ug/m3' },
+    { v: fmt1(cur.nitrogen_dioxide), l: 'Nitrogen dioxide (NO2)', s: 'ug/m3' },
+    { v: fmt1(cur.sulphur_dioxide), l: 'Sulphur dioxide (SO2)', s: 'ug/m3' },
+    { v: fmt1(cur.carbon_monoxide), l: 'Carbon monoxide (CO)', s: 'ug/m3' }
+  ];
+  $('polGrid').innerHTML = items.map(function (it) {
+    return '<div class="statbox"><div class="sv">' + esc(it.v) + '</div><div class="sl">' + esc(it.l) + '</div><div class="ss">' + esc(it.s) + '</div></div>';
+  }).join('');
+}
+function chartColor(metric, v) {
+  if (!isNum(v)) return '#cbd5e1';
+  if (metric === 'us_aqi') { var c = aqiCategory(v); return c ? c.color : '#94a3b8'; }
+  if (metric === 'pm2_5') return levelColor(pm25Level(v));
+  return levelColor(pm10Level(v));
+}
+function renderChart() {
+  if (!state.aqi || !state.aqi.hourly) return;
+  $('chartCard').hidden = false;
+  var curTime = state.aqi.current ? state.aqi.current.time : null;
+  var data = nextHours(state.aqi.hourly, curTime, 48);
+  var values = data[state.metric] || [];
+  var canvas = $('chartCanvas');
+  var dpr = window.devicePixelRatio || 1;
+  var w = canvas.clientWidth || 900;
+  var h = 220;
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  var ctx = canvas.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, w, h);
+  var nums = values.filter(isNum);
+  var maxV = nums.length ? Math.max.apply(null, nums) : 0;
+  var yMax = state.metric === 'us_aqi' ? Math.max(120, maxV * 1.15) : Math.max(60, maxV * 1.15);
+  var padL = 44, padR = 8, padT = 18, padB = 26;
+  var plotW = w - padL - padR;
+  var plotH = h - padT - padB;
+  ctx.font = '11px Segoe UI, Arial, sans-serif';
+  ctx.fillStyle = '#64748b';
+  [0, 0.5, 1].forEach(function (f) {
+    var y = padT + plotH * (1 - f);
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(w - padR, y); ctx.stroke();
+    ctx.fillText(String(Math.round(yMax * f)), 6, y + 4);
+  });
+  var n = values.length || 1;
+  var barW = plotW / n;
+  var maxIdx = -1;
+  values.forEach(function (v, i) { if (isNum(v) && (maxIdx < 0 || v > values[maxIdx])) maxIdx = i; });
+  values.forEach(function (v, i) {
+    if (!isNum(v)) return;
+    var bh = (v / yMax) * plotH;
+    var x = padL + i * barW;
+    var y = padT + plotH - bh;
+    ctx.fillStyle = chartColor(state.metric, v);
+    ctx.fillRect(x + 1, y, Math.max(2, barW - 2), bh);
+    if (i === maxIdx) {
+      ctx.fillStyle = '#0f172a';
+      ctx.font = 'bold 11px Segoe UI, Arial, sans-serif';
+      ctx.fillText(String(Math.round(v)), Math.min(x, w - 40), Math.max(12, y - 4));
+      ctx.font = '11px Segoe UI, Arial, sans-serif';
+    }
+  });
+  ctx.fillStyle = '#64748b';
+  data.times.forEach(function (t, i) {
+    if (i % 8 !== 0) return;
+    var x = padL + i * barW;
+    ctx.fillText(String(t).slice(11, 16), x, h - 8);
+  });
+  var unit = state.metric === 'us_aqi' ? 'US AQI' : (state.metric === 'pm2_5' ? 'PM2.5 ug/m3' : 'PM10 ug/m3');
+  $('chartNote').textContent = 'Hourly ' + unit + ' for the next 48 hours from ' + String(data.times[0] || '').replace('T', ' ') + '. Tallest bar is labelled with its value. Times are city local time.';
+  var cats = ['Good', 'Moderate', 'Unhealthy for Sensitive Groups', 'Unhealthy', 'Very Unhealthy', 'Hazardous'];
+  $('chartLegend').innerHTML = cats.map(function (c) {
+    return '<span><span class="dot" style="background:' + levelColor(c) + '"></span>' + esc(c) + '</span>';
+  }).join('');
+}
+function renderOutlook() {
+  if (!state.aqi) return;
+  var outlook = dailyOutlook(state.aqi.hourly).filter(function (d) { return d.maxAqi != null; }).slice(0, 5);
+  if (!outlook.length) return;
+  $('outlookCard').hidden = false;
+  $('outlookGrid').innerHTML = outlook.map(function (d) {
+    var c = aqiCategory(d.maxAqi);
+    return '<div class="daybox"><div class="d">' + esc(dayLabel(d.date)) + '</div>' +
+      '<div class="a" style="color:' + (c ? c.color : '#94a3b8') + '">' + esc(fmt0(d.maxAqi)) + '</div>' +
+      '<div class="c">' + esc(c ? c.label : 'No data') + '</div>' +
+      '<div class="p">Avg PM2.5 ' + esc(fmt1(d.avgPm25)) + ' ug/m3</div></div>';
+  }).join('');
+}
+function renderWeather() {
+  if (!state.wx || !state.wx.current) { $('wxCard').hidden = true; return; }
+  var w = state.wx.current;
+  $('wxCard').hidden = false;
+  $('wxTemp').textContent = fmt1(w.temperature_2m) + '°C';
+  $('wxDetail').innerHTML = esc(wmoText(w.weather_code)) + '<br>Humidity ' + esc(fmt0(w.relative_humidity_2m)) + '% · Wind ' + esc(fmt1(w.wind_speed_10m)) + ' km/h';
+  var daily = state.wx.daily;
+  if (daily && daily.time) {
+    $('wxDays').innerHTML = daily.time.map(function (t, i) {
+      return '<div class="wx-day"><div class="d">' + esc(dayLabel(t)) + '</div><div class="c">' + esc(wmoText(daily.weather_code[i])) + '</div><div class="t">' + esc(fmt0(daily.temperature_2m_min[i])) + '° – ' + esc(fmt0(daily.temperature_2m_max[i])) + '°</div></div>';
+    }).join('');
+  }
+}
+function saveRecent(city) {
+  try {
+    var key = 'dtz-aqi-recent';
+    var list = [];
+    try { list = JSON.parse(localStorage.getItem(key) || '[]'); } catch (e) { list = []; }
+    list = list.filter(function (c) { return !(c.name === city.name && c.lat === city.lat && c.lon === city.lon); });
+    list.unshift({ name: city.name, country: city.country || '', admin1: city.admin1 || '', lat: city.lat, lon: city.lon });
+    list = list.slice(0, 8);
+    localStorage.setItem(key, JSON.stringify(list));
+    localStorage.setItem('dtz-aqi-last', JSON.stringify(list[0]));
+    renderRecent();
+  } catch (e) { /* storage unavailable */ }
+}
+function renderRecent() {
+  var list = [];
+  try { list = JSON.parse(localStorage.getItem('dtz-aqi-recent') || '[]'); } catch (e) { list = []; }
+  $('recentCard').hidden = !list.length;
+  var wrap = $('recentList');
+  wrap.innerHTML = '';
+  list.forEach(function (c) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'recent-chip';
+    var left = document.createElement('span');
+    left.className = 'rn';
+    left.textContent = cityLabel(c);
+    var right = document.createElement('span');
+    right.className = 'rm';
+    right.textContent = c.lat + ', ' + c.lon;
+    b.appendChild(left);
+    b.appendChild(right);
+    b.addEventListener('click', function () { loadCity(c); });
+    wrap.appendChild(b);
+  });
+}
+function loadCity(city) {
+  state.city = city;
+  renderChips();
+  showMsg('searchMsg', '', '');
+  showMsg('aqiMsg', 'Loading air quality for ' + city.name + '...', 'info');
+  $('aqiCard').hidden = false;
+  $('aqiCity').textContent = cityLabel(city);
+  var aqiP = fetchJson(aqiUrl(city.lat, city.lon, true));
+  var wxP = fetchJson(wxUrl(city.lat, city.lon)).catch(function () { return null; });
+  aqiP.then(function (aqi) {
+    state.aqi = aqi;
+    showMsg('aqiMsg', '', '');
+    renderAqi();
+    renderPollutants();
+    renderChart();
+    renderOutlook();
+    saveRecent(city);
+    return wxP;
+  }).then(function (wx) {
+    state.wx = wx;
+    renderWeather();
+  }).catch(function () {
+    showMsg('aqiMsg', 'Could not load air quality data. Check your internet connection, then tap Refresh.', 'err');
+  });
+}
+function loadRanking() {
+  var btn = $('btnRank');
+  btn.disabled = true;
+  btn.textContent = 'Loading...';
+  showMsg('rankMsg', 'Fetching live AQI for 10 Pakistani cities...', 'info');
+  var jobs = PK_CITIES.map(function (c) {
+    return fetchJson(aqiUrl(c.lat, c.lon, false)).then(function (d) {
+      return { name: c.name, lat: c.lat, lon: c.lon, aqi: d && d.current ? d.current.us_aqi : null, pm25: d && d.current ? d.current.pm2_5 : null };
+    }).catch(function () {
+      return { name: c.name, lat: c.lat, lon: c.lon, aqi: null, pm25: null };
+    });
+  });
+  Promise.all(jobs).then(function (rows) {
+    state.ranking = sortRanking(rows);
+    btn.disabled = false;
+    btn.textContent = 'Refresh ranking';
+    $('btnCopyRank').disabled = false;
+    var okCount = rows.filter(function (r) { return isNum(r.aqi); }).length;
+    showMsg('rankMsg', okCount ? ('Loaded ' + okCount + ' of ' + rows.length + ' cities. Worst air first.') : 'Could not load any city right now. Check your connection and try again.', okCount ? 'ok' : 'err');
+    var html = '<table class="rank"><tr><th>#</th><th>City</th><th>US AQI</th><th>Level</th><th>PM2.5</th></tr>';
+    state.ranking.forEach(function (r, i) {
+      var c = aqiCategory(r.aqi);
+      html += '<tr class="clickable" data-city="' + esc(r.name) + '"><td>' + (i + 1) + '</td><td><strong>' + esc(r.name) + '</strong></td><td>' + esc(fmt0(r.aqi)) + '</td><td>' + (c ? '<span class="pill" style="background:' + c.color + '">' + esc(c.label) + '</span>' : 'No data') + '</td><td>' + esc(fmt1(r.pm25)) + ' ug/m3</td></tr>';
+    });
+    html += '</table>';
+    $('rankTableWrap').innerHTML = html;
+    var trs = $('rankTableWrap').querySelectorAll('tr.clickable');
+    trs.forEach(function (tr) {
+      tr.addEventListener('click', function () {
+        var name = tr.getAttribute('data-city');
+        var found = null;
+        PK_CITIES.forEach(function (c) { if (c.name === name) found = c; });
+        if (found) {
+          loadCity({ name: found.name, country: 'Pakistan', admin1: '', lat: found.lat, lon: found.lon });
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      });
+    });
+  });
+}
+function copyText(text, msgId, okText) {
+  function fallback() {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); showMsg(msgId, okText, 'ok'); }
+    catch (e) { showMsg(msgId, 'Copy failed on this browser. You can download the report instead.', 'err'); }
+    document.body.removeChild(ta);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function () { showMsg(msgId, okText, 'ok'); }).catch(fallback);
+  } else { fallback(); }
+}
+function setMetric(m) {
+  state.metric = m;
+  $('mAqi').classList.toggle('active', m === 'us_aqi');
+  $('mPm25').classList.toggle('active', m === 'pm2_5');
+  $('mPm10').classList.toggle('active', m === 'pm10');
+  renderChart();
+}
+$('btnSearch').addEventListener('click', doSearch);
+$('searchInput').addEventListener('keydown', function (e) { if (e.key === 'Enter') doSearch(); });
+$('btnLocate').addEventListener('click', function () {
+  if (!navigator.geolocation) { showMsg('searchMsg', 'Location is not supported on this browser. Type your city name instead.', 'err'); return; }
+  showMsg('searchMsg', 'Getting your location...', 'info');
+  navigator.geolocation.getCurrentPosition(function (pos) {
+    showMsg('searchMsg', '', '');
+    loadCity({ name: 'My Location', country: '', admin1: '', lat: Math.round(pos.coords.latitude * 100000) / 100000, lon: Math.round(pos.coords.longitude * 100000) / 100000 });
+  }, function () {
+    showMsg('searchMsg', 'Location permission was denied. Type your city name instead.', 'err');
+  }, { timeout: 10000 });
+});
+$('btnRefresh').addEventListener('click', function () { if (state.city) loadCity(state.city); });
+$('btnCopy').addEventListener('click', function () {
+  if (!state.aqi || !state.aqi.current) return;
+  copyText(buildSummary(cityLabel(state.city), state.aqi.current) + ' — via DTZ Air Quality Tracker (darktechzon.site/air-quality)', 'aqiMsg', 'Summary copied. Paste it anywhere to share.');
+});
+$('btnReport').addEventListener('click', function () {
+  if (!state.aqi) return;
+  var text = buildReport(state.city, state.aqi, state.wx, state.ranking);
+  var blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'dtz-air-quality-' + String(state.city.name || 'city').toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.txt';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 400);
+  showMsg('aqiMsg', 'Report downloaded.', 'ok');
+});
+$('btnRank').addEventListener('click', loadRanking);
+$('btnCopyRank').addEventListener('click', function () {
+  if (!state.ranking.length) return;
+  var lines = ['Pakistan Air Quality Ranking (worst first) — DTZ Air Quality Tracker'];
+  state.ranking.forEach(function (r, i) {
+    var c = aqiCategory(r.aqi);
+    lines.push((i + 1) + '. ' + r.name + ' — AQI ' + fmt0(r.aqi) + (c ? ' (' + c.label + ')' : '') + ', PM2.5 ' + fmt1(r.pm25) + ' ug/m3');
+  });
+  lines.push('Source: Open-Meteo (CAMS). darktechzon.site/air-quality');
+  copyText(lines.join('\n'), 'rankMsg', 'Ranking copied. Paste it anywhere to share.');
+});
+$('btnClearRecent').addEventListener('click', function () {
+  try { localStorage.removeItem('dtz-aqi-recent'); } catch (e) {}
+  renderRecent();
+});
+$('mAqi').addEventListener('click', function () { setMetric('us_aqi'); });
+$('mPm25').addEventListener('click', function () { setMetric('pm2_5'); });
+$('mPm10').addEventListener('click', function () { setMetric('pm10'); });
+window.addEventListener('resize', function () { if (state.aqi) renderChart(); });
+renderChips();
+renderRecent();
+(function init() {
+  var last = null;
+  try { last = JSON.parse(localStorage.getItem('dtz-aqi-last') || 'null'); } catch (e) { last = null; }
+  if (last && last.name && isNum(last.lat) && isNum(last.lon)) { loadCity(last); }
+  else { loadCity({ name: 'Lahore', country: 'Pakistan', admin1: 'Punjab', lat: 31.558, lon: 74.35071 }); }
+})();
+</script>
+<!-- DTZ Splash Intro (added 2026-11-25) -->
+<style>
+#dtz-splash-overlay{position:fixed;inset:0;z-index:2147483647;background:#02040a;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Segoe UI',Arial,sans-serif;opacity:1;transition:opacity .45s ease;cursor:pointer}
+#dtz-splash-overlay.dtz-splash-hide{opacity:0;pointer-events:none}
+.dtz-splash-logo-wrap{position:relative;width:190px;height:190px;margin-bottom:22px}
+.dtz-splash-ring{position:absolute;border-radius:50%;border:3px solid transparent}
+.dtz-splash-ring1{inset:-12px;border-top-color:#00e5ff;border-bottom-color:#00e5ff;animation:dtz-splash-spin 3.2s linear infinite}
+.dtz-splash-ring2{inset:-22px;border-left-color:#ff2e88;border-right-color:#ff2e88;animation:dtz-splash-spin-rev 4.6s linear infinite}
+.dtz-splash-ring3{inset:-32px;border-top-color:#9d4dff;animation:dtz-splash-spin 7s linear infinite;opacity:.7}
+@keyframes dtz-splash-spin{to{transform:rotate(360deg)}}
+@keyframes dtz-splash-spin-rev{to{transform:rotate(-360deg)}}
+.dtz-splash-logo{width:100%;height:100%;border-radius:50%;object-fit:cover;box-shadow:0 0 42px #00e5ff,0 0 90px rgba(157,77,255,.45);animation:dtz-splash-logo-in .8s cubic-bezier(.17,.89,.32,1.28) both}
+@keyframes dtz-splash-logo-in{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+.dtz-splash-title{font-size:30px;font-weight:900;letter-spacing:5px;text-transform:uppercase;color:#fff;text-align:center;animation:dtz-splash-title-in .7s ease .25s both}
+.dtz-splash-title span{color:#00e5ff}
+@keyframes dtz-splash-title-in{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.dtz-splash-tagline{margin-top:8px;font-size:14px;letter-spacing:5px;text-transform:uppercase;color:#8be9ff;text-align:center;animation:dtz-splash-title-in .7s ease .45s both}
+.dtz-splash-skip{margin-top:20px;font-size:11px;letter-spacing:2px;color:#5b7186;text-transform:uppercase}
+@media (prefers-reduced-motion:reduce){.dtz-splash-ring,.dtz-splash-logo,.dtz-splash-title,.dtz-splash-tagline{animation:none!important}}
+@media (max-width:480px){.dtz-splash-logo-wrap{width:150px;height:150px}.dtz-splash-title{font-size:22px;letter-spacing:3px}.dtz-splash-tagline{font-size:12px;letter-spacing:3px}}
+</style>
+<div id="dtz-splash-overlay" role="presentation">
+  <div class="dtz-splash-logo-wrap">
+    <div class="dtz-splash-ring dtz-splash-ring1"></div>
+    <div class="dtz-splash-ring dtz-splash-ring2"></div>
+    <div class="dtz-splash-ring dtz-splash-ring3"></div>
+    <img class="dtz-splash-logo" src="https://cdn.jsdelivr.net/gh/darktechzone2-cyber/dark-zone-md-pair@main/dtz-official-logo.jpg" alt="Dark Tech Zone" onerror="this.style.display='none'">
+  </div>
+  <div class="dtz-splash-title">Dark <span>Tech</span> Zone</div>
+  <div class="dtz-splash-tagline">Learn. Build. Secure.</div>
+  <div class="dtz-splash-skip">Tap to skip</div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('dtz-splash-overlay');
+  if(!el)return;
+  var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var done=false;
+  function hide(){
+    if(done)return;done=true;
+    el.classList.add('dtz-splash-hide');
+    setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},500);
+  }
+  el.addEventListener('click',hide);
+  el.addEventListener('touchstart',hide,{passive:true});
+  setTimeout(hide,reduced?350:2500);
+})();
+</script>
+<!-- /DTZ Splash Intro -->
+
+</body>
+</html>
